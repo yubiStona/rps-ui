@@ -1,0 +1,556 @@
+@import url("https://fonts.googleapis.com/css2?family=Poppins:wght@200;300;400;500;600;700;800&display=swap");
+
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+body,
+input {
+  font-family: "Poppins", sans-serif;
+}
+
+/* Main Container */
+.login-container {
+  position: relative;
+  width: 100%;
+  background-color: #fff;
+  min-height: 100vh;
+  overflow: hidden;
+}
+
+/* Background Circle Effect */
+.login-container::before {
+  content: "";
+  position: absolute;
+  height: 2000px;
+  width: 2000px;
+  top: -10%;
+  right: 48%;
+  transform: translateY(-50%);
+  background-image: linear-gradient(-45deg, #4481eb 0%, #04befe 100%);
+  border-radius: 50%;
+  z-index: 6;
+}
+
+/* Form Wrapper */
+.login-form-wrapper {
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  top: 0;
+  left: 0;
+  z-index: 10;
+}
+
+/* Form Container */
+.login-form {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  left: 75%;
+  width: 50%;
+  max-width: 450px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 0rem 3rem;
+}
+
+/* Form Title */
+.form-title {
+  font-size: 2.2rem;
+  color: #444;
+  margin-bottom: 10px;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Input Field */
+.input-field {
+  max-width: 380px;
+  width: 100%;
+  background-color: #f0f0f0;
+  margin: 10px 0;
+  height: 55px;
+  border-radius: 55px;
+  display: grid;
+  grid-template-columns: 15% 85%;
+  padding: 0 0.4rem;
+  position: relative;
+  transition: all 0.3s ease;
+}
+
+.input-field:focus-within {
+  background-color: #e8e8e8;
+  box-shadow: 0 0 0 2px rgba(89, 149, 253, 0.2);
+}
+
+.input-field i {
+  text-align: center;
+  line-height: 55px;
+  color: #acacac;
+  transition: 0.3s;
+  font-size: 1.1rem;
+}
+
+.input-field i.fa-eye,
+.input-field i.fa-eye-slash {
+  cursor: pointer;
+  user-select: none;
+}
+
+.input-field i.fa-eye:hover,
+.input-field i.fa-eye-slash:hover {
+  color: #5995fd;
+}
+
+.input-field input {
+  background: none;
+  outline: none;
+  border: none;
+  line-height: 1;
+  font-weight: 400;
+  font-size: 1.1rem;
+  color: #333;
+}
+
+.input-field input::placeholder {
+  color: #aaa;
+  font-weight: 500;
+}
+
+/* Login Button */
+.btn-login {
+  width: 150px;
+  background-color: #5995fd;
+  border: none;
+  outline: none;
+  height: 49px;
+  border-radius: 49px;
+  color: #fff;
+  text-transform: uppercase;
+  font-weight: 600;
+  margin: 10px 0;
+  cursor: pointer;
+  transition: 0.5s;
+  font-family: "Poppins", sans-serif;
+}
+
+.btn-login:hover {
+  background-color: #4d84e2;
+}
+
+/* Forgot Password Link */
+.forgot-link {
+  font-family: "Poppins", sans-serif;
+  color: #5995fd;
+  text-decoration: none;
+  margin-top: 0.5rem;
+  font-size: 0.95rem;
+}
+
+.forgot-link:hover {
+  text-decoration: underline;
+}
+
+/* Logo Panel (Desktop) */
+.logo-panel {
+  position: absolute;
+  height: 100%;
+  width: 50%;
+  top: 0;
+  left: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  justify-content: space-around;
+  text-align: center;
+  z-index: 6;
+  pointer-events: all;
+  padding: 3rem 17% 2rem 12%;
+}
+
+.logo-content {
+  color: #fff;
+}
+
+/* Logo Container */
+.logo-container {
+  margin-bottom: 2rem;
+  animation: fadeInDown 1s ease-out;
+}
+
+.logo-circle {
+  width: 120px;
+  height: 120px;
+  background: rgba(255, 255, 255, 0.15);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  position: relative;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+  backdrop-filter: blur(10px);
+  border: 3px solid rgba(255, 255, 255, 0.3);
+  animation: pulse 2s ease-in-out infinite;
+}
+
+.logo-circle::before {
+  content: "";
+  position: absolute;
+  width: 140px;
+  height: 140px;
+  border-radius: 50%;
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  animation: ripple 2s ease-out infinite;
+}
+
+.logo-icon {
+  font-size: 3.5rem !important;
+  color: #fff;
+  animation: float 3s ease-in-out infinite;
+  filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.2));
+}
+
+.system-title {
+  font-family: "Poppins", sans-serif;
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #fff;
+  margin-top: 1.5rem;
+  margin-bottom: 0.8rem;
+  letter-spacing: 1px;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+  animation: fadeIn 1.2s ease-out;
+}
+
+.title-underline {
+  width: 80px;
+  height: 4px;
+  background: linear-gradient(90deg, transparent, #fff, transparent);
+  margin: 0 auto 1.5rem;
+  border-radius: 2px;
+  animation: expandWidth 1.5s ease-out;
+}
+
+.system-subtitle {
+  font-family: "Poppins", sans-serif;
+  font-size: 1rem;
+  color: rgba(255, 255, 255, 0.95);
+  font-weight: 300;
+  letter-spacing: 0.5px;
+  animation: fadeIn 1.4s ease-out;
+}
+
+.feature-icons {
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin-top: 2rem;
+  animation: fadeInUp 1.6s ease-out;
+}
+
+.feature-item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+  transition: transform 0.3s ease;
+}
+
+.feature-item:hover {
+  transform: translateY(-5px);
+}
+
+.feature-item i {
+  font-size: 1.5rem;
+  color: #fff;
+  background: rgba(255, 255, 255, 0.15);
+  width: 50px;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  backdrop-filter: blur(10px);
+  border: 2px solid rgba(255, 255, 255, 0.2);
+  transition: all 0.3s ease;
+}
+
+.feature-item:hover i {
+  background: rgba(255, 255, 255, 0.25);
+  border-color: rgba(255, 255, 255, 0.4);
+  box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2);
+}
+
+.feature-item span {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  font-weight: 500;
+  font-family: "Poppins", sans-serif;
+}
+
+/* Mobile Logo Header */
+.mobile-logo-header {
+  display: none;
+  text-align: center;
+}
+
+.mobile-logo-icon {
+  width: 70px;
+  height: 70px;
+  background: linear-gradient(-45deg, #4481eb 0%, #04befe 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto;
+  box-shadow: 0 4px 15px rgba(68, 129, 235, 0.3);
+}
+
+.mobile-logo-icon i {
+  font-size: 2.2rem;
+  color: white;
+}
+
+.mobile-logo-text {
+  font-family: "Poppins", sans-serif;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #4481eb;
+  margin: 0;
+  letter-spacing: 1px;
+}
+
+.mobile-logo-subtitle {
+  font-family: "Poppins", sans-serif;
+  font-size: 0.85rem;
+  color: #888;
+  margin: 0;
+  font-weight: 400;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes float {
+  0%,
+  100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes ripple {
+  0% {
+    opacity: 1;
+    transform: scale(0.9);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(1.2);
+  }
+}
+
+@keyframes expandWidth {
+  from {
+    width: 0;
+  }
+  to {
+    width: 80px;
+  }
+}
+
+/* Responsive Design - Tablet & Mobile */
+@media (max-width: 870px) {
+  .login-container {
+    background: linear-gradient(-45deg, #4481eb 0%, #04befe 100%);
+  }
+
+  .login-container::before {
+    background: rgba(255, 255, 255, 0.05);
+    width: 400px;
+    height: 400px;
+    bottom: -150px;
+    left: -100px;
+    top: auto;
+    right: auto;
+    transform: none;
+    z-index: 1;
+  }
+
+  .login-container::after {
+    content: "";
+    position: absolute;
+    width: 300px;
+    height: 300px;
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 50%;
+    top: -100px;
+    right: -100px;
+    z-index: 1;
+    animation: floatCircle 6s ease-in-out infinite;
+  }
+
+  .login-form {
+    width: 90%;
+    max-width: 450px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: white;
+    border-radius: 20px;
+    padding: 2.5rem 1.5rem;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  }
+
+  .login-form-wrapper {
+    z-index: 10;
+  }
+
+  .logo-panel {
+    display: none;
+  }
+
+  .mobile-logo-header {
+    display: flex !important;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid #f0f0f0;
+  }
+}
+
+/* Small Mobile */
+@media (max-width: 570px) {
+  .login-container {
+    padding: 1rem;
+  }
+
+  .login-container::after {
+    width: 200px;
+    height: 200px;
+    top: -80px;
+    right: -80px;
+  }
+
+  .login-container::before {
+    width: 250px;
+    height: 250px;
+    bottom: -100px;
+    left: -80px;
+  }
+
+  .login-form {
+    width: 95%;
+    max-width: 400px;
+    padding: 2rem 1rem;
+  }
+
+  .form-title {
+    font-size: 1.8rem;
+  }
+
+  .input-field {
+    max-width: 100%;
+  }
+
+  .mobile-logo-icon {
+    width: 60px;
+    height: 60px;
+  }
+
+  .mobile-logo-icon i {
+    font-size: 2rem;
+  }
+
+  .mobile-logo-text {
+    font-size: 1.3rem;
+  }
+
+  .mobile-logo-subtitle {
+    font-size: 0.8rem;
+  }
+}
+
+/* Large screens */
+@media (min-width: 871px) {
+  .login-form {
+    left: 75% !important;
+    top: 50% !important;
+    transform: translate(-50%, -50%) !important;
+    width: 50% !important;
+  }
+
+  .logo-panel {
+    display: flex !important;
+  }
+
+  .login-container::before {
+    height: 2000px !important;
+    width: 2000px !important;
+    top: -10% !important;
+    right: 48% !important;
+    left: initial !important;
+    bottom: initial !important;
+    transform: translateY(-50%) !important;
+    border-radius: 50% !important;
+  }
+}
+
+@keyframes floatCircle {
+  0%,
+  100% {
+    transform: translate(0, 0);
+  }
+  50% {
+    transform: translate(20px, 20px);
+  }
+}
