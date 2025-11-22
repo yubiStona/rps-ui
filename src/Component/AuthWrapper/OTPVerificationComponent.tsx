@@ -178,8 +178,8 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
         <div className="mobile-logo-icon">
           <i className="fas fa-graduation-cap"></i>
         </div>
-        <h2 className="mobile-logo-text">RPS</h2>
-        <p className="mobile-logo-subtitle">Result Processing System</p>
+        <h2 className="mobile-logo-text">IES</h2>
+        <p className="mobile-logo-subtitle">Internal Evaluation System</p>
       </div>
 
       <h2 className="title">Verify OTP</h2>

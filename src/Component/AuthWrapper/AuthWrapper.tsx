@@ -16,9 +16,9 @@ const AuthWrapper: React.FC<AuthWrapperProps> = ({ children }) => {
               <i className="fas fa-graduation-cap logo-icon"></i>
             </div>
           </div>
-          <h1 className="system-title">RPS</h1>
+          <h1 className="system-title">IES</h1>
           <div className="title-underline"></div>
-          <p className="system-subtitle">Result Processing System</p>
+          <p className="system-subtitle">Internal Evaluation System</p>
           <div className="feature-icons">
             <div className="feature-item">
               <i className="fas fa-chart-line"></i>
