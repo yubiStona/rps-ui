@@ -11,11 +11,35 @@ export const authApi = createApi({
                 method:"POST",
                 body:data,
             }),
+        }),
+        verifyEmail:builder.mutation({
+            query:(data)=>({
+                url:"auth/verify-email",
+                method:'POST',
+                body:data,
+            })
+        }),
+        verifyOTP:builder.mutation({
+            query:(data)=>({
+                url:"auth/validate-otp",
+                method:"POST",
+                body:data,
+            })
+        }),
+        resetPassword:builder.mutation({
+            query:(data)=>({
+                url:"auth/reset-password",
+                method:"POST",
+                body:data,
+            })
         })
     })
 
 })
 
 export const {
-    useLoginUserMutation
+    useLoginUserMutation,
+    useVerifyEmailMutation,
+    useVerifyOTPMutation,
+    useResetPasswordMutation,
 } = authApi;

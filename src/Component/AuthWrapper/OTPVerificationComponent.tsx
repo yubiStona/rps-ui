@@ -1,6 +1,10 @@
 import React, { useRef, KeyboardEvent, useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
+import { useAppDispatch } from "../../app/hooks";
+import { toast } from 'react-toastify';
 import "./css/auth.css";
+import { useVerifyOTPMutation } from "../../features/auth/authApi";
+import { useVerifyEmailMutation } from "../../features/auth/authApi";
 
 interface OTPVerificationComponentProps {
   email: string;
@@ -70,12 +74,23 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
       .padStart(2, "0")}`;
   };
 
+  const dispatch = useAppDispatch();
+  const [verifyOTP, { isLoading: isVerifying }] = useVerifyOTPMutation();
+  const [resendOTP, { isLoading: resending }] = useVerifyEmailMutation();
   const onSubmit: SubmitHandler<OTPFormData> = async (data) => {
     const otp = `${data.otp1}${data.otp2}${data.otp3}${data.otp4}${data.otp5}${data.otp6}`;
     console.log("Verify OTP:", otp);
-    // Add your OTP verification logic here
-    // Example: await verifyOTPAPI(email, otp);
-    onVerifyOTP(otp);
+    try {
+      const res = await verifyOTP({ email, otp }).unwrap();
+      if (res.statusCode == 200 || res.status) {
+        toast.success(res?.message || "OTP verified successfully.");
+        onVerifyOTP(otp);
+      }
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to verify OTP.";
+      toast.error(errorMessage);
+
+    }
   };
 
   const handleChange = (index: number, value: string) => {
@@ -111,13 +126,21 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
     inputRefs.current[nextIndex]?.focus();
   };
 
-  const handleResendOTP = () => {
-    console.log("Resend OTP to:", email);
-    // Add your resend OTP logic here
-    reset();
-    setTimeLeft(600); // Reset timer to 10 minutes
-    setIsTimerExpired(false);
-    inputRefs.current[0]?.focus();
+  const handleResendOTP = async () => {
+    try {
+      const res = await resendOTP({email}).unwrap();
+      if (res?.statusCode == 200 || res?.status) {
+        toast.success(res?.message || "OTP sent successfully.");
+        reset();
+        setTimeLeft(600);
+        setIsTimerExpired(false);
+      }
+
+      inputRefs.current[0]?.focus();
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to send OTP.";
+      toast.error(errorMessage);
+    }
   };
 
   const isOTPComplete = Object.values(otpValues).every((val) => val !== "");
@@ -235,24 +258,23 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
 
       <input
         type="submit"
-        value={isSubmitting ? "Verifying..." : "Verify OTP"}
+        value={isVerifying ? "Verifying..." : "Verify OTP"}
         className="btn-auth"
-        disabled={isSubmitting || !isOTPComplete}
+        disabled={isVerifying || !isOTPComplete}
       />
 
-      <button
+      <input
         type="button"
         className="forgot-link"
         onClick={handleResendOTP}
+        value={resending ? "Resending..." : "Resend OTP"}
         style={{
           background: "none",
           border: "none",
           cursor: "pointer",
           marginTop: "0.5rem",
         }}
-      >
-        Resend OTP
-      </button>
+      />
 
       <button
         type="button"

@@ -1,7 +1,9 @@
 import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import "./css/auth.css";
-
+import { toast } from "react-toastify";
+import { useAppDispatch } from "../../app/hooks";
+import { useResetPasswordMutation } from "../../features/auth/authApi";
 interface ResetPasswordComponentProps {
   email: string;
   onResetPassword: (password: string) => void;
@@ -27,12 +29,19 @@ const ResetPasswordComponent: React.FC<ResetPasswordComponentProps> = ({
   const [showConfirmPassword, setShowConfirmPassword] = React.useState(false);
 
   const password = watch("password");
-
+  const [resetPassword,{isLoading:isReseting}]=useResetPasswordMutation();
   const onSubmit: SubmitHandler<ResetPasswordFormData> = async (data) => {
-    console.log("Reset password for:", email);
-    // Add your reset password logic here
-    // Example: await resetPasswordAPI(email, data.password);
-    onResetPassword(data.password);
+    try{
+      const formData={...data,email};
+      const res=await resetPassword(formData).unwrap();
+      if(res.statusCode==200||res.status){
+        toast.success(res?.message||"Password changed successfully.");
+        onResetPassword(data.password);
+      }
+    }catch(error:any){
+      const errorMessage=error?.data?.message||"Failed to change password.";
+      toast.error(errorMessage);
+    }
   };
 
   return (
@@ -103,9 +112,9 @@ const ResetPasswordComponent: React.FC<ResetPasswordComponentProps> = ({
 
       <input
         type="submit"
-        value={isSubmitting ? "Resetting..." : "Reset Password"}
+        value={isReseting ? "Resetting..." : "Reset Password"}
         className="btn-auth"
-        disabled={isSubmitting}
+        disabled={isReseting}
       />
     </form>
   );
