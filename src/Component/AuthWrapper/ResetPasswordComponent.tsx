@@ -34,7 +34,7 @@ const ResetPasswordComponent: React.FC<ResetPasswordComponentProps> = ({
     try{
       const formData={...data,email};
       const res=await resetPassword(formData).unwrap();
-      if(res.statusCode==200||res.status){
+      if(res.statusCode==200||res.success){
         toast.success(res?.message||"Password changed successfully.");
         onResetPassword(data.password);
       }

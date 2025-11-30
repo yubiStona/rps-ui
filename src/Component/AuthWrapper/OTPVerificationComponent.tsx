@@ -82,7 +82,7 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
     console.log("Verify OTP:", otp);
     try {
       const res = await verifyOTP({ email, otp }).unwrap();
-      if (res.statusCode == 200 || res.status) {
+      if (res.statusCode == 200 || res.success) {
         toast.success(res?.message || "OTP verified successfully.");
         onVerifyOTP(otp);
       }
