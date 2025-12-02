@@ -1,5 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import { baseQuery } from "../api/apislice"; 
+import { data } from "react-router-dom";
+import { url } from "inspector";
 
 export const authApi = createApi({
     reducerPath:"authApi",
@@ -32,6 +34,12 @@ export const authApi = createApi({
                 method:"POST",
                 body:data,
             })
+        }),
+        logout:builder.mutation({
+            query:(data)=>({
+                url:"auth/logout",
+                method:"post",
+            })
         })
     })
 
@@ -42,4 +50,5 @@ export const {
     useVerifyEmailMutation,
     useVerifyOTPMutation,
     useResetPasswordMutation,
+    useLogoutMutation,
 } = authApi;

@@ -6,7 +6,8 @@ import { clearCredentials } from '../features/auth/authSlice';
 import Sidebar from '../Component/layouts/Sidebar';
 import Topbar from '../Component/layouts/Topbar';
 import { getRoleByType } from '../helper';
-
+import { useLogoutMutation } from '../features/auth/authApi';
+import { toast } from 'react-toastify';
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
@@ -15,6 +16,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [sidebarOpen, setSidebarOpen] = useState(true);
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
+  const [logout, { isLoading: logging }] = useLogoutMutation();
 
   // Auto-close sidebar on mobile, auto-open on desktop
   useEffect(() => {
@@ -31,14 +33,24 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
 
     // Add event listener
     window.addEventListener('resize', handleResize);
-    
+
     // Cleanup
     return () => window.removeEventListener('resize', handleResize);
   }, []);
 
-  const handleLogout = () => {
-    dispatch(clearCredentials());
-    window.location.href = '/';
+  const handleLogout = async () => {
+    try {
+      const res = await logout(user?.email).unwrap();
+      if (res?.statusCode == 200) {
+        toast.success(res?.data?.message || "Logged out Successfully");
+      }
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Something went wrong.";
+      toast.error(errorMessage);
+    } finally {
+      dispatch(clearCredentials());
+      window.location.href = '/';
+    }
   };
 
   const toggleSidebar = () => {
@@ -54,22 +66,22 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   return (
     <div className="dashboard-layout">
       <Sidebar role={userRole} isOpen={sidebarOpen} />
-      
+
       {/* Overlay for mobile when sidebar is open */}
       {sidebarOpen && (
-        <div 
+        <div
           className="sidebar-overlay"
           onClick={() => setSidebarOpen(false)}
         />
       )}
-      
+
       <div className="main-content">
-        <Topbar 
+        <Topbar
           user={{
             name: user.name || 'User',
             email: user.email || '',
             role: userRole
-          }} 
+          }}
           onToggleSidebar={toggleSidebar}
           onLogout={handleLogout}
         />
