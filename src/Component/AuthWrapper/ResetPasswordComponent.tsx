@@ -22,7 +22,7 @@ const ResetPasswordComponent: React.FC<ResetPasswordComponentProps> = ({
     register,
     handleSubmit,
     watch,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ResetPasswordFormData>();
 
   const [showPassword, setShowPassword] = React.useState(false);

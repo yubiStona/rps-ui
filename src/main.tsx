@@ -7,6 +7,7 @@ import 'react-toastify/dist/ReactToastify.css';
 import { Provider } from 'react-redux';
 import { store } from './app/store';
 import "./Component/AuthWrapper/css/auth.css"
+import './css/index.css'
 
 createRoot(document.getElementById('root')!).render(
   <Provider store={store}>

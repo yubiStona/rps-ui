@@ -2,8 +2,7 @@ import React from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
 import { useVerifyEmailMutation } from "../../features/auth/authApi";
 import "./css/auth.css";
-import { useAppDispatch } from "../../app/hooks";
-import {toast} from 'react-toastify';
+import { toast } from "react-toastify";
 
 interface ForgotPasswordComponentProps {
   onSendOTP: (email: string) => void;
@@ -21,23 +20,20 @@ const ForgotPasswordComponent: React.FC<ForgotPasswordComponentProps> = ({
   const {
     register,
     handleSubmit,
-    formState: { errors, isSubmitting },
+    formState: { errors },
   } = useForm<ForgotPasswordFormData>();
-  
-  const dispatch=useAppDispatch();
-  const[sendOTP,{isLoading:isSending}]=useVerifyEmailMutation();
-  
+
+  const [sendOTP, { isLoading: isSending }] = useVerifyEmailMutation();
+
   const onSubmit: SubmitHandler<ForgotPasswordFormData> = async (data) => {
-    console.log("Send OTP to:", data.email);
-    try{
-      const res=await sendOTP(data).unwrap();
-      if(res.statusCode==200||res.success){
-        toast.success(res.message||"OTP sent successfully.");
+    try {
+      const res = await sendOTP(data).unwrap();
+      if (res.statusCode == 200 || res.success) {
+        toast.success(res.message || "OTP sent successfully.");
         onSendOTP(data.email);
       }
-    }catch(error:any){
-      console.log("Failed to send OTP.",error)
-      const errorMessage=error?.data?.message||"Failed to Send OTP.";
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to Send OTP.";
       toast.error(errorMessage);
     }
   };
@@ -100,6 +96,7 @@ const ForgotPasswordComponent: React.FC<ForgotPasswordComponentProps> = ({
           cursor: "pointer",
           marginTop: "0.5rem",
         }}
+        disabled={isSending}
       >
         Back to Login
       </button>

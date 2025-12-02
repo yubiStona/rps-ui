@@ -32,7 +32,7 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
     setValue,
     watch,
     reset,
-    formState: { isSubmitting },
+    formState: { errors,isSubmitting },
   } = useForm<OTPFormData>({
     defaultValues: {
       otp1: "",
@@ -74,7 +74,6 @@ const OTPVerificationComponent: React.FC<OTPVerificationComponentProps> = ({
       .padStart(2, "0")}`;
   };
 
-  const dispatch = useAppDispatch();
   const [verifyOTP, { isLoading: isVerifying }] = useVerifyOTPMutation();
   const [resendOTP, { isLoading: resending }] = useVerifyEmailMutation();
   const onSubmit: SubmitHandler<OTPFormData> = async (data) => {
