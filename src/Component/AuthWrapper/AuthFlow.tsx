@@ -21,16 +21,10 @@ const AuthFlow: React.FC = () => {
   };
 
   const handleVerifyOTP = (otp: string): void => {
-    console.log("OTP verified:", otp);
-    // Add your OTP verification logic here
     setCurrentStep("resetPassword");
   };
 
   const handleResetPassword = (password: string): void => {
-    console.log("Password reset successful");
-    // Add your password reset logic here
-    // After successful reset, redirect to login
-    alert("Password reset successful! Please login with your new password.");
     setCurrentStep("login");
     setUserEmail("");
   };
