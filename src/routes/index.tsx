@@ -84,7 +84,9 @@ const AppRouter = () => {
           path="/teacher/dashboard"
           element={
             <ProtectedRoute requiredRole="teacher">
-              <div>Comin soon</div>
+              <DashboardLayout>
+                <div>Comin soon</div>
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
@@ -93,17 +95,32 @@ const AppRouter = () => {
           path="/teacher/marks"
           element={
             <ProtectedRoute requiredRole="teacher">
-              <MarksEntry />
+              <DashboardLayout>
+                <MarksEntry />
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />
         {/* Teacher routes */}
 
+        {/* student routes */}
+        <Route
+          path="/student/dashboard"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <DashboardLayout>
+                <div>Comin soon</div>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
         <Route
           path="/students/results"
           element={
             <ProtectedRoute requiredRole="student">
-              <StudentResults />
+              <DashboardLayout>
+                <StudentResults />
+              </DashboardLayout>{" "}
             </ProtectedRoute>
           }
         />
