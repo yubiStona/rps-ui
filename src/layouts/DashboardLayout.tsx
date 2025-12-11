@@ -126,7 +126,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
               email: user.email || "",
               role: userRole,
             }}
-            sidebarOpen={sidebarOpen}
+            // sidebarOpen={sidebarOpen}
             onToggleSidebar={toggleSidebar}
             onLogout={handleLogout}
           />
