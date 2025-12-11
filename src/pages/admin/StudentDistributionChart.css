@@ -1,0 +1,123 @@
+/* StudentDistributionChart.css */
+
+.chart-card {
+  width: 100%;
+  overflow: hidden;
+}
+
+.chart-card-body {
+  padding: 20px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.chart-container-responsive {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  overflow: visible;
+}
+
+.chart-svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Ensure SVG content doesn't get clipped */
+.chart-svg g {
+  overflow: visible;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chart-card-body {
+    padding: 15px;
+  }
+  
+  .chart-header {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .chart-title {
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .chart-container-responsive {
+    min-height: 380px; /* Increased for mobile to accommodate horizontal legend */
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-card-body {
+    padding: 12px;
+  }
+  
+  .chart-title {
+    font-size: 15px;
+  }
+  
+  .chart-container-responsive {
+    min-height: 350px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 350px) {
+  .chart-container-responsive {
+    min-height: 400px; /* Even more height for very small screens */
+  }
+  
+  .chart-title {
+    font-size: 14px;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .chart-container-responsive {
+    min-height: 280px;
+  }
+}
+
+/* Prevent text selection on labels */
+.chart-svg text {
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+/* Tooltip styles */
+.chart-tooltip {
+  max-width: 200px;
+  word-wrap: break-word;
+  pointer-events: none;
+  z-index: 9999;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  padding: 8px;
+  font-size: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.15);
+}

@@ -1,33 +1,132 @@
-import React from 'react';
-import { Row, Col, Card } from 'react-bootstrap';
-import DashboardLayout from '../../layouts/DashboardLayout';
+import React, { useState, useEffect } from "react";
+import { Row, Col, Card } from "react-bootstrap";
+import {
+  FaUsers,
+  FaBook,
+  FaChalkboardTeacher,
+  FaUniversity,
+} from "react-icons/fa";
+import PerformanceChart from "./PerformanceChart";
+import StudentDistributionChart from "./StudentDistributionChart";
+import RecentActivity from "./RecentActivity";
+import "./Dashboard.css";
 
 const AdminDashboard: React.FC = () => {
-  const stats = [
-    { title: 'Total Students', value: '1,234', icon: '👨‍🎓', color: 'primary' },
-    { title: 'Total Teachers', value: '45', icon: '👨‍🏫', color: 'success' },
-    { title: 'Courses', value: '89', icon: '📚', color: 'info' },
-    { title: 'Faculties', value: '6', icon: '🏛️', color: 'warning' },
-  ];
+  const [stats, setStats] = useState([
+    {
+      title: "Total Students",
+      value: 1245,
+      icon: <FaUsers />,
+      color: "primary",
+      id: "totalStudents",
+    },
+    {
+      title: "Active Courses",
+      value: 42,
+      icon: <FaBook />,
+      color: "success",
+      id: "totalCourses",
+    },
+    {
+      title: "Total Teachers",
+      value: 68,
+      icon: <FaChalkboardTeacher />,
+      color: "info",
+      id: "totalTeachers",
+    },
+    {
+      title: "Faculties",
+      value: 5,
+      icon: <FaUniversity />,
+      color: "warning",
+      id: "totalFaculties",
+    },
+  ]);
+
+  const [performanceData] = useState([
+    { course: "Mathematics", score: 85 },
+    { course: "Science", score: 78 },
+    { course: "English", score: 92 },
+    { course: "History", score: 75 },
+    { course: "Computer Science", score: 88 },
+    { course: "Physics", score: 80 },
+  ]);
+
+  const [distributionData] = useState([
+    { program: "BBA", students: 280, color: "#4a6fa5" },
+    { program: "BCA", students: 320, color: "#28a745" },
+    { program: "B.Tech", students: 250, color: "#17a2b8" },
+    { program: "B.Sc", students: 220, color: "#ffc107" },
+    { program: "BA", students: 180, color: "#dc3545" },
+    { program: "B.Com", students: 195, color: "#6c757d" },
+  ]);
+
+  const [activities] = useState([
+    {
+      id: 1,
+      title: "Results published for Mathematics 101",
+      description: "Results for the final exam have been published",
+      time: "2 hours ago",
+      icon: "check",
+      type: "success" as const,
+    },
+    {
+      id: 2,
+      title: "3 results pending review",
+      description: "Require attention from the examination committee",
+      time: "5 hours ago",
+      icon: "exclamation",
+      type: "warning" as const,
+    },
+    {
+      id: 3,
+      title: "15 new students enrolled",
+      description: "New batch of students added to the system",
+      time: "1 day ago",
+      icon: "user-plus",
+      type: "info" as const,
+    },
+    {
+      id: 4,
+      title: "Performance report generated",
+      description: "Monthly performance report is ready for download",
+      time: "2 days ago",
+      icon: "chart-line",
+      type: "success" as const,
+    },
+  ]);
+
+  // Simulate live data updates
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setStats((prev) =>
+        prev.map((stat) => ({
+          ...stat,
+          value: stat.value + Math.floor(Math.random() * 10) - 5,
+        }))
+      );
+    }, 10000);
+
+    return () => clearInterval(interval);
+  }, []);
 
   return (
-    <DashboardLayout >
-      <div className="mb-4">
-        <h2 className="fw-bold">Admin Dashboard</h2>
-        <p className="text-muted">Welcome to the Internal Evaluation System</p>
-      </div>
-
+    /* Main Dashboard Content - No header here */
+    <div className="dashboard-content">
+      {/* Stats Cards */}
       <Row className="g-3 mb-4">
         {stats.map((stat, index) => (
           <Col xs={12} sm={6} lg={3} key={index}>
-            <Card className={`border-0 bg-${stat.color} text-white`}>
+            <Card className="border-0 shadow-sm stat-card">
               <Card.Body>
-                <div className="d-flex justify-content-between">
-                  <div>
-                    <h4 className="fw-bold">{stat.value}</h4>
-                    <p className="mb-0">{stat.title}</p>
+                <div className="d-flex align-items-center">
+                  <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
+                  <div className="stat-info ms-3">
+                    <h4 className="fw-bold mb-1">
+                      {stat.value.toLocaleString()}
+                    </h4>
+                    <p className="text-muted mb-0">{stat.title}</p>
                   </div>
-                  <div className="display-4">{stat.icon}</div>
                 </div>
               </Card.Body>
             </Card>
@@ -35,69 +134,30 @@ const AdminDashboard: React.FC = () => {
         ))}
       </Row>
 
-      <Row>
-        <Col lg={8}>
-          <Card className="border-0 shadow-sm">
-            <Card.Header className="bg-white">
-              <h5 className="mb-0">Recent Activities</h5>
-            </Card.Header>
-            <Card.Body>
-              <div className="table-responsive">
-                <table className="table table-hover">
-                  <thead>
-                    <tr>
-                      <th>Activity</th>
-                      <th>User</th>
-                      <th>Time</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td>New student registered</td>
-                      <td>John Doe</td>
-                      <td>2 hours ago</td>
-                    </tr>
-                    <tr>
-                      <td>Course updated</td>
-                      <td>Dr. Smith</td>
-                      <td>4 hours ago</td>
-                    </tr>
-                    <tr>
-                      <td>Marks entry completed</td>
-                      <td>Prof. Johnson</td>
-                      <td>1 day ago</td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </Card.Body>
-          </Card>
+      {/* Charts Row */}
+      <Row className="mb-4">
+        <Col lg={6} className="mb-4 mb-lg-0">
+          <PerformanceChart data={performanceData} />
         </Col>
-        <Col lg={4}>
-          <Card className="border-0 shadow-sm">
-            <Card.Header className="bg-white">
-              <h5 className="mb-0">Quick Actions</h5>
+        <Col lg={6}>
+          <StudentDistributionChart data={distributionData} />
+        </Col>
+      </Row>
+
+      {/* Recent Activity */}
+      <Row>
+        <Col lg={12}>
+          <Card className="border-0 shadow-sm activity-card">
+            <Card.Header className="bg-white border-0">
+              <h5 className="mb-0">Recent Activity</h5>
             </Card.Header>
             <Card.Body>
-              <div className="d-grid gap-2">
-                <button className="btn btn-outline-primary text-start">
-                  📝 Register New Student
-                </button>
-                <button className="btn btn-outline-success text-start">
-                  👨‍🏫 Add Teacher
-                </button>
-                <button className="btn btn-outline-info text-start">
-                  📚 Create Course
-                </button>
-                <button className="btn btn-outline-warning text-start">
-                  📊 Generate Reports
-                </button>
-              </div>
+              <RecentActivity activities={activities} />
             </Card.Body>
           </Card>
         </Col>
       </Row>
-    </DashboardLayout>
+    </div>
   );
 };
 

@@ -7,6 +7,8 @@ import StudentManagement from "../pages/admin/StudentManagement";
 import MarksEntry from "../pages/teacher/MarksEntry";
 import StudentResults from "../pages/student/Results";
 import { getRoleByType } from "../helper";
+import DashboardLayout from "../layouts/DashboardLayout";
+import { Link } from "react-router-dom";
 const AppRouter = () => {
   const { user } = useAppSelector((state) => state.auth);
 
@@ -15,71 +17,100 @@ const AppRouter = () => {
   const ProtectedRoute: React.FC<{
     children: React.ReactNode;
     requiredRole?: string;
-  }>=({children,requiredRole})=>{
-    if (!isAuthenticated ) {
+  }> = ({ children, requiredRole }) => {
+    if (!isAuthenticated) {
       return <Navigate to="/" replace />;
     }
 
     if (requiredRole && getRoleByType(user?.UserType) !== requiredRole) {
-      return <Navigate to={`/${getRoleByType(user?.UserType)}/dashboard`} replace />;
+      return (
+        <Navigate to={`/${getRoleByType(user?.UserType)}/dashboard`} replace />
+      );
     }
     return <>{children}</>;
-  }
+  };
   return (
     <BrowserRouter>
-        <Routes>
-            <Route path="/" element={!isAuthenticated ? <AuthFlow/> : <Navigate to={`/${getRoleByType(user?.UserType)}/dashboard`} replace/>} />
-            {/* Admin routes */}
-            <Route 
-              path="/admin/dashboard"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <AdminDashboard />
-                </ProtectedRoute>
-              }
-            />
+      <Routes>
+        <Route
+          path="/"
+          element={
+            !isAuthenticated ? (
+              <AuthFlow />
+            ) : (
+              <Navigate
+                to={`/${getRoleByType(user?.UserType)}/dashboard`}
+                replace
+              />
+            )
+          }
+        />
+        {/* Admin routes */}
+        <Route
+          path="/admin/dashboard"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout>
+                <AdminDashboard />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
 
-            <Route 
-              path="/admin/students"
-              element={
-                <ProtectedRoute requiredRole="admin">
-                  <StudentManagement />
-                </ProtectedRoute>
-              }
-            />
+        <Route
+          path="/admin/students"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <StudentManagement />
+            </ProtectedRoute>
+          }
+        />
 
-            {/* Teacher routes */}
-            <Route 
-              path="/teacher/dashboard"
-              element={
-                <ProtectedRoute requiredRole="teacher">
-                  <div>Comin soon</div>
-                </ProtectedRoute>
-              }
-            />
+        <Route
+          path="/admin/teachers"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout>
+                <div>
+                  <h1>comming soon sir</h1>
+                </div>
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
 
-            <Route 
-              path="/teacher/marks"
-              element={
-                <ProtectedRoute requiredRole="teacher">
-                  <MarksEntry />
-                </ProtectedRoute>
-              }
-            />
-            {/* Teacher routes */}
+        {/* Teacher routes */}
+        <Route
+          path="/teacher/dashboard"
+          element={
+            <ProtectedRoute requiredRole="teacher">
+              <div>Comin soon</div>
+            </ProtectedRoute>
+          }
+        />
 
-            <Route 
-              path="/students/results"
-              element={
-                <ProtectedRoute requiredRole="student">
-                  <StudentResults />
-                </ProtectedRoute>
-              }
-            />
-            <Route path="*" element={<NotFound />} />
-        </Routes>
+        <Route
+          path="/teacher/marks"
+          element={
+            <ProtectedRoute requiredRole="teacher">
+              <MarksEntry />
+            </ProtectedRoute>
+          }
+        />
+        {/* Teacher routes */}
+
+        <Route
+          path="/students/results"
+          element={
+            <ProtectedRoute requiredRole="student">
+              <StudentResults />
+            </ProtectedRoute>
+          }
+        />
+        <Route path="*" element={<NotFound />} />
+      </Routes>
     </BrowserRouter>
-  )
-}
+  );
+};
 
 export default AppRouter;

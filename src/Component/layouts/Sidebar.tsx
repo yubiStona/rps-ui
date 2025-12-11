@@ -1,71 +1,224 @@
-// src/components/layout/Sidebar.tsx
-import React from 'react';
-import { Nav } from 'react-bootstrap';
-import { useLocation, useNavigate } from 'react-router-dom';
+import React from "react";
+import { Nav } from "react-bootstrap";
+import { Link } from "react-router-dom";
+import {
+  FaTachometerAlt,
+  FaUserGraduate,
+  FaBookOpen,
+  FaChartBar,
+  FaCalendarAlt,
+  FaCog,
+  FaUsers,
+  FaChalkboardTeacher,
+  FaClipboardList,
+} from "react-icons/fa";
+import "./Sidebar.css";
 
 interface SidebarProps {
-  role: 'admin' | 'teacher' | 'student';
-  isOpen: boolean;
+  role: "admin" | "teacher" | "student";
+  isOpen?: boolean;
+  onClose?: () => void;
 }
 
-const Sidebar: React.FC<SidebarProps> = ({ role, isOpen }) => {
-  const location = useLocation();
-  const navigate = useNavigate();
+const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
+  // Navigation items based on role
+  const getNavItems = () => {
+    const commonItems = [
+      {
+        id: 1,
+        label: "Dashboard",
+        icon: <FaTachometerAlt />,
+        path: "/admin/dashboard",
+      },
+    ];
 
-  const adminMenu = [
-    { path: '/admin/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/admin/students', label: 'Student Management', icon: '👨‍🎓' },
-    { path: '/admin/teachers', label: 'Teacher Management', icon: '👨‍🏫' },
-    { path: '/admin/courses', label: 'Course Management', icon: '📚' },
-    { path: '/admin/faculties', label: 'Faculty Management', icon: '🏛️' },
-    { path: '/admin/reports', label: 'Reports', icon: '📈' },
-  ];
+    switch (role) {
+      case "admin":
+        return [
+          ...commonItems,
+          {
+            id: 2,
+            label: "Students",
+            icon: <FaUserGraduate />,
+            path: "/admin/students",
+          },
+          {
+            id: 3,
+            label: "Teachers",
+            icon: <FaChalkboardTeacher />,
+            path: "/admin/teachers",
+          },
+          { id: 4, label: "Courses", icon: <FaBookOpen />, path: "/courses" },
+          { id: 5, label: "Results", icon: <FaChartBar />, path: "/results" },
+          {
+            id: 6,
+            label: "Schedule",
+            icon: <FaCalendarAlt />,
+            path: "/schedule",
+          },
+          {
+            id: 7,
+            label: "Reports",
+            icon: <FaClipboardList />,
+            path: "/reports",
+          },
+          { id: 8, label: "Settings", icon: <FaCog />, path: "/settings" },
+          {
+            id: 9,
+            label: "Attendance",
+            icon: <FaClipboardList />,
+            path: "/attendance",
+          },
+          { id: 10, label: "Exams", icon: <FaBookOpen />, path: "/exams" },
+          {
+            id: 11,
+            label: "Assignments",
+            icon: <FaClipboardList />,
+            path: "/assignments",
+          },
+          { id: 12, label: "Grades", icon: <FaChartBar />, path: "/grades" },
+        ];
 
-  const teacherMenu = [
-    { path: '/teacher/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/teacher/marks', label: 'Marks Entry', icon: '📝' },
-    { path: '/teacher/resources', label: 'Resources', icon: '📁' },
-    { path: '/teacher/feedback', label: 'Feedback', icon: '💬' },
-  ];
+      case "teacher":
+        return [
+          ...commonItems,
+          {
+            id: 2,
+            label: "My Students",
+            icon: <FaUsers />,
+            path: "/my-students",
+          },
+          {
+            id: 3,
+            label: "Courses",
+            icon: <FaBookOpen />,
+            path: "/my-courses",
+          },
+          { id: 4, label: "Marks Entry", icon: <FaChartBar />, path: "/marks" },
+          {
+            id: 5,
+            label: "Schedule",
+            icon: <FaCalendarAlt />,
+            path: "/schedule",
+          },
+          {
+            id: 6,
+            label: "Reports",
+            icon: <FaClipboardList />,
+            path: "/reports",
+          },
+          {
+            id: 7,
+            label: "Attendance",
+            icon: <FaClipboardList />,
+            path: "/attendance",
+          },
+          {
+            id: 8,
+            label: "Assignments",
+            icon: <FaClipboardList />,
+            path: "/assignments",
+          },
+        ];
 
-  const studentMenu = [
-    { path: '/student/dashboard', label: 'Dashboard', icon: '📊' },
-    { path: '/student/results', label: 'View Results', icon: '📊' },
-    { path: '/student/resources', label: 'Resources', icon: '📁' },
-    { path: '/student/feedback', label: 'Feedback', icon: '💬' },
-  ];
+      case "student":
+        return [
+          ...commonItems,
+          {
+            id: 2,
+            label: "My Courses",
+            icon: <FaBookOpen />,
+            path: "/my-courses",
+          },
+          {
+            id: 3,
+            label: "Results",
+            icon: <FaChartBar />,
+            path: "/my-results",
+          },
+          {
+            id: 4,
+            label: "Schedule",
+            icon: <FaCalendarAlt />,
+            path: "/schedule",
+          },
+          {
+            id: 5,
+            label: "Profile",
+            icon: <FaUserGraduate />,
+            path: "/profile",
+          },
+          {
+            id: 6,
+            label: "Attendance",
+            icon: <FaClipboardList />,
+            path: "/attendance",
+          },
+          {
+            id: 7,
+            label: "Assignments",
+            icon: <FaClipboardList />,
+            path: "/assignments",
+          },
+          { id: 8, label: "Grades", icon: <FaChartBar />, path: "/grades" },
+        ];
 
-  const menuItems = role === 'admin' ? adminMenu : 
-                   role === 'teacher' ? teacherMenu : studentMenu;
+      default:
+        return commonItems;
+    }
+  };
+
+  const navItems = getNavItems();
 
   return (
-    <div className={`sidebar ${isOpen ? 'open' : 'closed'}`}>
-      <div className="sidebar-header">
-        <div className="sidebar-logo">
-          <i className="fas fa-graduation-cap"></i>
-          {isOpen && <span className="logo-text">IES</span>}
+    <>
+      <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
+        <div className="logo-container">
+          <div className="logo">LMS</div>
+          <div className="logo-text">EduManage</div>
         </div>
-        {isOpen && (
-          <div className="sidebar-portal">
-            {role === 'admin' && 'Admin Portal'}
-            {role === 'teacher' && 'Teacher Portal'}
-            {role === 'student' && 'Student Portal'}
+
+        {/* Scrollable Menu Container */}
+        <div className="nav-menu-container">
+          <Nav className="flex-column nav-menu">
+            {navItems.map((item) => (
+              <Nav.Link
+                key={item.id}
+                as={Link}
+                to={item.path}
+                className={`nav-link-custom ${
+                  window.location.pathname === item.path ? "active" : ""
+                }`}
+                data-tooltip={item.label}
+                onClick={() => {
+                  if (window.innerWidth < 768 && onClose) {
+                    onClose();
+                  }
+                }}
+              >
+                <span className="nav-icon">{item.icon}</span>
+                <span className="nav-label">{item.label}</span>
+              </Nav.Link>
+            ))}
+          </Nav>
+        </div>
+
+        {/* Optional Sidebar Footer */}
+        <div className="sidebar-footer">
+          <div className="text-center small text-white-50">
+            {role === "admin"
+              ? "Admin Portal"
+              : role === "teacher"
+              ? "Teacher Portal"
+              : "Student Portal"}
           </div>
-        )}
+        </div>
       </div>
-      <Nav className="sidebar-nav">
-        {menuItems.map((item) => (
-          <Nav.Link
-            key={item.path}
-            onClick={() => navigate(item.path)}
-            className={`nav-item ${location.pathname === item.path ? 'active' : ''}`}
-          >
-            <span className="nav-icon">{item.icon}</span>
-            {isOpen && <span className="nav-label">{item.label}</span>}
-          </Nav.Link>
-        ))}
-      </Nav>
-    </div>
+
+      {isOpen && window.innerWidth < 768 && (
+        <div className="sidebar-overlay active" onClick={onClose} />
+      )}
+    </>
   );
 };
 

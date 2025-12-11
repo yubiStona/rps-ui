@@ -1,0 +1,116 @@
+/* PerformanceChart.css */
+
+.chart-card {
+  width: 100%;
+  overflow: hidden;
+}
+
+.chart-card-body {
+  padding: 20px;
+}
+
+.chart-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+  gap: 15px;
+}
+
+.chart-title {
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+  margin: 0;
+}
+
+.chart-container-responsive {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 300px;
+  overflow: visible;
+}
+
+.chart-svg {
+  display: block;
+  margin: 0 auto;
+  max-width: 100%;
+  overflow: visible;
+}
+
+/* Ensure SVG content doesn't get clipped */
+.chart-svg g {
+  overflow: visible;
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+  .chart-card-body {
+    padding: 15px;
+  }
+  
+  .chart-header {
+    justify-content: center;
+    text-align: center;
+  }
+  
+  .chart-title {
+    font-size: 16px;
+    text-align: center;
+    width: 100%;
+  }
+  
+  .chart-container-responsive {
+    min-height: 320px;
+  }
+}
+
+@media (max-width: 480px) {
+  .chart-card-body {
+    padding: 12px;
+  }
+  
+  .chart-title {
+    font-size: 15px;
+  }
+  
+  .chart-container-responsive {
+    min-height: 300px;
+  }
+}
+
+/* For very small screens */
+@media (max-width: 350px) {
+  .chart-container-responsive {
+    min-height: 280px;
+  }
+  
+  .chart-title {
+    font-size: 14px;
+  }
+}
+
+/* Landscape mode adjustments */
+@media (max-height: 500px) and (orientation: landscape) {
+  .chart-container-responsive {
+    min-height: 250px;
+  }
+}
+
+/* Tooltip styles */
+.chart-tooltip {
+  max-width: 200px;
+  word-wrap: break-word;
+  pointer-events: none;
+  z-index: 9999;
+}
+
+/* Bar hover effects */
+.bar:hover {
+  opacity: 1 !important;
+  filter: brightness(1.1);
+  transition: opacity 0.2s ease;
+}

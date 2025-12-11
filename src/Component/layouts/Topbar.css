@@ -1,0 +1,264 @@
+/* Topbar.css - Fixed to start from end of sidebar */
+
+/* Fixed Topbar */
+.topbar {
+  position: fixed;
+  top: 0;
+  height: 70px;
+  background: #ffffff;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+  border-bottom: 1px solid #e9ecef;
+  z-index: 1035;
+  transition: left 0.3s ease, width 0.3s ease;
+}
+
+/* When sidebar is OPEN */
+.main-content.sidebar-open .topbar {
+  left: 250px; /* Start from end of open sidebar */
+  width: calc(100% - 250px); /* Take remaining width */
+}
+
+/* When sidebar is CLOSED */
+.main-content.sidebar-closed .topbar {
+  left: 70px; /* Start from end of closed sidebar */
+  width: calc(100% - 70px); /* Take remaining width */
+}
+
+/* Container */
+.topbar .container-fluid {
+  padding: 0 20px;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/* Left side */
+.d-flex.align-items-center {
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+/* Sidebar toggle button */
+.sidebar-toggle {
+  background: transparent;
+  border: none;
+  color: #495057;
+  font-size: 1.2rem;
+  padding: 8px;
+  border-radius: 6px;
+  transition: all 0.3s;
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.sidebar-toggle:hover {
+  background-color: #f8f9fa;
+  color: #212529;
+}
+
+/* Dashboard title */
+.dashboard-title h4 {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #212529;
+  margin: 0 0 4px 0;
+  line-height: 1.2;
+}
+
+.dashboard-title p {
+  font-size: 0.85rem;
+  color: #6c757d;
+  margin: 0;
+  line-height: 1.3;
+  max-width: 500px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Right side */
+.ms-auto.align-items-center {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+/* Notification */
+.notification-wrapper {
+  position: relative;
+}
+
+.notification-wrapper .btn-light {
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  border: 1px solid #dee2e6;
+}
+
+.notification-wrapper .btn-light:hover {
+  background-color: #e9ecef;
+  border-color: #ced4da;
+}
+
+.notification-wrapper .badge {
+  font-size: 10px;
+  padding: 4px 6px;
+  position: absolute;
+  top: -5px;
+  right: -5px;
+}
+
+/* User dropdown */
+.user-dropdown {
+  border: none !important;
+  background: transparent !important;
+  padding: 6px 12px !important;
+  border-radius: 8px !important;
+  transition: all 0.3s;
+}
+
+.user-dropdown:hover {
+  background-color: #f8f9fa !important;
+}
+
+.user-avatar {
+  width: 40px;
+  height: 40px;
+  background: linear-gradient(135deg, #4a6fa5, #166088);
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 16px;
+  border: 2px solid white;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+.user-info-text {
+  display: flex;
+  flex-direction: column;
+  text-align: left;
+}
+
+.user-info-text div:first-child {
+  font-size: 14px;
+  font-weight: 600;
+  color: #212529;
+}
+
+.user-info-text div:last-child {
+  font-size: 12px;
+  color: #6c757d;
+}
+
+/* Dropdown menu */
+.dropdown-menu {
+  min-width: 280px;
+  border-radius: 8px;
+  border: 1px solid #e9ecef;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.12);
+  margin-top: 10px;
+  padding: 8px 0;
+}
+
+.dropdown-item {
+  padding: 10px 20px;
+  border-radius: 6px;
+  margin: 0 8px;
+  transition: all 0.2s;
+  display: flex;
+  align-items: center;
+}
+
+.dropdown-item:hover {
+  background-color: #f8f9fa;
+}
+
+.dropdown-item i {
+  margin-right: 12px;
+  width: 20px;
+  text-align: center;
+}
+
+.dropdown-header {
+  padding: 12px 20px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.dropdown-header .small {
+  font-size: 0.8rem;
+  color: #6c757d;
+  display: block;
+  margin-bottom: 4px;
+}
+
+.dropdown-header .fw-bold {
+  font-size: 0.9rem;
+  color: #212529;
+  font-weight: 600;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  /* On mobile, Topbar should span full width */
+  .main-content.sidebar-open .topbar,
+  .main-content.sidebar-closed .topbar {
+    left: 0;
+    width: 100%;
+  }
+  
+  .topbar {
+    height: 60px;
+  }
+  
+  .topbar .container-fluid {
+    padding: 0 15px;
+  }
+  
+  .dashboard-title h4 {
+    font-size: 1.1rem;
+  }
+  
+  .dashboard-title p {
+    font-size: 0.8rem;
+    max-width: 250px;
+  }
+  
+  .d-none.d-md-block {
+    display: none !important;
+  }
+  
+  .user-avatar {
+    width: 36px;
+    height: 36px;
+    font-size: 14px;
+  }
+  
+  .sidebar-toggle {
+    width: 36px;
+    height: 36px;
+    padding: 6px;
+  }
+}
+
+@media (max-width: 576px) {
+  .dashboard-title p {
+    display: none;
+  }
+  
+  .dashboard-title h4 {
+    font-size: 1rem;
+  }
+}
