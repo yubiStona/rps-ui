@@ -4,11 +4,11 @@ import NotFound from "../Component/NotFound";
 import AuthFlow from "../Component/AuthWrapper/AuthFlow";
 import AdminDashboard from "../pages/admin/Dashboard";
 import StudentManagement from "../pages/admin/StudentManagement";
+import TeacherManagement from "../pages/admin/TeacherManagement";
 import MarksEntry from "../pages/teacher/MarksEntry";
 import StudentResults from "../pages/student/Results";
 import { getRoleByType } from "../helper";
 import DashboardLayout from "../layouts/DashboardLayout";
-import { Link } from "react-router-dom";
 const AppRouter = () => {
   const { user } = useAppSelector((state) => state.auth);
 
@@ -71,9 +71,7 @@ const AppRouter = () => {
           element={
             <ProtectedRoute requiredRole="admin">
               <DashboardLayout>
-                <div>
-                  <h1>comming soon sir</h1>
-                </div>
+                <TeacherManagement />
               </DashboardLayout>
             </ProtectedRoute>
           }

@@ -33,14 +33,17 @@ export interface Student {
 }
 
 export interface Teacher {
-  id: string;
-  employeeId: string;
-  name: string;
+  id: number;
+  first_name: string;
+  last_name: string;
   email: string;
-  faculty: string;
-  department: string;
-  contact: string;
-  courses: string[];
+  phone: string | null;
+  address1: string;
+  address2: string | null;
+  gender: 'M' | 'F' | 'O';
+  dob: string;
+  created_at: string;
+  updated_at: string;
 }
 
 export interface Course {
