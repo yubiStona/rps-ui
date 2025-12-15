@@ -4,6 +4,7 @@ export interface User {
   email: string | null;
   contact: string | null;
   UserType: string;
+  token:string;
 }
 
 export interface AuthState {

@@ -1,5 +1,5 @@
 // src/data/mockData.ts
-import { Student, Teacher, Course, Mark, Faculty, Program } from '../types';
+import { Student, Course, Mark, Faculty, Program } from '../types';
 
 export const mockStudents: Student[] = [
   {
@@ -37,7 +37,7 @@ export const mockStudents: Student[] = [
   }
 ];
 
-export const mockTeachers: Teacher[] = [
+export const mockTeachers = [
   {
     id: '1',
     employeeId: 'T001',

@@ -1,5 +1,5 @@
-import React from 'react';
-import { Navbar, Nav, Dropdown, Badge } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Navbar, Nav, Dropdown, Badge } from "react-bootstrap";
 
 interface TopbarProps {
   onToggleSidebar: () => void;
@@ -8,33 +8,46 @@ interface TopbarProps {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
+  const [showNotificationModal, setShowNotificationModal] = useState(false);
   // Format role display name
   const getRoleDisplayName = (role: string) => {
     switch (role) {
-      case 'admin': return 'Administrator';
-      case 'teacher': return 'Teacher';
-      case 'student': return 'Student';
-      default: return 'User';
+      case "admin":
+        return "Administrator";
+      case "teacher":
+        return "Teacher";
+      case "student":
+        return "Student";
+      default:
+        return "User";
     }
   };
 
   // Get dashboard title based on user role
   const getDashboardTitle = (role: string) => {
     switch (role) {
-      case 'admin': return 'Result Management Dashboard';
-      case 'teacher': return 'Teacher Dashboard';
-      case 'student': return 'Student Dashboard';
-      default: return 'Dashboard';
+      case "admin":
+        return "Result Management Dashboard";
+      case "teacher":
+        return "Teacher Dashboard";
+      case "student":
+        return "Student Dashboard";
+      default:
+        return "Dashboard";
     }
   };
 
   // Get dashboard subtitle based on user role
   const getDashboardSubtitle = (role: string) => {
     switch (role) {
-      case 'admin': return "Here's an overview of your LMS performance";
-      case 'teacher': return "Manage your courses and students";
-      case 'student': return "Track your progress and results";
-      default: return 'Welcome to your dashboard';
+      case "admin":
+        return "Here's an overview of your LMS performance";
+      case "teacher":
+        return "Manage your courses and students";
+      case "student":
+        return "Track your progress and results";
+      default:
+        return "Welcome to your dashboard";
     }
   };
 
@@ -50,9 +63,10 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
           >
             <i className="fas fa-bars"></i>
           </button>
-          
           <div className="dashboard-title">
-            <h4 className="fw-bold mb-1 text-dark">{getDashboardTitle(user.role)}</h4>
+            <h4 className="fw-bold mb-1 text-dark">
+              {getDashboardTitle(user.role)}
+            </h4>
             <p className="text-muted mb-0 small">
               Welcome back, {user.name}. {getDashboardSubtitle(user.role)}
             </p>
@@ -63,12 +77,15 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
         <Nav className="ms-auto align-items-center">
           {/* Notification Bell */}
           <div className="notification-wrapper position-relative me-3">
-            <button className="btn btn-light btn-sm p-2 rounded-circle border">
+            <button
+              className="btn btn-light btn-sm p-2 rounded-circle border"
+              title="Show Notifications"
+            >
               <i className="fas fa-bell text-dark"></i>
             </button>
-            <Badge 
-              pill 
-              bg="danger" 
+            <Badge
+              pill
+              bg="danger"
               className="position-absolute top-0 start-100 translate-middle"
             >
               3
@@ -77,9 +94,9 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
 
           {/* User Dropdown */}
           <Dropdown align="end">
-            <Dropdown.Toggle 
-              variant="light" 
-              id="user-dropdown" 
+            <Dropdown.Toggle
+              variant="light"
+              id="user-dropdown"
               className="user-dropdown d-flex align-items-center px-2"
             >
               <div className="user-avatar me-2">
@@ -90,10 +107,10 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
                 <div>{getRoleDisplayName(user.role)}</div>
               </div>
             </Dropdown.Toggle>
-            
             <Dropdown.Menu className="shadow-lg border-0 mt-2">
               <Dropdown.Header className="text-muted small">
-                Signed in as<br/>
+                Signed in as
+                <br />
                 <span className="fw-bold">{user.email}</span>
               </Dropdown.Header>
               <Dropdown.Divider />
@@ -112,7 +129,7 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
                 </div>
               </Dropdown.Item>
               <Dropdown.Divider />
-              <Dropdown.Item 
+              <Dropdown.Item
                 onClick={onLogout}
                 className="d-flex align-items-center py-2 text-danger"
               >

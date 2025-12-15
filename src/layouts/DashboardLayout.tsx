@@ -18,7 +18,7 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
   const [topbarVisible, setTopbarVisible] = useState(true);
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const [logout, { isLoading: logging }] = useLogoutMutation();
+  const [ logout ] = useLogoutMutation();
 
   // Refs for scroll tracking
   const scrollPositionRef = useRef(0);

@@ -33,9 +33,9 @@ export interface Student {
 }
 
 export interface Teacher {
-  id: number;
-  first_name: string;
-  last_name: string;
+  id: string;
+  employeeId:string;
+  name: string;
   email: string;
   phone: string | null;
   address1: string;

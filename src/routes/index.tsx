@@ -9,6 +9,7 @@ import MarksEntry from "../pages/teacher/MarksEntry";
 import StudentResults from "../pages/student/Results";
 import { getRoleByType } from "../helper";
 import DashboardLayout from "../layouts/DashboardLayout";
+import TeacherDashboard from "../pages/teacher/Dashboard";
 const AppRouter = () => {
   const { user } = useAppSelector((state) => state.auth);
 
@@ -83,7 +84,7 @@ const AppRouter = () => {
           element={
             <ProtectedRoute requiredRole="teacher">
               <DashboardLayout>
-                <div>Comin soon</div>
+                <TeacherDashboard />
               </DashboardLayout>
             </ProtectedRoute>
           }

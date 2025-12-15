@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Row, Col, Card, Form, Button, Table } from 'react-bootstrap';
-import DashboardLayout from '../../layouts/DashboardLayout';
 
 interface MarkEntry {
   id: string;
@@ -66,7 +65,7 @@ const MarksEntry: React.FC = () => {
   };
 
   return (
-    <DashboardLayout role="teacher">
+    <>
       <div className="mb-4">
         <h2 className="fw-bold">Marks Entry</h2>
         <p className="text-muted">Enter and manage student marks</p>
@@ -214,7 +213,7 @@ const MarksEntry: React.FC = () => {
           </Card.Body>
         </Card>
       )}
-    </DashboardLayout>
+    </>
   );
 };
 

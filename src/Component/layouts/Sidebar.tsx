@@ -76,7 +76,6 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
             icon: <FaClipboardList />,
             path: "/assignments",
           },
-          { id: 12, label: "Grades", icon: <FaChartBar />, path: "/grades" },
         ];
 
       case "teacher":
