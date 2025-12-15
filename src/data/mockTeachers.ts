@@ -1,5 +1,4 @@
-import { Teacher } from '../types';
-
+import { Teacher } from "../types";
 export const mockTeachers: Teacher[] = [
   {
     id: 1,
