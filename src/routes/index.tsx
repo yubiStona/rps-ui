@@ -4,7 +4,7 @@ import NotFound from "../Component/NotFound";
 import AuthFlow from "../Component/AuthWrapper/AuthFlow";
 import AdminDashboard from "../pages/admin/Dashboard";
 import StudentManagement from "../pages/admin/StudentManagement";
-import TeacherManagement from "../pages/admin/TeacherManagement";
+import TeacherManagement from "../pages/admin/TeacherManagement/TeacherManagement";
 import MarksEntry from "../pages/teacher/MarksEntry";
 import StudentResults from "../pages/student/Results";
 import { getRoleByType } from "../helper";

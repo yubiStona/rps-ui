@@ -21,15 +21,25 @@ export interface Role {
 }
 
 export interface Student {
-  id: string;
-  registrationNo: string;
-  name: string;
+  id: number;
+  first_name: string;
+  last_name: string;
   email: string;
-  faculty: string;
-  program: string;
-  semester: number;
-  contact: string;
-  createdAt: Date;
+  phone: string;
+  roll_no: string;
+  enrollment_date: string;
+  status: 'A' | 'P' | 'S';
+  registration_no: string;
+  gender: 'M' | 'F' | 'O';
+  dob: string;
+  address1: string;
+  address2: string | null;
+  current_semester: number;
+  program_id: number;
+  program_name?: string; // For display purposes
+  is_passed: number;
+  created_at?: string;
+  updated_at?: string;
 }
 
 export interface Teacher {
