@@ -6,7 +6,7 @@ export const dashBoardApi = createApi({
     reducerPath:"dashboardApi",
     baseQuery,
     endpoints: (builder) => ({
-        getStatistics: builder.query({
+        getStatistics: builder.query<void,void>({
             query: () => ({
                 url:AdminEndpoints.DASHBOARD_STATISTICS,
             })
