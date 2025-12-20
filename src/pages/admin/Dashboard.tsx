@@ -10,6 +10,7 @@ import PerformanceChart from "./PerformanceChart";
 import StudentDistributionChart from "./StudentDistributionChart";
 import RecentActivity from "./RecentActivity";
 import "./Dashboard.css";
+import { useGetStatisticsQuery } from "../../features/admin/dashboard/dahboardApi";
 
 const AdminDashboard: React.FC = () => {
   const [stats, setStats] = useState([
@@ -21,11 +22,11 @@ const AdminDashboard: React.FC = () => {
       id: "totalStudents",
     },
     {
-      title: "Active Courses",
+      title: "Total Programs",
       value: 42,
       icon: <FaBook />,
       color: "success",
-      id: "totalCourses",
+      id: "totalPrograms",
     },
     {
       title: "Total Teachers",
@@ -35,7 +36,7 @@ const AdminDashboard: React.FC = () => {
       id: "totalTeachers",
     },
     {
-      title: "Faculties",
+      title: "Total Faculties",
       value: 5,
       icon: <FaUniversity />,
       color: "warning",
@@ -52,14 +53,20 @@ const AdminDashboard: React.FC = () => {
     { course: "Physics", score: 80 },
   ]);
 
-  const [distributionData] = useState([
-    { program: "BBA", students: 280, color: "#4a6fa5" },
-    { program: "BCA", students: 320, color: "#28a745" },
-    { program: "B.Tech", students: 250, color: "#17a2b8" },
-    { program: "B.Sc", students: 220, color: "#ffc107" },
-    { program: "BA", students: 180, color: "#dc3545" },
-    { program: "B.Com", students: 195, color: "#6c757d" },
-  ]);
+const generateColor = (index: number) => {
+  const hue = (index * 137.508) % 360; // golden angle
+  return `hsl(${hue}, 65%, 55%)`;
+};
+
+const [distributionData] = useState([
+  { program: "BBA", students: 0, color: generateColor(1) },
+  { program: "BCA", students: 320, color: generateColor(2) },
+  { program: "B.Tech", students: 250, color: generateColor(3) },
+  { program: "B.Sc", students: 220, color: generateColor(4) },
+  { program: "BA", students: 180, color: generateColor(5) },
+  { program: "B.Com", students: 195, color: generateColor(6) },
+]);
+
 
   const [activities] = useState([
     {
@@ -95,6 +102,8 @@ const AdminDashboard: React.FC = () => {
       type: "success" as const,
     },
   ]);
+
+  const {data,isLoading} = useGetStatisticsQuery();
 
   // Simulate live data updates
   useEffect(() => {

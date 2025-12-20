@@ -9,6 +9,8 @@ import {
   Form
 } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
+import Pagination from '@mui/material/Pagination';
+import Stack from '@mui/material/Stack';
 import TeacherFormModal from './Partials/TeacherFormModal';
 import DeleteConfirmationModal from './Partials/DeleteConfirmationModal';
 import { mockTeachers } from '../../../data/mockTeachers';
@@ -25,7 +27,8 @@ interface TeacherFormData {
   dob: string;
 }
 
-const ITEMS_PER_PAGE = 5;
+const DEFAULT_ITEMS_PER_PAGE = 5;
+const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const TeacherManagement: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
@@ -38,6 +41,7 @@ const TeacherManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [genderFilter, setGenderFilter] = useState<string>('all');
   const [statusFilter, setStatusFilter] = useState<string>('all');
+  const [itemsPerPage, setItemsPerPage] = useState<number>(DEFAULT_ITEMS_PER_PAGE);
 
   const {
     register,
@@ -65,14 +69,15 @@ const TeacherManagement: React.FC = () => {
   });
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredTeachers.length / ITEMS_PER_PAGE);
-  const startIndex = (currentPage - 1) * ITEMS_PER_PAGE;
-  const paginatedTeachers = filteredTeachers.slice(startIndex, startIndex + ITEMS_PER_PAGE);
+  const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
+  const startIndex = (currentPage - 1) * itemsPerPage;
+  const endIndex = Math.min(startIndex + itemsPerPage, filteredTeachers.length);
+  const paginatedTeachers = filteredTeachers.slice(startIndex, endIndex);
 
-  // Reset to first page when filters change
+  // Reset to first page when filters or items per page change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, genderFilter, statusFilter]);
+  }, [searchTerm, genderFilter, statusFilter, itemsPerPage]);
 
   const onSubmit = async (data: TeacherFormData) => {
     setIsLoading(true);
@@ -191,8 +196,12 @@ const TeacherManagement: React.FC = () => {
     return config[gender];
   };
 
-  const handlePageChange = (page: number) => {
+  const handlePageChange = (event: React.ChangeEvent<unknown>, page: number) => {
     setCurrentPage(page);
+  };
+
+  const handleItemsPerPageChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    setItemsPerPage(Number(event.target.value));
   };
 
   const clearFilters = () => {
@@ -200,6 +209,66 @@ const TeacherManagement: React.FC = () => {
     setGenderFilter('all');
     setStatusFilter('all');
   };
+
+  // Render pagination controls component (reusable)
+  const renderPaginationControls = () => (
+      <div className={`d-flex justify-content-between align-items-center border-top pt-3`}>
+        {/* Items per page and showing info */}
+        <div className="d-flex align-items-center gap-3">
+          <div className="d-flex align-items-center gap-2">
+            <span className="text-muted small">Show:</span>
+            <Form.Select
+                value={itemsPerPage}
+                onChange={handleItemsPerPageChange}
+                size="sm"
+                className="w-auto"
+                style={{ width: '80px' }}
+            >
+              {ITEMS_PER_PAGE_OPTIONS.map(option => (
+                  <option key={option} value={option}>
+                    {option}
+                  </option>
+              ))}
+            </Form.Select>
+            <span className="text-muted small ms-2">
+            per page
+          </span>
+          </div>
+          <span className="text-muted">
+          Showing {startIndex + 1}-{endIndex} of {filteredTeachers.length} teachers
+        </span>
+        </div>
+
+        {/* Material-UI Pagination */}
+        {totalPages > 1 && (
+            <Stack spacing={2}>
+              <Pagination
+                  count={totalPages}
+                  page={currentPage}
+                  onChange={handlePageChange}
+                  variant="outlined"
+                  shape="rounded"
+                  color="primary"
+                  showFirstButton
+                  showLastButton
+                  size={'medium'}
+                  sx={{
+                    '& .MuiPaginationItem-root': {
+                      fontSize: '0.875rem',
+                    },
+                    '& .MuiPaginationItem-page.Mui-selected': {
+                      backgroundColor: '#0d6efd',
+                      color: 'white',
+                      '&:hover': {
+                        backgroundColor: '#0b5ed7',
+                      }
+                    }
+                  }}
+              />
+            </Stack>
+        )}
+      </div>
+  );
 
   return (
       <>
@@ -296,7 +365,7 @@ const TeacherManagement: React.FC = () => {
                 </Col>
 
                 {/* Status Filter (if available) */}
-                {/* <Col md={3}>
+                <Col md={3}>
                 <Form.Select
                   value={statusFilter}
                   onChange={(e) => setStatusFilter(e.target.value)}
@@ -306,7 +375,7 @@ const TeacherManagement: React.FC = () => {
                   <option value="active">Active</option>
                   <option value="inactive">Inactive</option>
                 </Form.Select>
-              </Col> */}
+              </Col>
               </Row>
 
               {/* Clear Filters Button */}
@@ -328,68 +397,9 @@ const TeacherManagement: React.FC = () => {
 
           {/* Teachers Table */}
           <Card className="border-0 shadow-sm">
-            <Card.Header className="bg-white d-flex justify-content-between align-items-center py-3">
-              <h5 className="mb-0">Teachers List</h5>
-              <div className="d-flex align-items-center gap-3">
-              <span className="text-muted">
-                Showing {startIndex + 1}-{Math.min(startIndex + ITEMS_PER_PAGE, filteredTeachers.length)} of {filteredTeachers.length} teachers
-              </span>
-
-                {/* Pagination Controls - Fixed to show alongside text */}
-                {totalPages > 1 && (
-                    <div className="d-flex align-items-center gap-2">
-                      <Button
-                          variant="outline-secondary"
-                          size="sm"
-                          onClick={() => handlePageChange(currentPage - 1)}
-                          disabled={currentPage === 1}
-                          className="px-3"
-                      >
-                        <i className="fas fa-chevron-left"></i>
-                      </Button>
-
-                      <div className="d-flex align-items-center gap-1">
-                        {Array.from({ length: totalPages }, (_, i) => i + 1)
-                            .filter(page => {
-                              // Show first, last, current, and pages around current
-                              if (page === 1 || page === totalPages) return true;
-                              if (page >= currentPage - 1 && page <= currentPage + 1) return true;
-                              return false;
-                            })
-                            .map((page, index, array) => {
-                              // Add ellipsis for gaps
-                              const prevPage = array[index - 1];
-                              const showEllipsis = prevPage && page - prevPage > 1;
-
-                              return (
-                                  <React.Fragment key={page}>
-                                    {showEllipsis && (
-                                        <span className="mx-1 text-muted">...</span>
-                                    )}
-                                    <Button
-                                        variant={currentPage === page ? "primary" : "outline-secondary"}
-                                        size="sm"
-                                        onClick={() => handlePageChange(page)}
-                                        className={`px-3 ${currentPage === page ? 'fw-bold' : ''}`}
-                                    >
-                                      {page}
-                                    </Button>
-                                  </React.Fragment>
-                              );
-                            })}
-                      </div>
-
-                      <Button
-                          variant="outline-secondary"
-                          size="sm"
-                          onClick={() => handlePageChange(currentPage + 1)}
-                          disabled={currentPage === totalPages}
-                          className="px-3"
-                      >
-                        <i className="fas fa-chevron-right"></i>
-                      </Button>
-                    </div>
-                )}
+            <Card.Header className="bg-white py-3">
+              <div className="px-3 pb-3">
+                {renderPaginationControls()}
               </div>
             </Card.Header>
             <Card.Body className="p-0">
@@ -410,94 +420,101 @@ const TeacherManagement: React.FC = () => {
                     </p>
                   </div>
               ) : (
-                  <div className="table-responsive">
-                    <Table hover className="mb-0">
-                      <thead className="table-light">
-                      <tr>
-                        <th>ID</th>
-                        <th>Teacher Information</th>
-                        <th>Contact</th>
-                        <th>Gender</th>
-                        <th>Date of Birth</th>
-                        <th>Joined On</th>
-                        <th>Actions</th>
-                      </tr>
-                      </thead>
-                      <tbody>
-                      {paginatedTeachers.map((teacher) => {
-                        const genderConfig = getGenderBadge(teacher.gender);
-                        return (
-                            <tr key={teacher.id}>
-                              <td className="fw-semibold">#{teacher.id}</td>
-                              <td>
-                                <div className="d-flex align-items-center">
-                                  <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
-                                    <i className="fas fa-user text-primary"></i>
-                                  </div>
-                                  <div>
-                                    <div className="fw-semibold">
-                                      {teacher.first_name} {teacher.last_name}
+                  <>
+                    <div className="table-responsive">
+                      <Table hover className="mb-0">
+                        <thead className="table-light">
+                        <tr>
+                          <th>ID</th>
+                          <th>Teacher Information</th>
+                          <th>Contact</th>
+                          <th>Gender</th>
+                          <th>Date of Birth</th>
+                          <th>Joined On</th>
+                          <th>Actions</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        {paginatedTeachers.map((teacher) => {
+                          const genderConfig = getGenderBadge(teacher.gender);
+                          return (
+                              <tr key={teacher.id}>
+                                <td className="fw-semibold">#{teacher.id}</td>
+                                <td>
+                                  <div className="d-flex align-items-center">
+                                    <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
+                                      <i className="fas fa-user text-primary"></i>
                                     </div>
-                                    <small className="text-muted">
-                                      {teacher.address1}
-                                    </small>
+                                    <div>
+                                      <div className="fw-semibold">
+                                        {teacher.first_name} {teacher.last_name}
+                                      </div>
+                                      <small className="text-muted">
+                                        {teacher.address1}
+                                      </small>
+                                    </div>
                                   </div>
-                                </div>
-                              </td>
-                              <td>
-                                <div>
-                                  <a href={`mailto:${teacher.email}`} className="text-decoration-none d-block">
-                                    <i className="fas fa-envelope me-1"></i>
-                                    {teacher.email}
-                                  </a>
-                                  {teacher.phone && (
-                                      <a href={`tel:${teacher.phone}`} className="text-decoration-none d-block mt-1">
-                                        <i className="fas fa-phone me-1"></i>
-                                        {teacher.phone}
-                                      </a>
-                                  )}
-                                </div>
-                              </td>
-                              <td>
-                                <Badge bg={genderConfig.variant}>
-                                  {genderConfig.label}
-                                </Badge>
-                              </td>
-                              <td>{formatDate(teacher.dob)}</td>
-                              <td>{formatDate(teacher.created_at)}</td>
-                              <td>
-                                <div className="d-flex gap-2">
-                                  <Button
-                                      variant="outline-primary"
-                                      size="sm"
-                                      onClick={() => handleEdit(teacher)}
-                                      title="Edit"
-                                  >
-                                    <i className="fas fa-edit"></i>
-                                  </Button>
-                                  <Button
-                                      variant="outline-danger"
-                                      size="sm"
-                                      onClick={() => handleDeleteClick(teacher)}
-                                      title="Delete"
-                                  >
-                                    <i className="fas fa-trash"></i>
-                                  </Button>
-                                  <Button
-                                      variant="outline-info"
-                                      size="sm"
-                                      title="View Details"
-                                  >
-                                    <i className="fas fa-eye"></i>
-                                  </Button>
-                                </div>
-                              </td>
-                            </tr>
-                        );
-                      })}
-                      </tbody>
-                    </Table>
-                  </div>
+                                </td>
+                                <td>
+                                  <div>
+                                    <a href={`mailto:${teacher.email}`} className="text-decoration-none d-block">
+                                      <i className="fas fa-envelope me-1"></i>
+                                      {teacher.email}
+                                    </a>
+                                    {teacher.phone && (
+                                        <a href={`tel:${teacher.phone}`} className="text-decoration-none d-block mt-1">
+                                          <i className="fas fa-phone me-1"></i>
+                                          {teacher.phone}
+                                        </a>
+                                    )}
+                                  </div>
+                                </td>
+                                <td>
+                                  <Badge bg={genderConfig.variant}>
+                                    {genderConfig.label}
+                                  </Badge>
+                                </td>
+                                <td>{formatDate(teacher.dob)}</td>
+                                <td>{formatDate(teacher.created_at)}</td>
+                                <td>
+                                  <div className="d-flex gap-2">
+                                    <Button
+                                        variant="outline-primary"
+                                        size="sm"
+                                        onClick={() => handleEdit(teacher)}
+                                        title="Edit"
+                                    >
+                                      <i className="fas fa-edit"></i>
+                                    </Button>
+                                    <Button
+                                        variant="outline-danger"
+                                        size="sm"
+                                        onClick={() => handleDeleteClick(teacher)}
+                                        title="Delete"
+                                    >
+                                      <i className="fas fa-trash"></i>
+                                    </Button>
+                                    <Button
+                                        variant="outline-info"
+                                        size="sm"
+                                        title="View Details"
+                                    >
+                                      <i className="fas fa-eye"></i>
+                                    </Button>
+                                  </div>
+                                </td>
+                              </tr>
+                          );
+                        })}
+                        </tbody>
+                      </Table>
+                    </div>
+
+                    {/* Bottom pagination controls */}
+                    <div className="px-3 pb-3">
+                      {renderPaginationControls()}
+                    </div>
+                  </>
               )}
             </Card.Body>
           </Card>

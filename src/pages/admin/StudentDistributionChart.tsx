@@ -96,35 +96,35 @@ const StudentDistributionChart: React.FC<StudentDistributionChartProps> = ({
       .attr("opacity", 0.8);
 
     // Add percentage labels - perfectly centered in the colored segment
-    arcs
-      .append("text")
-      .attr("transform", (d) => {
-        // Calculate the exact center point of the arc segment
-        const midAngle = (d.startAngle + d.endAngle) / 2;
+    // arcs
+    //   .append("text")
+    //   .attr("transform", (d) => {
+    //     // Calculate the exact center point of the arc segment
+    //     const midAngle = (d.startAngle + d.endAngle) / 2;
         
-        const x = Math.cos(midAngle) * middleRadius;
-        const y = Math.sin(midAngle) * middleRadius;
-        return `translate(${x},${y})`;
-      })
-      .attr("text-anchor", "middle")
-      .attr("dominant-baseline", "middle")
-      .attr("fill", "#ffffff") // Pure white for maximum contrast
-      .attr("font-size", isMobile ? "11px" : "13px")
-      .attr("font-weight", "600") // Semi-bold for better readability
-      .attr("pointer-events", "none")
-      .style("text-shadow", 
-        "0px 1px 2px rgba(0,0,0,0.7), " +
-        "1px 0px 2px rgba(0,0,0,0.7), " +
-        "0px -1px 2px rgba(0,0,0,0.7), " +
-        "-1px 0px 2px rgba(0,0,0,0.7)") // Shadow on all sides for contrast
-      .style("user-select", "none")
-      .style("filter", "drop-shadow(0px 1px 1px rgba(0,0,0,0.8))")
-      .style("paint-order", "stroke")
-      .text((d) => {
-        const total = d3.sum(data, (d) => d.students);
-        const percentage = Math.round((d.data.students / total) * 100);
-        return `${percentage}%`;
-      });
+    //     const x = Math.cos(midAngle) * middleRadius;
+    //     const y = Math.sin(midAngle) * middleRadius;
+    //     return `translate(${x},${y})`;
+    //   })
+    //   .attr("text-anchor", "middle")
+    //   .attr("dominant-baseline", "middle")
+    //   .attr("fill", "#ffffff") // Pure white for maximum contrast
+    //   .attr("font-size", isMobile ? "11px" : "13px")
+    //   .attr("font-weight", "600") // Semi-bold for better readability
+    //   .attr("pointer-events", "none")
+    //   .style("text-shadow", 
+    //     "0px 1px 2px rgba(0,0,0,0.7), " +
+    //     "1px 0px 2px rgba(0,0,0,0.7), " +
+    //     "0px -1px 2px rgba(0,0,0,0.7), " +
+    //     "-1px 0px 2px rgba(0,0,0,0.7)") // Shadow on all sides for contrast
+    //   .style("user-select", "none")
+    //   .style("filter", "drop-shadow(0px 1px 1px rgba(0,0,0,0.8))")
+    //   .style("paint-order", "stroke")
+    //   .text((d) => {
+    //     const total = d3.sum(data, (d) => d.students);
+    //     const percentage = Math.round((d.data.students / total) * 100);
+    //     return `${percentage}%`;
+    //   });
 
     // For very small segments, we need to adjust font size or hide labels
     arcs.each(function(d: any) {
