@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import { Navbar, Nav, Dropdown, Badge, Container } from "react-bootstrap";
 
 interface TopbarProps {
@@ -8,7 +8,6 @@ interface TopbarProps {
 }
 
 const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
-  const [showNotificationModal, setShowNotificationModal] = useState(false);
   
   // Format role display name
   const getRoleDisplayName = (role: string) => {
