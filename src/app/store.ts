@@ -3,7 +3,8 @@ import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authSlice from "../features/auth/authSlice"
 import { authApi } from "../features/auth/authApi";
-import { dashBoardApi } from "../features/admin/dashboard/dahboardApi";
+import { dashboardApi } from "../features/admin/dashboard/dahboardApi";
+import { adminStudentApi } from "../features/admin/students/studentApi";
 
 const persistConfig = {
   key: 'root',
@@ -15,10 +16,11 @@ export const store = configureStore({
     reducer:{
         auth: persistedReducer,
         [authApi.reducerPath]:authApi.reducer,
-        [dashBoardApi.reducerPath]:dashBoardApi.reducer
+        [dashboardApi.reducerPath]:dashboardApi.reducer,
+        [adminStudentApi.reducerPath]:adminStudentApi.reducer,
     },
     middleware:(getDefaultMiddleware) =>
-        getDefaultMiddleware({serializableCheck: false,}).concat(authApi.middleware,dashBoardApi.middleware)
+        getDefaultMiddleware({serializableCheck: false,}).concat(authApi.middleware,dashboardApi.middleware,adminStudentApi.middleware)
 })
 
 export const persistor = persistStore(store);
