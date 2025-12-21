@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "../api/apislice"; 
+import baseQuery from "../api/apislice"; 
 
 export const authApi = createApi({
     reducerPath:"authApi",
@@ -34,7 +34,7 @@ export const authApi = createApi({
             })
         }),
         logout:builder.mutation({
-            query:(data)=>({
+            query:()=>({
                 url:"auth/logout",
                 method:"post",
             })

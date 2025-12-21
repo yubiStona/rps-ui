@@ -1,5 +1,5 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
-import { baseQuery } from "../../api/apislice";
+import  baseQuery  from "../../api/apislice";
 import AdminEndpoints from "./endpoints";
 import { StatisticsAPiResponse } from "./utils";
 

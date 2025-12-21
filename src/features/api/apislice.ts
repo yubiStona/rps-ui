@@ -1,7 +1,11 @@
 import {fetchBaseQuery} from "@reduxjs/toolkit/query/react"
 import { RootState } from "../../app/store"
+import { clearCredentials } from "../auth/authSlice";
+import { createBrowserHistory } from "history";
 
-export const baseQuery = fetchBaseQuery({
+const history = createBrowserHistory();
+
+const baseQuery = fetchBaseQuery({
     baseUrl:import.meta.env.VITE_BASE_URL,
     credentials:"include",
     prepareHeaders: (headers,{getState}) =>{
@@ -13,3 +17,22 @@ export const baseQuery = fetchBaseQuery({
         return headers;
     },
 })
+
+const baseQueryWithReauth: typeof baseQuery = async (
+  args,
+  api,
+  extraOptions
+) => {
+  const result = await baseQuery(args, api, extraOptions);
+
+  if (result.error) {
+    if (result.error.status === 401) {
+      api.dispatch(clearCredentials());
+      history.push("/");
+    }
+  }
+
+  return result;
+};
+
+export default baseQueryWithReauth;
