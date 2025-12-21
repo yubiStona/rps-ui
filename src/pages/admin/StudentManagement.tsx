@@ -250,7 +250,7 @@ if(studentsData){
   );
 
   return (
-    <DashboardLayout>
+    <>
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
           <div>
@@ -509,7 +509,7 @@ if(studentsData){
         studentName={deletingStudent ? `${deletingStudent.firstName} ${deletingStudent.lastName}` : ''}
         isLoading={isDeleting}
       />
-    </DashboardLayout>
+    </>
   );
 };
 

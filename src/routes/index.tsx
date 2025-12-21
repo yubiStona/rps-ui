@@ -62,7 +62,9 @@ const AppRouter = () => {
           path="/admin/students"
           element={
             <ProtectedRoute requiredRole="admin">
-              <StudentManagement />
+              <DashboardLayout>
+                <StudentManagement />
+              </DashboardLayout>
             </ProtectedRoute>
           }
         />

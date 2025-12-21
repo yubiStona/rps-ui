@@ -7,71 +7,64 @@ import Topbar from "../Component/layouts/Topbar";
 import { getRoleByType } from "../helper";
 import { useLogoutMutation } from "../features/auth/authApi";
 import { toast } from "react-toastify";
-import "./DashboardLayout.css";
-
+import './DashboardLayout.css';
 interface DashboardLayoutProps {
   children: React.ReactNode;
 }
 
 const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
-  const [sidebarOpen, setSidebarOpen] = useState(true);
-  const [topbarVisible, setTopbarVisible] = useState(true);
+  const [sidebarOpen, setSidebarOpen] = useState(() => {
+    // Initialize based on current screen size
+    return typeof window !== 'undefined' ? window.innerWidth >= 992 : true;
+  });
+  const [isMobile, setIsMobile] = useState(() => {
+    return typeof window !== 'undefined' ? window.innerWidth < 992 : false;
+  });
+  
+  // Use ref to track previous width to avoid stale closures
+  const previousWidthRef = useRef<number>(
+    typeof window !== 'undefined' ? window.innerWidth : 1200
+  );
+  
   const { user } = useAppSelector((state) => state.auth);
   const dispatch = useAppDispatch();
-  const [ logout ] = useLogoutMutation();
+  const [logout] = useLogoutMutation();
 
-  // Refs for scroll tracking
-  const scrollPositionRef = useRef(0);
-  const mainContentRef = useRef<HTMLDivElement>(null);
-
-  // Auto-close sidebar on mobile, auto-open on desktop
+  // Handle resize with proper width tracking
   useEffect(() => {
+    let resizeTimer: NodeJS.Timeout;
+    
     const handleResize = () => {
-      if (window.innerWidth < 768) {
-        setSidebarOpen(false);
-      } else {
-        setSidebarOpen(true);
-      }
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(() => {
+        const currentWidth = window.innerWidth;
+        const prevWidth = previousWidthRef.current;
+        
+        const wasMobile = prevWidth < 992;
+        const isMobileNow = currentWidth < 992;
+        
+        // Update mobile state
+        setIsMobile(isMobileNow);
+        
+        // Only auto-close when crossing FROM desktop TO mobile
+        if (!wasMobile && isMobileNow) {
+          setSidebarOpen(false);
+        }
+        // Never auto-open - user must manually open
+        
+        // Update the ref for next comparison
+        previousWidthRef.current = currentWidth;
+      }, 15);
     };
 
-    // Set initial state
-    handleResize();
+    // Initialize
+    previousWidthRef.current = window.innerWidth;
 
-    // Add event listener
     window.addEventListener("resize", handleResize);
 
-    // Cleanup
-    return () => window.removeEventListener("resize", handleResize);
-  }, []);
-
-  // Handle scroll to show/hide topbar
-  useEffect(() => {
-    const contentArea = mainContentRef.current?.querySelector(".content-area");
-    if (!contentArea) return;
-
-    const handleScroll = () => {
-      const currentScroll = contentArea.scrollTop;
-      const scrollDifference = currentScroll - scrollPositionRef.current;
-
-      // Only hide/show on significant scroll (more than 5px to prevent jitter)
-      if (Math.abs(scrollDifference) > 5) {
-        if (scrollDifference > 0 && currentScroll > 50) {
-          // Scrolling DOWN and not at the very top
-          setTopbarVisible(false);
-        } else {
-          // Scrolling UP or at top
-          setTopbarVisible(true);
-        }
-      }
-
-      scrollPositionRef.current = currentScroll;
-    };
-
-    contentArea.addEventListener("scroll", handleScroll);
-
-    // Cleanup
     return () => {
-      contentArea.removeEventListener("scroll", handleScroll);
+      window.removeEventListener("resize", handleResize);
+      clearTimeout(resizeTimer);
     };
   }, []);
 
@@ -103,41 +96,56 @@ const DashboardLayout: React.FC<DashboardLayoutProps> = ({ children }) => {
     | "teacher"
     | "student";
 
+  // Calculate margin based on screen size and sidebar state
+  const getMarginLeft = () => {
+    if (isMobile) {
+      return "0";
+    }
+    return sidebarOpen ? "250px" : "70px";
+  };
+
   return (
-    <div className="dashboard-layout">
+    <div className="d-flex" style={{ minHeight: "100vh", backgroundColor: "#f8f9fa" }}>
       <Sidebar
         role={userRole}
         isOpen={sidebarOpen}
         onClose={() => setSidebarOpen(false)}
       />
 
-      <div
-        ref={mainContentRef}
-        className={`main-content ${
-          sidebarOpen ? "sidebar-open" : "sidebar-closed"
-        }`}
+      <div 
+        className="flex-grow-1 d-flex flex-column position-relative" 
+        style={{ 
+          marginLeft: getMarginLeft(),
+          transition: "margin-left 0.3s ease",
+          width: "100%",
+          minHeight: "100vh"
+        }}
       >
-        <div
-          className={`topbar-wrapper ${topbarVisible ? "visible" : "hidden"}`}
+        <Topbar
+          user={{
+            name: user.name || "User",
+            email: user.email || "",
+            role: userRole,
+          }}
+          onToggleSidebar={toggleSidebar}
+          onLogout={handleLogout}
+        />
+        
+        <main 
+          className="flex-grow-1 p-3 p-md-4 overflow-auto" 
+          style={{ 
+            backgroundColor: "#f8f9fa",
+            minHeight: "calc(100vh - 80px)"
+          }}
         >
-          <Topbar
-            user={{
-              name: user.name || "User",
-              email: user.email || "",
-              role: userRole,
-            }}
-            // sidebarOpen={sidebarOpen}
-            onToggleSidebar={toggleSidebar}
-            onLogout={handleLogout}
-          />
-        </div>
-        <div className="content-area">{children}</div>
+          {children}
+        </main>
       </div>
 
-      {/* Mobile overlay */}
-      {sidebarOpen && window.innerWidth < 768 && (
+      {/* Mobile overlay - only show on small screens when sidebar is open */}
+      {sidebarOpen && isMobile && (
         <div
-          className="sidebar-overlay"
+          className="sidebar-overlay active"
           onClick={() => setSidebarOpen(false)}
         />
       )}

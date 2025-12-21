@@ -1,17 +1,14 @@
-/* DashboardLayout.css */
+/* DashboardLayout.css - Updated for proper sidebar behavior */
 
+/* Main layout container */
 .dashboard-layout {
   display: flex;
   min-height: 100vh;
   background-color: #f8f9fa;
+  position: relative;
 }
 
-/* Sidebar styles remain the same */
-.sidebar {
-  /* Your existing sidebar styles */
-}
-
-/* Main content area */
+/* Main content area wrapper */
 .main-content {
   flex: 1;
   display: flex;
@@ -19,58 +16,28 @@
   transition: margin-left 0.3s ease;
   overflow-x: hidden;
   position: relative;
+  min-height: 100vh;
 }
 
-.main-content.sidebar-open {
-  margin-left: 250px;
-}
-
-.main-content.sidebar-closed {
-  margin-left: 70px;
-}
-
-/* Topbar wrapper with animation */
-.topbar-wrapper {
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-  will-change: transform;
-}
-
-.topbar-wrapper.visible {
-  transform: translateY(0);
-}
-
-.topbar-wrapper.hidden {
-  transform: translateY(-100%);
-}
-
-/* Topbar styling */
-.topbar-container {
-  background: white;
-  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.08);
-  padding: 12px 24px;
-  border-bottom: 1px solid #eaeaea;
-}
-
-/* Content area - increased top padding slightly to account for hidden topbar */
+/* Content area */
 .content-area {
   flex: 1;
   padding: 20px 24px;
   overflow-y: auto;
   background-color: #f8f9fa;
-  height: calc(100vh - 60px); /* Fixed height for better scroll control */
+  min-height: calc(100vh - 80px);
   scroll-behavior: smooth;
+  margin-top: 80px;
 }
 
-/* Ensure smooth scrolling and prevent layout shift */
+/* Custom scrollbar styling */
 .content-area::-webkit-scrollbar {
   width: 8px;
 }
 
 .content-area::-webkit-scrollbar-track {
   background: #f1f1f1;
+  border-radius: 4px;
 }
 
 .content-area::-webkit-scrollbar-thumb {
@@ -82,7 +49,7 @@
   background: #a8a8a8;
 }
 
-/* Mobile overlay */
+/* Sidebar Overlay for Mobile */
 .sidebar-overlay {
   position: fixed;
   top: 0;
@@ -90,62 +57,221 @@
   right: 0;
   bottom: 0;
   background-color: rgba(0, 0, 0, 0.5);
-  z-index: 999;
+  z-index: 1045;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
+  pointer-events: none;
 }
 
-/* Responsive adjustments */
-@media (max-width: 768px) {
+.sidebar-overlay.active {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ============================================
+   RESPONSIVE BREAKPOINTS
+============================================ */
+
+/* Desktop (≥ 992px) */
+@media (min-width: 992px) {
+  .main-content {
+    margin-left: 250px; /* Default for open sidebar */
+    transition: margin-left 0.3s ease;
+  }
+  
+  .main-content.sidebar-closed {
+    margin-left: 70px;
+  }
+  
+  /* No overlay on desktop */
+  .sidebar-overlay {
+    display: none !important;
+  }
+}
+
+/* Tablets (768px to 991px) */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  /* Sidebar should be overlay on tablets */
   .main-content {
     margin-left: 0 !important;
-    width: 100%;
+    width: 100% !important;
   }
-
+  
+  /* Sidebar becomes overlay */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1050;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  
+  /* Topbar fixed on tablets */
   .topbar-wrapper {
-    position: fixed; /* Fixed on mobile for better behavior */
-    width: 100%;
+    position: fixed;
     top: 0;
+    width: 100%;
+    z-index: 1040;
   }
-
-  .topbar-container {
-    padding: 10px 16px;
-  }
-
+  
   .content-area {
-    padding: 15px 16px;
-    height: calc(100vh - 60px);
-    padding-top: 70px; /* Add padding to account for fixed topbar */
+    padding-top: 70px;
     margin-top: 0;
   }
-
-  .topbar-wrapper.hidden ~ .content-area {
-    padding-top: 15px; /* Less padding when topbar is hidden */
-    transition: padding-top 0.3s ease;
-  }
 }
 
-/* Extra small devices */
-@media (max-width: 480px) {
-  .topbar-container {
-    padding: 8px 12px;
+/* Mobile devices (< 768px) */
+@media (max-width: 767.98px) {
+  /* Reset sidebar margins on mobile */
+  .main-content {
+    margin-left: 0 !important;
+    width: 100% !important;
   }
-
+  
+  /* Topbar fixed on mobile */
+  .topbar-wrapper {
+    position: fixed;
+    top: 0;
+    width: 100%;
+    height: 56px !important;
+    z-index: 1040;
+  }
+  
+  /* Adjust content area for mobile */
   .content-area {
-    padding: 12px;
-    padding-top: 65px; /* Adjusted for mobile */
+    padding: 15px 16px;
+    padding-top: 56px !important;
+    margin-top: 0 !important;
+    min-height: calc(100vh - 56px);
   }
-
-  .topbar-wrapper.hidden ~ .content-area {
-    padding-top: 12px;
+  
+  /* Sidebar becomes overlay on mobile */
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform 0.3s ease;
+    z-index: 1050;
+  }
+  
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  
+  /* Show mobile overlay when sidebar is open */
+  .sidebar-overlay.active {
+    opacity: 1;
+    visibility: visible;
+    pointer-events: auto;
+  }
+  
+  /* Compact topbar on mobile */
+  .navbar {
+    height: 56px !important;
+    min-height: 56px !important;
+  }
+  
+  .navbar .container-fluid {
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+  
+  /* Hide welcome text on mobile */
+  .navbar .small {
+    display: none !important;
+  }
+  
+  /* Compact title on mobile */
+  .navbar h5 {
+    font-size: 0.95rem !important;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 180px;
+  }
+  
+  /* Adjust toggle button */
+  .navbar .btn-link {
+    padding: 6px !important;
+    margin-right: 8px !important;
+    width: 36px !important;
+    height: 36px !important;
+  }
+  
+  /* Compact notification and user dropdown */
+  .navbar .me-3 {
+    margin-right: 0.5rem !important;
   }
 }
 
-/* Optional: Touch device optimization */
+/* Small devices (landscape phones, less than 576px) */
+@media (max-width: 575.98px) {
+  /* Even more compact for small screens */
+  .navbar {
+    height: 52px !important;
+    min-height: 52px !important;
+  }
+  
+  .topbar-wrapper {
+    height: 52px !important;
+  }
+  
+  .content-area {
+    padding-top: 52px !important;
+    min-height: calc(100vh - 52px);
+    padding: 12px 14px;
+  }
+  
+  .navbar h5 {
+    font-size: 0.9rem !important;
+    max-width: 140px;
+  }
+  
+  .navbar .btn-link {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 4px !important;
+  }
+  
+  .navbar .btn-link i {
+    font-size: 0.9rem !important;
+  }
+  
+  /* Smaller notification bell */
+  .navbar .btn-light {
+    width: 32px !important;
+    height: 32px !important;
+    padding: 0 !important;
+  }
+  
+  /* Smaller user avatar */
+  .navbar .rounded-circle {
+    width: 30px !important;
+    height: 30px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* Touch device optimization */
 @media (hover: none) and (pointer: coarse) {
   .content-area {
     -webkit-overflow-scrolling: touch;
   }
+}
 
-  .topbar-wrapper {
-    transition: transform 0.2s ease;
+/* Reduced motion preference */
+@media (prefers-reduced-motion: reduce) {
+  .main-content,
+  .sidebar,
+  .sidebar-overlay {
+    transition: none !important;
   }
 }

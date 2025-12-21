@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Navbar, Nav, Dropdown, Badge } from "react-bootstrap";
+import { Navbar, Nav, Dropdown, Badge, Container } from "react-bootstrap";
 
 interface TopbarProps {
   onToggleSidebar: () => void;
@@ -9,6 +9,7 @@ interface TopbarProps {
 
 const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
   const [showNotificationModal, setShowNotificationModal] = useState(false);
+  
   // Format role display name
   const getRoleDisplayName = (role: string) => {
     switch (role) {
@@ -52,97 +53,153 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
   };
 
   return (
-    <Navbar className="topbar bg-white shadow-sm border-bottom">
-      <div className="container-fluid px-3">
-        {/* Left Side - Toggle Button and Brand */}
-        <div className="d-flex align-items-center">
-          <button
-            className="btn sidebar-toggle me-3 p-2"
-            onClick={onToggleSidebar}
-            title="Toggle Sidebar"
-          >
-            <i className="fas fa-bars"></i>
-          </button>
-          <div className="dashboard-title">
-            <h4 className="fw-bold mb-1 text-dark">
-              {getDashboardTitle(user.role)}
-            </h4>
-            <p className="text-muted mb-0 small">
-              Welcome back, {user.name}. {getDashboardSubtitle(user.role)}
-            </p>
-          </div>
-        </div>
-
-        {/* Right Side - User Info and Notifications */}
-        <Nav className="ms-auto align-items-center">
-          {/* Notification Bell */}
-          <div className="notification-wrapper position-relative me-3">
+    <Navbar 
+      className="bg-white shadow-sm border-bottom position-sticky top-0" 
+      style={{ 
+        zIndex: 1020,
+        height: "80px",
+        minHeight: "80px"
+      }}
+    >
+      <Container fluid className="px-4 h-100">
+        <div className="d-flex align-items-center justify-content-between w-100 h-100">
+          {/* Left Side - Toggle Button and Brand */}
+          <div className="d-flex align-items-center">
             <button
-              className="btn btn-light btn-sm p-2 rounded-circle border"
-              title="Show Notifications"
+              className="btn btn-link text-dark p-0 me-3"
+              onClick={onToggleSidebar}
+              title="Toggle Sidebar"
+              style={{ 
+                width: "24px", 
+                height: "24px",
+                border: "none",
+                background: "none"
+              }}
             >
-              <i className="fas fa-bell text-dark"></i>
+              <i className="fas fa-bars" style={{ fontSize: "20px" }}></i>
             </button>
-            <Badge
-              pill
-              bg="danger"
-              className="position-absolute top-0 start-100 translate-middle"
-            >
-              3
-            </Badge>
+            <div className="d-flex flex-column justify-content-center">
+              <h4 className="fw-bold mb-1 text-dark" style={{ fontSize: "20px", lineHeight: "1.2" }}>
+                {getDashboardTitle(user.role)}
+              </h4>
+              <p className="text-muted mb-0 d-none d-md-block" style={{ fontSize: "14px", lineHeight: "1.2" }}>
+                Welcome back, {user.name}. {getDashboardSubtitle(user.role)}
+              </p>
+            </div>
           </div>
 
-          {/* User Dropdown */}
-          <Dropdown align="end">
-            <Dropdown.Toggle
-              variant="light"
-              id="user-dropdown"
-              className="user-dropdown d-flex align-items-center px-2"
-            >
-              <div className="user-avatar me-2">
-                {user.name.charAt(0).toUpperCase()}
-              </div>
-              <div className="user-info-text d-none d-md-block">
-                <div>{user.name}</div>
-                <div>{getRoleDisplayName(user.role)}</div>
-              </div>
-            </Dropdown.Toggle>
-            <Dropdown.Menu className="shadow-lg border-0 mt-2">
-              <Dropdown.Header className="text-muted small">
-                Signed in as
-                <br />
-                <span className="fw-bold">{user.email}</span>
-              </Dropdown.Header>
-              <Dropdown.Divider />
-              <Dropdown.Item className="d-flex align-items-center py-2">
-                <i className="fas fa-user me-3 text-primary"></i>
-                <div>
-                  <div className="fw-semibold">Profile</div>
-                  <small className="text-muted">View your profile</small>
-                </div>
-              </Dropdown.Item>
-              <Dropdown.Item className="d-flex align-items-center py-2">
-                <i className="fas fa-cog me-3 text-warning"></i>
-                <div>
-                  <div className="fw-semibold">Settings</div>
-                  <small className="text-muted">Manage your settings</small>
-                </div>
-              </Dropdown.Item>
-              <Dropdown.Divider />
-              <Dropdown.Item
-                onClick={onLogout}
-                className="d-flex align-items-center py-2 text-danger"
+          {/* Right Side - User Info and Notifications */}
+          <Nav className="align-items-center">
+            {/* Notification Bell */}
+            <div className="position-relative me-3">
+              <button
+                className="btn btn-light p-2 rounded-circle border-0"
+                title="Show Notifications"
+                style={{ 
+                  width: "40px", 
+                  height: "40px",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  backgroundColor: "#f8f9fa"
+                }}
               >
-                <i className="fas fa-sign-out-alt me-3"></i>
-                <div>
-                  <div className="fw-semibold">Logout</div>
-                  <small>Sign out from system</small>
+                <i className="fas fa-bell text-dark" style={{ fontSize: "18px" }}></i>
+              </button>
+              <Badge
+                pill
+                bg="danger"
+                className="position-absolute"
+                style={{ 
+                  fontSize: "0.65rem", 
+                  padding: "0.25em 0.5em",
+                  minWidth: "18px",
+                  top: "0",
+                  right: "0",
+                  transform: "translate(25%, -25%)"
+                }}
+              >
+                3
+              </Badge>
+            </div>
+
+            {/* User Dropdown */}
+            <Dropdown align="end">
+              <Dropdown.Toggle
+                variant="light"
+                id="user-dropdown"
+                className="d-flex align-items-center px-2 py-1 border-0"
+                style={{ 
+                  minHeight: "40px",
+                  backgroundColor: "transparent"
+                }}
+              >
+                <div 
+                  className="d-flex align-items-center justify-content-center me-2 rounded-circle text-white"
+                  style={{ 
+                    width: "36px", 
+                    height: "36px",
+                    background: "linear-gradient(135deg, #4a6fa5, #166088)",
+                    fontSize: "14px",
+                    fontWeight: "600",
+                    flexShrink: 0
+                  }}
+                >
+                  {user.name.charAt(0).toUpperCase()}
                 </div>
-              </Dropdown.Item>
-            </Dropdown.Menu>
-          </Dropdown>
-        </Nav>
-      </div>
+                <div className="text-start d-none d-lg-block">
+                  <div className="fw-semibold text-dark" style={{ fontSize: "14px", lineHeight: "1.3" }}>
+                    {user.name}
+                  </div>
+                  <div className="text-muted" style={{ fontSize: "12px", lineHeight: "1.3" }}>
+                    {getRoleDisplayName(user.role)}
+                  </div>
+                </div>
+              </Dropdown.Toggle>
+              <Dropdown.Menu 
+                className="shadow border" 
+                style={{ 
+                  minWidth: "280px",
+                  borderRadius: "8px",
+                  marginTop: "8px"
+                }}
+              >
+                <Dropdown.Header className="text-muted small py-2">
+                  Signed in as
+                  <br />
+                  <span className="fw-bold text-dark">{user.email}</span>
+                </Dropdown.Header>
+                <Dropdown.Divider className="my-1" />
+                <Dropdown.Item className="d-flex align-items-center py-2 px-3">
+                  <i className="fas fa-user me-3 text-primary" style={{ width: "20px" }}></i>
+                  <div>
+                    <div className="fw-semibold">Profile</div>
+                    <small className="text-muted">View your profile</small>
+                  </div>
+                </Dropdown.Item>
+                <Dropdown.Item className="d-flex align-items-center py-2 px-3">
+                  <i className="fas fa-cog me-3 text-warning" style={{ width: "20px" }}></i>
+                  <div>
+                    <div className="fw-semibold">Settings</div>
+                    <small className="text-muted">Manage your settings</small>
+                  </div>
+                </Dropdown.Item>
+                <Dropdown.Divider className="my-1" />
+                <Dropdown.Item
+                  onClick={onLogout}
+                  className="d-flex align-items-center py-2 px-3 text-danger"
+                >
+                  <i className="fas fa-sign-out-alt me-3" style={{ width: "20px" }}></i>
+                  <div>
+                    <div className="fw-semibold">Logout</div>
+                    <small>Sign out from system</small>
+                  </div>
+                </Dropdown.Item>
+              </Dropdown.Menu>
+            </Dropdown>
+          </Nav>
+        </div>
+      </Container>
     </Navbar>
   );
 };
