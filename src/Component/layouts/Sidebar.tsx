@@ -174,7 +174,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <div className="logo-container">
           <div className="logo">LMS</div>
-          <div className="logo-text">EduManage</div>
+          <div className="logo-text">Result Portal</div>
         </div>
 
         {/* Scrollable Menu Container */}

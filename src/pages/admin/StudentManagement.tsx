@@ -6,7 +6,6 @@ import Stack from '@mui/material/Stack';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StudentFormModal from './partials/StudentFormModal';
 import DeleteConfirmationModal from './partials/DeleteConfirmationModal';
-import { mockStudents } from '../../data/mockData';
 import { 
   useGetStudentsQuery, 
   useGetProgramsQuery,
@@ -373,7 +372,7 @@ if(studentsData){
                         <th>SN</th>
                         <th>Name</th>
                         <th>Reg-No</th>
-                        <th>Roll No</th>
+                        <th>Roll-No</th>
                         <th>Program</th>
                         <th>Contact</th>
                         <th>Status</th>
