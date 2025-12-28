@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import {
   Row,
   Col,
@@ -13,8 +13,8 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import TeacherFormModal from './Partials/TeacherFormModal';
 import DeleteConfirmationModal from './Partials/DeleteConfirmationModal';
-import { mockTeachers } from '../../../data/mockTeachers';
-import { Teacher } from '../../../types';
+import { useGetTeacherQuery } from '../../../features/admin/teacher/teacherApi';
+import { Teacher } from '../../../features/admin/teacher/utils';
 
 interface TeacherFormData {
   first_name: string;
@@ -27,7 +27,6 @@ interface TeacherFormData {
   dob: string;
 }
 
-const DEFAULT_ITEMS_PER_PAGE = 5;
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const TeacherManagement: React.FC = () => {
@@ -35,13 +34,28 @@ const TeacherManagement: React.FC = () => {
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
-  const [teachers, setTeachers] = useState<Teacher[]>(mockTeachers);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [genderFilter, setGenderFilter] = useState<string>('all');
-  const [statusFilter, setStatusFilter] = useState<string>('all');
-  const [itemsPerPage, setItemsPerPage] = useState<number>(DEFAULT_ITEMS_PER_PAGE);
+  const [itemsPerPage, setItemsPerPage] = useState<number>(10);
+  const [debouncedSearch, setDebouncedSearch] = useState("");
+
+  useEffect(() => {
+      const timer = setTimeout(() => {
+          setDebouncedSearch(searchTerm);
+      }, 500);    
+      return () => clearTimeout(timer);
+  }, [searchTerm]);
+
+
+  const queryParams = useMemo(()=>({
+    search:debouncedSearch,
+    page:currentPage,
+    limit:itemsPerPage,
+    gender:genderFilter
+  }),[debouncedSearch,currentPage,itemsPerPage,genderFilter]
+  )
 
   const {
     register,
@@ -50,81 +64,29 @@ const TeacherManagement: React.FC = () => {
     formState: { errors },
   } = useForm<TeacherFormData>();
 
-  // Filter teachers based on search term and filters
-  const filteredTeachers = teachers.filter(teacher => {
-    // Text search
-    const matchesSearch =
-        teacher.first_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        teacher.last_name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        teacher.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        (teacher.phone && teacher.phone.includes(searchTerm));
-
-    // Gender filter
-    const matchesGender = genderFilter === 'all' || teacher.gender === genderFilter;
-
-    // Status filter (if you have status field, otherwise remove)
-    // const matchesStatus = statusFilter === 'all' || teacher.status === statusFilter;
-
-    return matchesSearch && matchesGender; // Add && matchesStatus if you have status field
-  });
+   const {data:teacherData, isLoading:isTeacherLoading} = useGetTeacherQuery(queryParams);
 
   // Calculate pagination
-  const totalPages = Math.ceil(filteredTeachers.length / itemsPerPage);
-  const startIndex = (currentPage - 1) * itemsPerPage;
-  const endIndex = Math.min(startIndex + itemsPerPage, filteredTeachers.length);
-  const paginatedTeachers = filteredTeachers.slice(startIndex, endIndex);
+  let startIndex=0;
+  let endIndex = 0;
+
+  if(teacherData){
+    startIndex = teacherData?.total === 0 ? 0 :(teacherData?.page - 1) * teacherData?.limit + 1;
+    endIndex = Math.min(teacherData?.page * teacherData?.limit, teacherData?.total);
+  }
 
   // Reset to first page when filters or items per page change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, genderFilter, statusFilter, itemsPerPage]);
+  }, [searchTerm, genderFilter, itemsPerPage]);
 
   const onSubmit = async (data: TeacherFormData) => {
     setIsLoading(true);
-
-    // Simulate API call
-    setTimeout(() => {
-      if (editingTeacher) {
-        // Update existing teacher
-        setTeachers(prev => prev.map(teacher =>
-            teacher.id === editingTeacher.id
-                ? {
-                  ...teacher,
-                  ...data,
-                  updated_at: new Date().toISOString()
-                }
-                : teacher
-        ));
-      } else {
-        // Add new teacher
-        const newTeacher: Teacher = {
-          id: teachers.length > 0 ? Math.max(...teachers.map(t => t.id)) + 1 : 1,
-          ...data,
-          phone: data.phone || null,
-          address2: data.address2 || null,
-          created_at: new Date().toISOString(),
-          updated_at: new Date().toISOString()
-        };
-        setTeachers(prev => [...prev, newTeacher]);
-      }
-
-      setIsLoading(false);
-      handleCloseFormModal();
-    }, 1000);
+    console.log(data)
   };
 
   const handleEdit = (teacher: Teacher) => {
     setEditingTeacher(teacher);
-    reset({
-      first_name: teacher.first_name,
-      last_name: teacher.last_name,
-      email: teacher.email,
-      phone: teacher.phone || '',
-      address1: teacher.address1,
-      address2: teacher.address2 || '',
-      gender: teacher.gender,
-      dob: teacher.dob
-    });
     setShowFormModal(true);
   };
 
@@ -135,13 +97,7 @@ const TeacherManagement: React.FC = () => {
 
   const handleDeleteConfirm = async () => {
     if (!deletingTeacher) return;
-
     setIsLoading(true);
-    setTimeout(() => {
-      setTeachers(prev => prev.filter(teacher => teacher.id !== deletingTeacher.id));
-      setIsLoading(false);
-      handleCloseDeleteModal();
-    }, 500);
   };
 
   const handleCloseFormModal = () => {
@@ -207,7 +163,6 @@ const TeacherManagement: React.FC = () => {
   const clearFilters = () => {
     setSearchTerm('');
     setGenderFilter('all');
-    setStatusFilter('all');
   };
 
   // Render pagination controls component (reusable)
@@ -235,16 +190,16 @@ const TeacherManagement: React.FC = () => {
           </span>
           </div>
           <span className="text-muted">
-          Showing {startIndex + 1}-{endIndex} of {filteredTeachers.length} teachers
+          Showing {startIndex + 1}-{endIndex} of {teacherData?.total} teachers
         </span>
         </div>
 
         {/* Material-UI Pagination */}
-        {totalPages > 1 && (
+        {teacherData && teacherData?.total > 1 && (
             <Stack spacing={2}>
               <Pagination
-                  count={totalPages}
-                  page={currentPage}
+                  count={teacherData?.lastPage}
+                  page={teacherData?.page}
                   onChange={handlePageChange}
                   variant="outlined"
                   shape="rounded"
@@ -288,48 +243,6 @@ const TeacherManagement: React.FC = () => {
             </Button>
           </div>
 
-          {/* Stats Cards */}
-          <Row className="g-3 mb-4">
-            <Col md={3}>
-              <Card className="border-0 shadow-sm">
-                <Card.Body className="text-center">
-                  <h3 className="fw-bold text-primary mb-2">{teachers.length}</h3>
-                  <p className="text-muted mb-0">Total Teachers</p>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card className="border-0 shadow-sm">
-                <Card.Body className="text-center">
-                  <h3 className="fw-bold text-success mb-2">
-                    {teachers.filter(t => t.gender === 'M').length}
-                  </h3>
-                  <p className="text-muted mb-0">Male Teachers</p>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card className="border-0 shadow-sm">
-                <Card.Body className="text-center">
-                  <h3 className="fw-bold text-danger mb-2">
-                    {teachers.filter(t => t.gender === 'F').length}
-                  </h3>
-                  <p className="text-muted mb-0">Female Teachers</p>
-                </Card.Body>
-              </Card>
-            </Col>
-            <Col md={3}>
-              <Card className="border-0 shadow-sm">
-                <Card.Body className="text-center">
-                  <h3 className="fw-bold text-info mb-2">
-                    {teachers.filter(t => t.gender === 'O').length}
-                  </h3>
-                  <p className="text-muted mb-0">Other</p>
-                </Card.Body>
-              </Card>
-            </Col>
-          </Row>
-
           {/* Search and Filters Section */}
           <Card className="border-0 shadow-sm mb-4">
             <Card.Body className="p-3">
@@ -364,22 +277,10 @@ const TeacherManagement: React.FC = () => {
                   </Form.Select>
                 </Col>
 
-                {/* Status Filter (if available) */}
-                <Col md={3}>
-                <Form.Select
-                  value={statusFilter}
-                  onChange={(e) => setStatusFilter(e.target.value)}
-                  className="bg-light border-0"
-                >
-                  <option value="all">All Status</option>
-                  <option value="active">Active</option>
-                  <option value="inactive">Inactive</option>
-                </Form.Select>
-              </Col>
               </Row>
 
               {/* Clear Filters Button */}
-              {(searchTerm || genderFilter !== 'all' || statusFilter !== 'all') && (
+              {(searchTerm || genderFilter !== 'all') && (
                   <div className="mt-3">
                     <Button
                         variant="outline-secondary"
@@ -403,21 +304,11 @@ const TeacherManagement: React.FC = () => {
               </div>
             </Card.Header>
             <Card.Body className="p-0">
-              {isLoading ? (
+            {isTeacherLoading ? (
                   <div className="text-center py-5">
                     <div className="spinner-border text-primary" role="status">
                       <span className="visually-hidden">Loading...</span>
                     </div>
-                  </div>
-              ) : filteredTeachers.length === 0 ? (
-                  <div className="text-center py-5">
-                    <i className="fas fa-users fa-3x text-muted mb-3"></i>
-                    <h5>No teachers found</h5>
-                    <p className="text-muted">
-                      {searchTerm || genderFilter !== 'all' || statusFilter !== 'all'
-                          ? 'Try adjusting your filters or search term'
-                          : 'Add your first teacher to get started'}
-                    </p>
                   </div>
               ) : (
                   <>
@@ -428,18 +319,18 @@ const TeacherManagement: React.FC = () => {
                           <th>ID</th>
                           <th>Teacher Information</th>
                           <th>Contact</th>
-                          <th>Gender</th>
-                          <th>Date of Birth</th>
+                          <th>Address</th>
                           <th>Joined On</th>
                           <th>Actions</th>
                         </tr>
                         </thead>
                         <tbody>
-                        {paginatedTeachers.map((teacher) => {
-                          const genderConfig = getGenderBadge(teacher.gender);
+                        {teacherData?.data && teacherData?.data.length > 0 ? (
+                          teacherData.data.map((item,key)=>{
+                          const genderConfig = getGenderBadge(item.gender);
                           return (
-                              <tr key={teacher.id}>
-                                <td className="fw-semibold">#{teacher.id}</td>
+                              <tr key={key}>
+                                <td className="fw-semibold">#{item.id}</td>
                                 <td>
                                   <div className="d-flex align-items-center">
                                     <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
@@ -447,41 +338,40 @@ const TeacherManagement: React.FC = () => {
                                     </div>
                                     <div>
                                       <div className="fw-semibold">
-                                        {teacher.first_name} {teacher.last_name}
+                                        {item.firstName} {item.lastName}
                                       </div>
-                                      <small className="text-muted">
-                                        {teacher.address1}
-                                      </small>
+                                      <div className="mt-1">
+                                        <Badge bg={genderConfig.variant}>
+                                          {genderConfig.label}
+                                        </Badge>
+                                      </div>
                                     </div>
                                   </div>
                                 </td>
                                 <td>
                                   <div>
-                                    <a href={`mailto:${teacher.email}`} className="text-decoration-none d-block">
+                                    <a href={`mailto:${item.email}`} className="text-decoration-none d-block">
                                       <i className="fas fa-envelope me-1"></i>
-                                      {teacher.email}
+                                      {item.email}
                                     </a>
-                                    {teacher.phone && (
-                                        <a href={`tel:${teacher.phone}`} className="text-decoration-none d-block mt-1">
+                                    {item.phone && (
+                                        <a href={`tel:${item.phone}`} className="text-decoration-none d-block mt-1">
                                           <i className="fas fa-phone me-1"></i>
-                                          {teacher.phone}
+                                          {item.phone}
                                         </a>
                                     )}
                                   </div>
                                 </td>
                                 <td>
-                                  <Badge bg={genderConfig.variant}>
-                                    {genderConfig.label}
-                                  </Badge>
+                                  {item.address1}
                                 </td>
-                                <td>{formatDate(teacher.dob)}</td>
-                                <td>{formatDate(teacher.created_at)}</td>
+                                <td>{formatDate(item.createdAt)}</td>
                                 <td>
                                   <div className="d-flex gap-2">
                                     <Button
                                         variant="outline-primary"
                                         size="sm"
-                                        onClick={() => handleEdit(teacher)}
+                                        onClick={() => handleEdit(item)}
                                         title="Edit"
                                     >
                                       <i className="fas fa-edit"></i>
@@ -489,7 +379,7 @@ const TeacherManagement: React.FC = () => {
                                     <Button
                                         variant="outline-danger"
                                         size="sm"
-                                        onClick={() => handleDeleteClick(teacher)}
+                                        onClick={() => handleDeleteClick(item)}
                                         title="Delete"
                                     >
                                       <i className="fas fa-trash"></i>
@@ -504,18 +394,23 @@ const TeacherManagement: React.FC = () => {
                                   </div>
                                 </td>
                               </tr>
-                          );
-                        })}
+                            )
+                          })  
+                          ):(
+                            <>
+                              <p>No data found</p>
+                            </>
+                          )}
                         </tbody>
                       </Table>
                     </div>
-
-                    {/* Bottom pagination controls */}
-                    <div className="px-3 pb-3">
-                      {renderPaginationControls()}
-                    </div>
                   </>
               )}
+                  {/* Bottom pagination controls */}
+                  <div className="px-3 pb-3">
+                    {renderPaginationControls()}
+                  </div>
+                  
             </Card.Body>
           </Card>
         </div>
@@ -537,7 +432,7 @@ const TeacherManagement: React.FC = () => {
             show={showDeleteModal}
             onHide={handleCloseDeleteModal}
             onConfirm={handleDeleteConfirm}
-            teacherName={deletingTeacher ? `${deletingTeacher.first_name} ${deletingTeacher.last_name}` : ''}
+            teacherName={deletingTeacher ? `${deletingTeacher.firstName} ${deletingTeacher.lastName}` : ''}
             isLoading={isLoading}
         />
       </>

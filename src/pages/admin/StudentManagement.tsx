@@ -64,14 +64,6 @@ const StudentManagement: React.FC = () => {
     [currentPage,itemsPerPage,debouncedSearch,semesterFilter,programFilter,statusFilter]
   )
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<StudentForm>();
-
-
   const {data:studentsData,isLoading} = useGetStudentsQuery(queryParams);
   const {data:programData} = useGetProgramsQuery();
   const [deleteStudent,{isLoading:isDeleting}] = useDeleteStudentMutation();

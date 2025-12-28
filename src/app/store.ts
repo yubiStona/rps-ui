@@ -5,6 +5,7 @@ import authSlice from "../features/auth/authSlice"
 import { authApi } from "../features/auth/authApi";
 import { dashboardApi } from "../features/admin/dashboard/dahboardApi";
 import { adminStudentApi } from "../features/admin/students/studentApi";
+import { adminTeacherApi } from "../features/admin/teacher/teacherApi";
 
 const persistConfig = {
   key: 'root',
@@ -18,9 +19,10 @@ export const store = configureStore({
         [authApi.reducerPath]:authApi.reducer,
         [dashboardApi.reducerPath]:dashboardApi.reducer,
         [adminStudentApi.reducerPath]:adminStudentApi.reducer,
+        [adminTeacherApi.reducerPath]:adminTeacherApi.reducer,
     },
     middleware:(getDefaultMiddleware) =>
-        getDefaultMiddleware({serializableCheck: false,}).concat(authApi.middleware,dashboardApi.middleware,adminStudentApi.middleware)
+        getDefaultMiddleware({serializableCheck: false,}).concat(authApi.middleware,dashboardApi.middleware,adminStudentApi.middleware, adminTeacherApi.middleware)
 })
 
 export const persistor = persistStore(store);
