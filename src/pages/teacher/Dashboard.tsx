@@ -1,15 +1,21 @@
 // src/pages/teacher/Dashboard.tsx
 import React from 'react';
 import { Row, Col, Card } from 'react-bootstrap';
+import { useNavigate } from 'react-router-dom';
 import DashboardLayout from '../../layouts/DashboardLayout';
 
 const TeacherDashboard: React.FC = () => {
+  const navigate = useNavigate();
   const stats = [
     { title: 'Total Courses', value: '8', icon: '📚', color: 'primary' },
     { title: 'Students', value: '240', icon: '👨‍🎓', color: 'success' },
     { title: 'Pending Marks', value: '45', icon: '📝', color: 'warning' },
     { title: 'Average Rating', value: '4.8', icon: '⭐', color: 'info' },
   ];
+  
+  const enterMarks = () => {
+    navigate('/teacher/marks');
+  }
 
   return (
     <DashboardLayout>
@@ -81,7 +87,7 @@ const TeacherDashboard: React.FC = () => {
             </Card.Header>
             <Card.Body>
               <div className="d-grid gap-2">
-                <button className="btn btn-outline-primary text-start">
+                <button className="btn btn-outline-primary text-start" onClick={enterMarks}>
                   📝 Enter Marks
                 </button>
                 <button className="btn btn-outline-success text-start">
