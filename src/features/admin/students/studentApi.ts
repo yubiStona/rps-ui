@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import  baseQuery  from "../../api/apislice";
 import AdminStudentEndpoints from "./endpoints";
-import { StudentListApiReponse,studentListParams,ProgramListApiResponse } from "./utils";
+import { StudentListApiReponse,studentListParams,ProgramListApiResponse,StudentDetailApiResponse } from "./utils";
 
 export const adminStudentApi = createApi({
     reducerPath:"adminStudentApi",
@@ -66,6 +66,14 @@ export const adminStudentApi = createApi({
                 body:data
             }),
             invalidatesTags: (result) => result?.success ? ["Students"] : []
+        }),
+
+        getStudentById: builder.query<StudentDetailApiResponse, number>({
+            query: (id) => ({
+                url: `${AdminStudentEndpoints.GET_STUDENTS}/${id}`,
+                method: "GET"
+            }),
+            providesTags: (result, error, id) => [{ type: "Students", id }]
         })
 
     })
@@ -75,5 +83,6 @@ export const {
     useGetStudentsQuery,
     useGetProgramsQuery,
     useDeleteStudentMutation,
-    useAddStudentMutation
+    useAddStudentMutation,
+    useGetStudentByIdQuery
 } = adminStudentApi;

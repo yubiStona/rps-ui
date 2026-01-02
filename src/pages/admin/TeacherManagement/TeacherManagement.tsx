@@ -13,7 +13,8 @@ import Pagination from '@mui/material/Pagination';
 import Stack from '@mui/material/Stack';
 import TeacherFormModal from './Partials/TeacherFormModal';
 import DeleteConfirmationModal from './Partials/DeleteConfirmationModal';
-import { useGetTeacherQuery } from '../../../features/admin/teacher/teacherApi';
+import ViewDetailsModal from '../partials/ViewDetailsModal';
+import { useGetTeacherQuery, useGetTeacherByIdQuery } from '../../../features/admin/teacher/teacherApi';
 import { Teacher } from '../../../features/admin/teacher/utils';
 
 interface TeacherFormData {
@@ -32,8 +33,10 @@ const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 const TeacherManagement: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
+  const [viewingTeacherId, setViewingTeacherId] = useState<number | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,6 +68,15 @@ const TeacherManagement: React.FC = () => {
   } = useForm<TeacherFormData>();
 
    const {data:teacherData, isLoading:isTeacherLoading} = useGetTeacherQuery(queryParams);
+   
+   // Fetch teacher details for view modal
+   const { 
+     data: teacherDetailsData, 
+     isLoading: isLoadingDetails, 
+     error: detailsError 
+   } = useGetTeacherByIdQuery(viewingTeacherId!, {
+     skip: !viewingTeacherId,
+   });
 
   // Calculate pagination
   let startIndex=0;

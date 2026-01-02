@@ -33,10 +33,18 @@ export const adminTeacherApi = createApi({
                     method:"GET"
                 }
             }
+        }),
+
+        getTeacherById: builder.query({
+            query: (id) => ({
+                url: `${AdminTeacherEndpoints.GET_TEACHER_BY_ID}/${id}`,
+                method: "GET"
+            })
         })
     })
 })
 
 export const {
-    useGetTeacherQuery
+    useGetTeacherQuery,
+    useGetTeacherByIdQuery
 } = adminTeacherApi

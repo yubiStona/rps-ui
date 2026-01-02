@@ -6,11 +6,13 @@ import Stack from '@mui/material/Stack';
 import DashboardLayout from '../../layouts/DashboardLayout';
 import StudentFormModal from './partials/StudentFormModal';
 import DeleteConfirmationModal from './partials/DeleteConfirmationModal';
+import ViewDetailsModal from './partials/ViewDetailsModal';
 import { 
   useGetStudentsQuery, 
   useGetProgramsQuery,
   useDeleteStudentMutation,
-  useAddStudentMutation 
+  useAddStudentMutation,
+  useGetStudentByIdQuery 
 } from '../../features/admin/students/studentApi';
 import { Student } from '../../features/admin/students/utils';
 import { toast } from 'react-toastify';
@@ -36,8 +38,10 @@ const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 const StudentManagement: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [showViewModal, setShowViewModal] = useState(false);
   const [editingStudent, setEditingStudent] = useState<Student | null>(null);
   const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
+  const [viewingStudentId, setViewingStudentId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [statusFilter, setStatusFilter] = useState<string>('');
@@ -68,6 +72,15 @@ const StudentManagement: React.FC = () => {
   const {data:programData} = useGetProgramsQuery();
   const [deleteStudent,{isLoading:isDeleting}] = useDeleteStudentMutation();
   const [addStudent, {isLoading:isAddingStudent}] = useAddStudentMutation();
+  
+  // Fetch student details for view modal
+  const { 
+    data: studentDetailsData, 
+    isLoading: isLoadingDetails, 
+    error: detailsError 
+  } = useGetStudentByIdQuery(viewingStudentId!, {
+    skip: !viewingStudentId,
+  });
 
 
   // Calculate pagination
@@ -128,6 +141,16 @@ if(studentsData){
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
     setDeletingStudent(null);
+  };
+
+  const handleViewDetails = (student: Student) => {
+    setViewingStudentId(student.id);
+    setShowViewModal(true);
+  };
+
+  const handleCloseViewModal = () => {
+    setShowViewModal(false);
+    setViewingStudentId(null);
   };
 
   const handleAddNew = () => {
@@ -457,6 +480,7 @@ if(studentsData){
                               <Button
                                 variant="outline-info"
                                 size="sm"
+                                onClick={() => handleViewDetails(item)}
                                 title="View Details"
                               >
                                 <i className="fas fa-eye"></i>
@@ -500,6 +524,16 @@ if(studentsData){
         onConfirm={handleDeleteConfirm}
         studentName={deletingStudent ? `${deletingStudent.firstName} ${deletingStudent.lastName}` : ''}
         isLoading={isDeleting}
+      />
+
+      <ViewDetailsModal
+        show={showViewModal}
+        onHide={handleCloseViewModal}
+        entityType="student"
+        entityId={viewingStudentId}
+        data={studentDetailsData?.data}
+        isLoading={isLoadingDetails}
+        error={detailsError}
       />
     </>
   );

@@ -9,10 +9,16 @@ export interface Student {
   status: "A" | "P" | "S";
   registrationNumber: string;
   gender: "F" | "M" | "O";
+  DOB: string;
+  address1: string;
+  address2?: string;
+  enrollmentDate: string;
+  programId: number;
   program: {
     name: string;
   };
   createdAt: string;
+  updatedAt?: string;
 }
 
 export interface studentListParams {
@@ -46,4 +52,11 @@ export interface ProgramListApiResponse {
   statusCode: number;
   message: string;
   data: ProgramList[]
+}
+
+export interface StudentDetailApiResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: Student;
 }
