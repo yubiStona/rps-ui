@@ -1,7 +1,7 @@
 import React from "react";
 import { Modal, Button, Row, Col, Form, InputGroup } from "react-bootstrap";
-import { ProgramList } from "../../../features/admin/students/utils";
-import { useForm } from "react-hook-form"; 
+import { ProgramList } from "../../../../features/admin/students/utils";
+import { useForm } from "react-hook-form";
 
 interface StudentForm {
   firstName: string;
@@ -10,15 +10,12 @@ interface StudentForm {
   phone: string;
   rollNumber: string;
   enrollmentDate: string;
-  // status: "A" | "P" | "S";
   registrationNumber: string;
   gender: "M" | "F" | "O";
   DOB: string;
   address1: string;
   address2: string;
-  // current_semester: number;
   programId: number;
-  // is_passed: number;
 }
 
 interface StudentFormModalProps {
@@ -26,7 +23,6 @@ interface StudentFormModalProps {
   onHide: () => void;
   onSubmit: (data: StudentForm) => void;
   isLoading: boolean;
-  editingStudent: boolean;
   programs: ProgramList[];
 }
 
@@ -35,18 +31,39 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
   onHide,
   onSubmit,
   isLoading,
-  editingStudent,
   programs,
 }) => {
   const {
     register,
     handleSubmit,
+    reset,
     formState: { errors },
   } = useForm<StudentForm>();
+
   const handleFormSubmit = (data: StudentForm) => {
-    onSubmit(data);  
+    onSubmit(data);
   };
-  
+
+  // Reset form when modal opens
+  React.useEffect(() => {
+    if (show) {
+      reset({
+        firstName: "",
+        lastName: "",
+        email: "",
+        phone: "",
+        rollNumber: "",
+        enrollmentDate: new Date().toISOString().split("T")[0],
+        registrationNumber: "",
+        gender: "M",
+        DOB: "",
+        address1: "",
+        address2: "",
+        programId: 0,
+      });
+    }
+  }, [show, reset]);
+
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
       <Modal.Header closeButton className="border-bottom-0">
@@ -56,22 +73,12 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
               className="bg-primary rounded-circle p-2 d-flex align-items-center justify-content-center"
               style={{ width: "44px", height: "44px" }}
             >
-              <i
-                className={`fas ${
-                  editingStudent ? "fa-user-edit" : "fa-user-plus"
-                } text-white fs-5`}
-              ></i>
+              <i className="fas fa-user-plus text-white fs-5"></i>
             </div>
             <div>
-              <h5 className="mb-0">
-                {editingStudent
-                  ? "Edit Student Profile"
-                  : "Register New Student"}
-              </h5>
+              <h5 className="mb-0">Register New Student</h5>
               <small className="text-muted">
-                {editingStudent
-                  ? "Update student information"
-                  : "Fill in the details to register a new student"}
+                Fill in the details to register a new student
               </small>
             </div>
           </div>
@@ -157,7 +164,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Phone Number *
+                    Phone Number <span className="text-danger">*</span>
                   </Form.Label>
                   <InputGroup>
                     <InputGroup.Text className="bg-light">
@@ -295,28 +302,6 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                 </Form.Group>
               </Col>
 
-              {/* <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">
-                    Status <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Form.Select
-                    {...register("status", {
-                      required: "Status is required",
-                    })}
-                    isInvalid={!!errors.status}
-                    className="py-2"
-                  >
-                    <option value="A">Active</option>
-                    <option value="P">Pending</option>
-                    <option value="S">Suspended</option>
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.status?.message}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col> */}
-
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
@@ -342,31 +327,6 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Control.Feedback>
                 </Form.Group>
               </Col>
-
-              {/* <Col md={6}>
-                <Form.Group className="mb-3">
-                  <Form.Label className="fw-semibold">
-                    Current Semester <span className="text-danger">*</span>
-                  </Form.Label>
-                  <Form.Select
-                    {...register("current_semester", {
-                      required: "Semester is required",
-                      valueAsNumber: true,
-                    })}
-                    isInvalid={!!errors.current_semester}
-                    className="py-2"
-                  >
-                    {[1, 2, 3, 4, 5, 6, 7, 8,9,10].map((sem) => (
-                      <option key={sem} value={sem}>
-                        Semester {sem}
-                      </option>
-                    ))}
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.current_semester?.message}
-                  </Form.Control.Feedback>
-                </Form.Group>
-              </Col> */}
             </Row>
           </div>
 
@@ -428,16 +388,12 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   className="spinner-border spinner-border-sm me-2"
                   role="status"
                 ></span>
-                {editingStudent ? "Updating..." : "Creating..."}
+                Creating...
               </>
             ) : (
               <>
-                <i
-                  className={`fas ${
-                    editingStudent ? "fa-save" : "fa-plus"
-                  } me-2`}
-                ></i>
-                {editingStudent ? "Update Student" : "Register Student"}
+                <i className="fas fa-plus me-2"></i>
+                Register Student
               </>
             )}
           </Button>
