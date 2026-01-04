@@ -15,6 +15,7 @@ export interface Student {
   enrollmentDate: string;
   programId: number;
   program: {
+    id?:number;
     name: string;
   };
   createdAt: string;
@@ -58,5 +59,5 @@ export interface StudentDetailApiResponse {
   success: boolean;
   statusCode: number;
   message: string;
-  data: Student;
+  data: Student[];
 }

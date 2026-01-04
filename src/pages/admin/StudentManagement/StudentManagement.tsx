@@ -1,41 +1,51 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Row, Col, Card, Button, Table, Badge, Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-import TeacherFormModal from "./Partials/TeacherFormModal";
-import DeleteConfirmationModal from "./Partials/DeleteConfirmationModal";
-import ViewDetailsModal from "../StudentManagement/partials/ViewDetailsModal";
+import StudentFormModal from "./partials/StudentFormModal";
+import DeleteConfirmationModal from "./partials/DeleteConfirmationModal";
+import ViewStudentDetailsModal from "./partials/StudentDetailsModal";
+import StudentEditModal from "./partials/EditStudentModal";
 import {
-  useGetTeacherQuery,
-  useGetTeacherByIdQuery,
-} from "../../../features/admin/teacher/teacherApi";
-import { Teacher } from "../../../features/admin/teacher/utils";
+  useGetStudentsQuery,
+  useGetProgramsQuery,
+  useDeleteStudentMutation,
+  useAddStudentMutation,
+  useGetStudentByIdQuery,
+  useEditStudentMutation
+} from "../../../features/admin/students/studentApi";
+import { Student } from "../../../features/admin/students/utils";
+import { toast } from "react-toastify";
 
-interface TeacherFormData {
-  first_name: string;
-  last_name: string;
+interface StudentForm {
+  firstName: string;
+  lastName: string;
   email: string;
   phone: string;
+  rollNumber: string;
+  enrollmentDate: string;
+  registrationNumber: string;
+  gender: "M" | "F" | "O";
+  DOB: string;
   address1: string;
   address2: string;
-  gender: "M" | "F" | "O";
-  dob: string;
+  programId: number;
 }
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
-const TeacherManagement: React.FC = () => {
+const StudentManagement: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
-  const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
-  const [viewingTeacherId, setViewingTeacherId] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
+  const [showEditModal, setShowEditModal] = useState(false);
+  const [deletingStudent, setDeletingStudent] = useState<Student | null>(null);
+  const [viewingStudentId, setViewingStudentId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [genderFilter, setGenderFilter] = useState<string>("all");
+  const [statusFilter, setStatusFilter] = useState<string>("");
+  const [programFilter, setProgramFilter] = useState<string>("");
+  const [semesterFilter, setSemesterFilter] = useState<string>("");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
@@ -51,102 +61,130 @@ const TeacherManagement: React.FC = () => {
       search: debouncedSearch,
       page: currentPage,
       limit: itemsPerPage,
-      gender: genderFilter,
+      currentSemester: Number(semesterFilter),
+      programId: Number(programFilter),
+      status: statusFilter,
     }),
-    [debouncedSearch, currentPage, itemsPerPage, genderFilter]
+    [
+      currentPage,
+      itemsPerPage,
+      debouncedSearch,
+      semesterFilter,
+      programFilter,
+      statusFilter,
+    ]
   );
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<TeacherFormData>();
+  const { data: studentsData, isLoading, isFetching } = useGetStudentsQuery(queryParams);
+  const { data: programData } = useGetProgramsQuery();
+  const [deleteStudent, { isLoading: isDeleting }] = useDeleteStudentMutation();
+  const [addStudent, { isLoading: isAddingStudent }] = useAddStudentMutation();
+  const [editStudent, {isLoading:isUpdatingStudent}] = useEditStudentMutation();
 
-  const { data: teacherData, isLoading: isTeacherLoading } =
-    useGetTeacherQuery(queryParams);
-
-  // Fetch teacher details for view modal
+  // Fetch student details for view modal
   const {
-    data: teacherDetailsData,
+    data: studentDetailsData,
     isLoading: isLoadingDetails,
+    isFetching: isStudentDetailsFetching,
     error: detailsError,
-  } = useGetTeacherByIdQuery(viewingTeacherId!, {
-    skip: !viewingTeacherId,
+  } = useGetStudentByIdQuery(viewingStudentId!, {
+    skip: !viewingStudentId,
   });
 
   // Calculate pagination
   let startIndex = 0;
   let endIndex = 0;
-
-  if (teacherData) {
+  if (studentsData) {
     startIndex =
-      teacherData?.total === 0
+      studentsData?.total === 0
         ? 0
-        : (teacherData?.page - 1) * teacherData?.limit + 1;
+        : (studentsData?.page - 1) * studentsData?.limit + 1;
     endIndex = Math.min(
-      teacherData?.page * teacherData?.limit,
-      teacherData?.total
+      studentsData?.page * studentsData?.limit,
+      studentsData?.total
     );
   }
 
   // Reset to first page when filters or items per page change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, genderFilter, itemsPerPage]);
+  }, [searchTerm, statusFilter, programFilter, semesterFilter, itemsPerPage]);
 
-  const onSubmit = async (data: TeacherFormData) => {
-    setIsLoading(true);
-    console.log(data);
+  const onSubmit = async (data: StudentForm) => {
+    if (!data) return;
+    try {
+      const response = await addStudent(data).unwrap();
+      if (response.success) {
+        toast.success(response.message);
+        setShowFormModal(false);
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
   };
 
-  const handleEdit = (teacher: Teacher) => {
-    setEditingTeacher(teacher);
-    setShowFormModal(true);
+  const handleEditModalOpen = (student: Student) => {
+    setViewingStudentId(student.id);
+    setShowEditModal(true);
   };
 
-  const handleDeleteClick = (teacher: Teacher) => {
-    setDeletingTeacher(teacher);
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setViewingStudentId(null);
+  };
+
+  const handleEditConfirm = async (data: StudentForm) =>{
+    if(!data) return;
+    try{
+      const response = await editStudent({data,id:viewingStudentId}).unwrap();
+      if(response.success){
+        toast.success(response.message);
+        setShowEditModal(false);
+        setViewingStudentId(null);
+      }
+    }catch(error:any){
+      toast.error(error?.data?.message);
+    }
+  }
+
+  const handleDeleteClick = (student: Student) => {
+    setDeletingStudent(student);
     setShowDeleteModal(true);
   };
 
   const handleDeleteConfirm = async () => {
-    if (!deletingTeacher) return;
-    setIsLoading(true);
+    if (!deletingStudent) return;
+    try {
+      const response = await deleteStudent(deletingStudent.id).unwrap();
+      if (response.success) {
+        toast.success(response.message);
+        handleCloseDeleteModal();
+      }
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
   };
 
   const handleCloseFormModal = () => {
     setShowFormModal(false);
-    setEditingTeacher(null);
-    reset({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      address1: "",
-      address2: "",
-      gender: "M",
-      dob: "",
-    });
   };
 
   const handleCloseDeleteModal = () => {
     setShowDeleteModal(false);
-    setDeletingTeacher(null);
+    setDeletingStudent(null);
+  };
+
+  const handleViewDetails = (student: Student) => {
+    setViewingStudentId(student.id);
+    setShowViewModal(true);
+  };
+
+  const handleCloseViewModal = () => {
+    setShowViewModal(false);
+    setViewingStudentId(null);
   };
 
   const handleAddNew = () => {
-    setEditingTeacher(null);
-    reset({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      address1: "",
-      address2: "",
-      gender: "M",
-      dob: "",
-    });
     setShowFormModal(true);
   };
 
@@ -158,6 +196,19 @@ const TeacherManagement: React.FC = () => {
     });
   };
 
+  const getStatusBadge = (status: "A" | "P" | "S") => {
+    switch (status) {
+      case "A":
+        return <Badge bg="success">Active</Badge>;
+      case "P":
+        return <Badge bg="warning">Passed</Badge>;
+      case "S":
+        return <Badge bg="secondary">Suspended</Badge>;
+      default:
+        return <Badge bg="secondary">Unknown</Badge>;
+    }
+  };
+
   const getGenderBadge = (gender: "M" | "F" | "O") => {
     const config = {
       M: { label: "Male", variant: "primary" },
@@ -166,6 +217,7 @@ const TeacherManagement: React.FC = () => {
     };
     return config[gender];
   };
+
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
@@ -178,11 +230,14 @@ const TeacherManagement: React.FC = () => {
     event: React.ChangeEvent<HTMLSelectElement>
   ) => {
     setItemsPerPage(Number(event.target.value));
+    console.log("query params: ", queryParams);
   };
 
   const clearFilters = () => {
     setSearchTerm("");
-    setGenderFilter("all");
+    setStatusFilter("");
+    setProgramFilter("");
+    setSemesterFilter("");
   };
 
   // Render pagination controls component (reusable)
@@ -210,22 +265,20 @@ const TeacherManagement: React.FC = () => {
           <span className="text-muted small ms-2">per page</span>
         </div>
         <span className="text-muted">
-          Showing {startIndex + 1}-{endIndex} of {teacherData?.total} teachers
+          Showing {startIndex} to {endIndex} of {studentsData?.total} students
         </span>
       </div>
 
       {/* Material-UI Pagination */}
-      {teacherData && teacherData?.total > 1 && (
+      {studentsData && studentsData?.total > 1 && (
         <Stack spacing={2}>
           <Pagination
-            count={teacherData?.lastPage}
-            page={teacherData?.page}
+            count={studentsData?.lastPage}
+            page={studentsData?.page}
             onChange={handlePageChange}
             variant="outlined"
             shape="rounded"
             color="primary"
-            showFirstButton
-            showLastButton
             size={"medium"}
             sx={{
               "& .MuiPaginationItem-root": {
@@ -250,9 +303,9 @@ const TeacherManagement: React.FC = () => {
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
           <div>
-            <h2 className="fw-bold">Teacher Management</h2>
+            <h2 className="fw-bold">Student Management</h2>
             <p className="text-muted">
-              Manage teacher profiles and information
+              Manage student registrations and information
             </p>
           </div>
           <Button
@@ -261,7 +314,7 @@ const TeacherManagement: React.FC = () => {
             className="d-flex align-items-center gap-2"
           >
             <i className="fas fa-plus"></i>
-            Add Teacher
+            Add Student
           </Button>
         </div>
 
@@ -270,7 +323,7 @@ const TeacherManagement: React.FC = () => {
           <Card.Body className="p-3">
             <Row className="g-3">
               {/* Search Bar */}
-              <Col md={6}>
+              <Col md={4}>
                 <div className="input-group">
                   <span className="input-group-text bg-light border-0">
                     <i className="fas fa-search text-muted"></i>
@@ -278,30 +331,69 @@ const TeacherManagement: React.FC = () => {
                   <input
                     type="text"
                     className="form-control border-0 bg-light"
-                    placeholder="Search teachers by name, email or phone..."
+                    placeholder="Search students..."
                     value={searchTerm}
                     onChange={(e) => setSearchTerm(e.target.value)}
+                    disabled={isLoading}
                   />
                 </div>
               </Col>
 
-              {/* Gender Filter */}
-              <Col md={3}>
+              {/* Status Filter */}
+              <Col md={2}>
                 <Form.Select
-                  value={genderFilter}
-                  onChange={(e) => setGenderFilter(e.target.value)}
+                  value={statusFilter}
+                  onChange={(e) => setStatusFilter(e.target.value)}
                   className="bg-light border-0"
+                  disabled={isLoading || isFetching}
                 >
-                  <option value="all">All Gender</option>
-                  <option value="M">Male</option>
-                  <option value="F">Female</option>
-                  <option value="O">Other</option>
+                  <option value="">All Status</option>
+                  <option value="A">Active</option>
+                  <option value="P">Passed</option>
+                  <option value="S">Suspended</option>
+                </Form.Select>
+              </Col>
+
+              {/* Program Filter */}
+              <Col md={2}>
+                <Form.Select
+                  value={programFilter}
+                  onChange={(e) => setProgramFilter(e.target.value)}
+                  className="bg-light border-0"
+                  disabled={isLoading || isFetching}
+                >
+                  <option value="">All Programs</option>
+                  {programData?.data.map((program) => (
+                    <option key={program.id} value={program.id}>
+                      {program.code}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+
+              {/* Semester Filter */}
+              <Col md={2}>
+                <Form.Select
+                  value={semesterFilter}
+                  onChange={(e) => setSemesterFilter(e.target.value)}
+                  className="bg-light border-0"
+                  disabled={isLoading || isFetching}
+                >
+                  <option value="">All Semesters</option>
+                  {[1, 2, 3, 4, 5, 6, 7, 8, 9, 10].map((sem) => (
+                    <option key={sem} value={sem}>
+                      Semester {sem}
+                    </option>
+                  ))}
                 </Form.Select>
               </Col>
             </Row>
 
             {/* Clear Filters Button */}
-            {(searchTerm || genderFilter !== "all") && (
+            {(searchTerm ||
+              statusFilter !== "" ||
+              programFilter !== "" ||
+              semesterFilter !== "") && (
               <div className="mt-3">
                 <Button
                   variant="outline-secondary"
@@ -317,13 +409,13 @@ const TeacherManagement: React.FC = () => {
           </Card.Body>
         </Card>
 
-        {/* Teachers Table */}
+        {/* Students Table */}
         <Card className="border-0 shadow-sm">
           <Card.Header className="bg-white py-3">
             <div className="px-3 pb-3">{renderPaginationControls()}</div>
           </Card.Header>
           <Card.Body className="p-0">
-            {isTeacherLoading ? (
+            {(isLoading || isFetching) ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
@@ -335,36 +427,68 @@ const TeacherManagement: React.FC = () => {
                   <Table hover className="mb-0">
                     <thead className="table-light">
                       <tr>
-                        <th>ID</th>
-                        <th>Teacher Information</th>
+                        <th>SN</th>
+                        <th>Name</th>
+                        <th>Reg-No</th>
+                        <th>Roll-No</th>
+                        <th>Program</th>
                         <th>Contact</th>
-                        <th>Address</th>
-                        <th>Joined On</th>
+                        <th>Status</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
-                      {teacherData?.data && teacherData?.data.length > 0 ? (
-                        teacherData.data.map((item, key) => {
+                      {studentsData?.data && studentsData?.data?.length > 0 ? (
+                        studentsData.data.map((item, key) => {
                           const genderConfig = getGenderBadge(item.gender);
+                          const serialNumber =
+                            (currentPage - 1) * itemsPerPage + key + 1;
                           return (
                             <tr key={key}>
-                              <td className="fw-semibold">#{item.id}</td>
+                              <td className="fw-semibold">{serialNumber}.</td>
                               <td>
                                 <div className="d-flex align-items-center">
                                   <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
-                                    <i className="fas fa-user text-primary"></i>
+                                    <i className="fas fa-user-graduate text-primary"></i>
                                   </div>
                                   <div>
                                     <div className="fw-semibold">
                                       {item.firstName} {item.lastName}
                                     </div>
                                     <div className="mt-1">
-                                      <Badge bg={genderConfig.variant}>
+                                      <Badge
+                                        bg={genderConfig.variant}
+                                        className="me-1"
+                                      >
                                         {genderConfig.label}
                                       </Badge>
                                     </div>
                                   </div>
+                                </div>
+                              </td>
+                              <td>
+                                <div className="fw-semibold">
+                                  {item.registrationNumber}
+                                </div>
+                              </td>
+                              <td>
+                                <div className="fw-semibold">
+                                  {item.rollNumber}
+                                </div>
+                              </td>
+                              <td>
+                                <div>
+                                  <div className="fw-semibold">
+                                    {item.program.name}
+                                  </div>
+                                  <div className="d-flex align-items-center gap-2 mt-1">
+                                    <span className="badge bg-light text-dark">
+                                      Semester {item.currentSemester}
+                                    </span>
+                                  </div>
+                                  <small className="text-muted d-block mt-1">
+                                    Enrolled: {formatDate(item.createdAt)}
+                                  </small>
                                 </div>
                               </td>
                               <td>
@@ -387,14 +511,17 @@ const TeacherManagement: React.FC = () => {
                                   )}
                                 </div>
                               </td>
-                              <td>{item.address1}</td>
-                              <td>{formatDate(item.createdAt)}</td>
+                              <td>
+                                <div className="d-flex flex-column gap-1">
+                                  {getStatusBadge(item.status)}
+                                </div>
+                              </td>
                               <td>
                                 <div className="d-flex gap-2">
                                   <Button
                                     variant="outline-primary"
                                     size="sm"
-                                    onClick={() => handleEdit(item)}
+                                    onClick={() => handleEditModalOpen(item)}
                                     title="Edit"
                                   >
                                     <i className="fas fa-edit"></i>
@@ -410,6 +537,7 @@ const TeacherManagement: React.FC = () => {
                                   <Button
                                     variant="outline-info"
                                     size="sm"
+                                    onClick={() => handleViewDetails(item)}
                                     title="View Details"
                                   >
                                     <i className="fas fa-eye"></i>
@@ -436,31 +564,43 @@ const TeacherManagement: React.FC = () => {
       </div>
 
       {/* Form Modal */}
-      <TeacherFormModal
+      <StudentFormModal
         show={showFormModal}
         onHide={handleCloseFormModal}
         onSubmit={onSubmit}
-        register={register}
-        errors={errors}
-        isLoading={isLoading}
-        editingTeacher={!!editingTeacher}
-        handleSubmit={handleSubmit(onSubmit)}
+        isLoading={isAddingStudent}
+        programs={programData?.data || []}
       />
 
-      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         show={showDeleteModal}
         onHide={handleCloseDeleteModal}
         onConfirm={handleDeleteConfirm}
-        teacherName={
-          deletingTeacher
-            ? `${deletingTeacher.firstName} ${deletingTeacher.lastName}`
+        studentName={
+          deletingStudent
+            ? `${deletingStudent.firstName} ${deletingStudent.lastName}`
             : ""
         }
-        isLoading={isLoading}
+        isLoading={isDeleting}
+      />
+
+      <ViewStudentDetailsModal
+        show={showViewModal}
+        onHide={handleCloseViewModal}
+        student={studentDetailsData?.data?.[0]}
+        isLoading={isLoadingDetails || isStudentDetailsFetching}
+      />
+      <StudentEditModal
+        show={showEditModal}
+        onHide={handleCloseEditModal}
+        onSubmit={handleEditConfirm} 
+        isLoading={isUpdatingStudent} 
+        isGettingData = {isLoadingDetails || isStudentDetailsFetching}
+        programs={programData?.data || []}
+        studentData={studentDetailsData?.data?.[0]}
       />
     </>
   );
 };
 
-export default TeacherManagement;
+export default StudentManagement;

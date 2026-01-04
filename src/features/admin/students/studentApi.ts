@@ -68,9 +68,18 @@ export const adminStudentApi = createApi({
             invalidatesTags: (result) => result?.success ? ["Students"] : []
         }),
 
+        editStudent: builder.mutation({
+            query: ({data,id}) =>({
+                url:`${AdminStudentEndpoints.STUDENT_ACTION}/${id}`,
+                method:"PATCH",
+                body:data
+            }),
+            invalidatesTags:(result) => result?.success ? ["Students"] : []
+        }),
+
         getStudentById: builder.query<StudentDetailApiResponse, number>({
             query: (id) => ({
-                url: `${AdminStudentEndpoints.GET_STUDENTS}/${id}`,
+                url: `${AdminStudentEndpoints.GET_STUDENTS}?id=${id}`,
                 method: "GET"
             }),
             providesTags: (result, error, id) => [{ type: "Students", id }]
@@ -84,5 +93,6 @@ export const {
     useGetProgramsQuery,
     useDeleteStudentMutation,
     useAddStudentMutation,
-    useGetStudentByIdQuery
+    useGetStudentByIdQuery,
+    useEditStudentMutation
 } = adminStudentApi;

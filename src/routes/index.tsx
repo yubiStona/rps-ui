@@ -3,7 +3,7 @@ import { useAppSelector } from "../app/hooks";
 import NotFound from "../Component/NotFound";
 import AuthFlow from "../Component/AuthWrapper/AuthFlow";
 import AdminDashboard from "../pages/admin/Dashboard";
-import StudentManagement from "../pages/admin/StudentManagement";
+import StudentManagement from "../pages/admin/StudentManagement/StudentManagement";
 import TeacherManagement from "../pages/admin/TeacherManagement/TeacherManagement";
 import MarksEntry from "../pages/teacher/MarksEntry";
 import StudentResults from "../pages/student/Results";
