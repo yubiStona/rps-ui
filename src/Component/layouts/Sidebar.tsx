@@ -48,34 +48,29 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
             icon: <FaChalkboardTeacher />,
             path: "/admin/teachers",
           },
-          { id: 4, label: "Courses", icon: <FaBookOpen />, path: "/courses" },
-          { id: 5, label: "Results", icon: <FaChartBar />, path: "/results" },
+          { id: 4, label: "Faculties", icon: <FaChartBar />, path: "/admin/Faculties" },
+          { id: 5, label: "Programs", icon: <FaBookOpen />, path: "/admin/programs" },
+          { id: 6, label: "Results", icon: <FaChartBar />, path: "/results" },
           {
-            id: 6,
+            id: 7,
             label: "Schedule",
             icon: <FaCalendarAlt />,
             path: "/schedule",
           },
           {
-            id: 7,
+            id: 8,
             label: "Reports",
             icon: <FaClipboardList />,
             path: "/reports",
           },
-          { id: 8, label: "Settings", icon: <FaCog />, path: "/settings" },
+          { id: 9, label: "Settings", icon: <FaCog />, path: "/settings" },
           {
-            id: 9,
+            id: 10,
             label: "Attendance",
             icon: <FaClipboardList />,
             path: "/attendance",
           },
-          { id: 10, label: "Exams", icon: <FaBookOpen />, path: "/exams" },
-          {
-            id: 11,
-            label: "Assignments",
-            icon: <FaClipboardList />,
-            path: "/assignments",
-          },
+          { id: 11, label: "Exams", icon: <FaBookOpen />, path: "/exams" },
         ];
 
       case "teacher":

@@ -10,6 +10,8 @@ import StudentResults from "../pages/student/Results";
 import { getRoleByType } from "../helper";
 import DashboardLayout from "../layouts/DashboardLayout";
 import TeacherDashboard from "../pages/teacher/Dashboard";
+import ProgramManagement from "../pages/admin/Program management/Programs";
+import FacultyManagement from "../pages/admin/Faculty/FacultyManagement";
 const AppRouter = () => {
   const { user } = useAppSelector((state) => state.auth);
 
@@ -75,6 +77,26 @@ const AppRouter = () => {
             <ProtectedRoute requiredRole="admin">
               <DashboardLayout>
                 <TeacherManagement />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/admin/programs"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout>
+                <ProgramManagement /> 
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+        <Route 
+          path="/admin/faculties"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout>
+                <FacultyManagement /> 
               </DashboardLayout>
             </ProtectedRoute>
           }
