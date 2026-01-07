@@ -86,7 +86,6 @@ const StudentManagement: React.FC = () => {
     data: studentDetailsData,
     isLoading: isLoadingDetails,
     isFetching: isStudentDetailsFetching,
-    error: detailsError,
   } = useGetStudentByIdQuery(viewingStudentId!, {
     skip: !viewingStudentId,
   });
@@ -441,8 +440,7 @@ const StudentManagement: React.FC = () => {
                       {studentsData?.data && studentsData?.data?.length > 0 ? (
                         studentsData.data.map((item, key) => {
                           const genderConfig = getGenderBadge(item.gender);
-                          const serialNumber =
-                            (currentPage - 1) * itemsPerPage + key + 1;
+                          const serialNumber =(currentPage - 1) * itemsPerPage + key + 1;
                           return (
                             <tr key={key}>
                               <td className="fw-semibold">{serialNumber}.</td>

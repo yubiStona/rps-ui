@@ -1,10 +1,11 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../api/apislice";
 import { AdminTeacherEndpoints } from "./endpoints";
-import { TeacherListResponse, TeacherListParams } from "./utils";
+import { TeacherListResponse, TeacherListParams, TeacherDetailResponseById } from "./utils";
 
 export const adminTeacherApi = createApi({
     reducerPath:"adminTeacherApi",
+    tagTypes:["Teacher"],
     baseQuery,
     endpoints: (builder) => ({
         getTeacher: builder.query<TeacherListResponse,TeacherListParams>({
@@ -32,12 +33,39 @@ export const adminTeacherApi = createApi({
                     url:`${AdminTeacherEndpoints.LIST_TEACHER}${queryString ? `?${queryString}` : ""}`,
                     method:"GET"
                 }
-            }
+            },
+            providesTags:["Teacher"]
         }),
 
-        getTeacherById: builder.query({
+        addTeacher: builder.mutation({
+            query: (data)=>({
+                url:AdminTeacherEndpoints.TEACHER_ACTION,
+                method:"POST",
+                body:data,
+            }),
+            invalidatesTags: (result) =>result?.success ? ["Teacher"] : []
+        }),
+
+        editTeacher:builder.mutation({
+            query: ({data,id})=>({
+                url:`${AdminTeacherEndpoints.TEACHER_ACTION}/${id}`,
+                method:"PATCH",
+                body:data
+            }),
+            invalidatesTags:(result) => result?.success ? ["Teacher"] : []
+        }),
+
+        deleteTeacher: builder.mutation({
+            query:(id)=>({
+                url:`${AdminTeacherEndpoints.TEACHER_ACTION}/${id}`,
+                method:"DELETE",
+            }),
+            invalidatesTags:(result) => result?.success ? ["Teacher"] : []
+        }),
+
+        getTeacherById: builder.query<TeacherDetailResponseById,number>({
             query: (id) => ({
-                url: `${AdminTeacherEndpoints.GET_TEACHER_BY_ID}/${id}`,
+                url: `${AdminTeacherEndpoints.TEACHER_ACTION}?id=${id}`,
                 method: "GET"
             })
         })
@@ -46,5 +74,8 @@ export const adminTeacherApi = createApi({
 
 export const {
     useGetTeacherQuery,
-    useGetTeacherByIdQuery
+    useGetTeacherByIdQuery,
+    useAddTeacherMutation,
+    useDeleteTeacherMutation,
+    useEditTeacherMutation
 } = adminTeacherApi

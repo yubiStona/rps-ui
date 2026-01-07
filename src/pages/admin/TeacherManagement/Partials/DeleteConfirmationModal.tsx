@@ -10,12 +10,12 @@ interface DeleteConfirmationModalProps {
 }
 
 const DeleteConfirmationModal: React.FC<DeleteConfirmationModalProps> = ({
-                                                                             show,
-                                                                             onHide,
-                                                                             onConfirm,
-                                                                             teacherName,
-                                                                             isLoading,
-                                                                         }) => {
+    show,
+    onHide,
+    onConfirm,
+    teacherName,
+    isLoading,
+}) => {
     return (
         <Modal show={show} onHide={onHide} centered>
             <Modal.Header closeButton>
