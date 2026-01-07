@@ -14,7 +14,7 @@ const ProgramManagement: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  const [deletingProgram, setDeletingProgram] = useState<Program | null>(null);
+  // const [deletingProgram, setDeletingProgram] = useState<Program | null>(null);
   const [editingProgramId, setEditingProgramId] = useState<number | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
@@ -72,9 +72,9 @@ const ProgramManagement: React.FC = () => {
 //     }
 //   };
 
-  const handleEdit = (program: Program) => {
-    setEditingProgramId(program.id);
-    setShowEditModal(true);
+  const handleEdit = () => {
+    // setEditingProgramId(program.id);
+    // setShowEditModal(true);
   };
 
 //   const handleCloseEditModal = () => {
@@ -97,9 +97,9 @@ const ProgramManagement: React.FC = () => {
 //     }
 //   };
 
-  const handleDeleteClick = (program: Program) => {
-    setDeletingProgram(program);
-    setShowDeleteModal(true);
+  const handleDeleteClick = () => {
+    // setDeletingProgram(program);
+    // setShowDeleteModal(true);
   };
 
 //   const handleDeleteConfirm = async () => {
@@ -312,7 +312,7 @@ const ProgramManagement: React.FC = () => {
                                   <Button
                                     variant="outline-primary"
                                     size="sm"
-                                    onClick={() => handleEdit(item)}
+                                    onClick={() => handleEdit()}
                                     title="Edit"
                                   >
                                     <i className="fas fa-edit"></i>
@@ -320,7 +320,7 @@ const ProgramManagement: React.FC = () => {
                                   <Button
                                     variant="outline-danger"
                                     size="sm"
-                                    onClick={() => handleDeleteClick(item)}
+                                    onClick={() => handleDeleteClick()}
                                     title="Delete"
                                   >
                                     <i className="fas fa-trash"></i>
