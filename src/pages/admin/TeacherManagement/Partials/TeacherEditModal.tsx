@@ -2,14 +2,14 @@ import React, { useEffect } from 'react';
 import { Modal, Button, Row, Col, Form, InputGroup, Spinner } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { Teacher } from '../../../../features/admin/teacher/utils';
-import { TeacherEditFormData } from '../../../../features/admin/teacher/utils';
+import { TeacherFormData } from '../../../../features/admin/teacher/utils';
 import { teacherEditSchema } from '../validation/teacherSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 interface TeacherEditModalProps {
     show: boolean;
     onHide: () => void;
-    onSubmit: (data: TeacherEditFormData) => void;
+    onSubmit: (data: TeacherFormData) => void;
     isLoading: boolean;
     teacherData?: Teacher; // Data for editing
     isUpdating?:boolean;
@@ -28,7 +28,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<TeacherEditFormData>()
+    } = useForm<TeacherFormData>()
 
     // Reset form when modal opens/closes or teacherData changes
     useEffect(() => {
@@ -51,7 +51,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
         }
     }, [show, teacherData, reset]);
 
-    const handleFormSubmit = (data: TeacherEditFormData) => {
+    const handleFormSubmit = (data: TeacherFormData) => {
         onSubmit(data);
     };
 
