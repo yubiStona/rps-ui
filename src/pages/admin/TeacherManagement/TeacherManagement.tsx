@@ -1,27 +1,21 @@
 import React, { useState, useEffect, useMemo } from "react";
 import { Row, Col, Card, Button, Table, Badge, Form } from "react-bootstrap";
-import { useForm } from "react-hook-form";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import TeacherFormModal from "./Partials/TeacherFormModal";
 import DeleteConfirmationModal from "./Partials/DeleteConfirmationModal";
-import ViewDetailsModal from "../StudentManagement/partials/ViewDetailsModal";
+import TeacherEditModal from "./Partials/TeacherEditModal";
 import {
   useGetTeacherQuery,
   useGetTeacherByIdQuery,
+  useAddTeacherMutation,
+  useDeleteTeacherMutation,
+  useEditTeacherMutation
 } from "../../../features/admin/teacher/teacherApi";
 import { Teacher } from "../../../features/admin/teacher/utils";
-
-interface TeacherFormData {
-  first_name: string;
-  last_name: string;
-  email: string;
-  phone: string;
-  address1: string;
-  address2: string;
-  gender: "M" | "F" | "O";
-  dob: string;
-}
+import ViewTeacherDetailsModal from "./Partials/TeacherDetailsModal";
+import { TeacherFormData } from "../../../features/admin/teacher/utils";
+import { toast } from "react-toastify";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -29,10 +23,9 @@ const TeacherManagement: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
-  const [editingTeacher, setEditingTeacher] = useState<Teacher | null>(null);
+  const [showEditModal, setShowEditModal] = useState(false);
   const [deletingTeacher, setDeletingTeacher] = useState<Teacher | null>(null);
   const [viewingTeacherId, setViewingTeacherId] = useState<number | null>(null);
-  const [isLoading, setIsLoading] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [genderFilter, setGenderFilter] = useState<string>("all");
@@ -56,21 +49,16 @@ const TeacherManagement: React.FC = () => {
     [debouncedSearch, currentPage, itemsPerPage, genderFilter]
   );
 
-  const {
-    register,
-    handleSubmit,
-    reset,
-    formState: { errors },
-  } = useForm<TeacherFormData>();
-
-  const { data: teacherData, isLoading: isTeacherLoading } =
-    useGetTeacherQuery(queryParams);
+  const { data: teacherData, isLoading: isTeacherLoading, isFetching} = useGetTeacherQuery(queryParams);
+  const [addTeacher, {isLoading:isAddingTeacher}] = useAddTeacherMutation();
+  const [deleteTeacher,{isLoading:isDeleting}] = useDeleteTeacherMutation();
+  const [editTeacher, {isLoading:isUpdatingTeacher}] = useEditTeacherMutation();
 
   // Fetch teacher details for view modal
   const {
     data: teacherDetailsData,
     isLoading: isLoadingDetails,
-    error: detailsError,
+    isFetching:isFetchingDetails,
   } = useGetTeacherByIdQuery(viewingTeacherId!, {
     skip: !viewingTeacherId,
   });
@@ -96,38 +84,74 @@ const TeacherManagement: React.FC = () => {
   }, [searchTerm, genderFilter, itemsPerPage]);
 
   const onSubmit = async (data: TeacherFormData) => {
-    setIsLoading(true);
-    console.log(data);
+    if(!data) return;
+    try{
+      const response = await addTeacher(data).unwrap();
+      if(response.success){
+        toast.success(response.message);
+        setShowFormModal(false);
+      }
+    }catch(error:any){
+      toast.error(error?.data?.message);
+    }
   };
 
   const handleEdit = (teacher: Teacher) => {
-    setEditingTeacher(teacher);
-    setShowFormModal(true);
+    setViewingTeacherId(teacher.id);
+    setShowEditModal(true);
   };
+
+  const handleCloseEditModal = () =>{
+    setShowEditModal(false);
+
+  }
+  const handleUpdateTeacher= async (data:TeacherFormData)=>{
+    if(!data) return;
+    try{
+      const response = await editTeacher({data,id:viewingTeacherId}).unwrap();
+      if(response.success){
+        toast.success(response.message);
+        setViewingTeacherId(null);
+        setShowEditModal(false)
+      }
+    }catch(error:any){
+      const errorMessage = error?.data?.message || "Failed to edit techer";
+      toast.error(errorMessage)
+    }
+  }
 
   const handleDeleteClick = (teacher: Teacher) => {
     setDeletingTeacher(teacher);
     setShowDeleteModal(true);
   };
 
+  const handleViewDetails = (teacher:Teacher)=>{
+    setViewingTeacherId(teacher.id);
+    setShowViewModal(true);
+  }
+
+  const handleCloseViewModal = ()=>{
+    setViewingTeacherId(null);
+    setShowViewModal(false);
+  }
+
   const handleDeleteConfirm = async () => {
     if (!deletingTeacher) return;
-    setIsLoading(true);
+    try{
+      const response = await deleteTeacher(deletingTeacher.id).unwrap();
+      if(response.success){
+        toast.success(response.message);
+        setShowDeleteModal(false);
+        setDeletingTeacher(null);
+      }
+    }catch(error:any){
+      const errorMessage = error?.data?.message || "Failed to delete techer";
+      toast.error(errorMessage)
+    }
   };
 
   const handleCloseFormModal = () => {
     setShowFormModal(false);
-    setEditingTeacher(null);
-    reset({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      address1: "",
-      address2: "",
-      gender: "M",
-      dob: "",
-    });
   };
 
   const handleCloseDeleteModal = () => {
@@ -136,17 +160,6 @@ const TeacherManagement: React.FC = () => {
   };
 
   const handleAddNew = () => {
-    setEditingTeacher(null);
-    reset({
-      first_name: "",
-      last_name: "",
-      email: "",
-      phone: "",
-      address1: "",
-      address2: "",
-      gender: "M",
-      dob: "",
-    });
     setShowFormModal(true);
   };
 
@@ -323,7 +336,7 @@ const TeacherManagement: React.FC = () => {
             <div className="px-3 pb-3">{renderPaginationControls()}</div>
           </Card.Header>
           <Card.Body className="p-0">
-            {isTeacherLoading ? (
+            {(isTeacherLoading || isFetching) ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
@@ -335,7 +348,7 @@ const TeacherManagement: React.FC = () => {
                   <Table hover className="mb-0">
                     <thead className="table-light">
                       <tr>
-                        <th>ID</th>
+                        <th>SN</th>
                         <th>Teacher Information</th>
                         <th>Contact</th>
                         <th>Address</th>
@@ -347,9 +360,10 @@ const TeacherManagement: React.FC = () => {
                       {teacherData?.data && teacherData?.data.length > 0 ? (
                         teacherData.data.map((item, key) => {
                           const genderConfig = getGenderBadge(item.gender);
+                           const serialNumber =(currentPage - 1) * itemsPerPage + key + 1;
                           return (
                             <tr key={key}>
-                              <td className="fw-semibold">#{item.id}</td>
+                              <td className="fw-semibold">{serialNumber}</td>
                               <td>
                                 <div className="d-flex align-items-center">
                                   <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
@@ -411,6 +425,7 @@ const TeacherManagement: React.FC = () => {
                                     variant="outline-info"
                                     size="sm"
                                     title="View Details"
+                                    onClick={()=>handleViewDetails(item)}
                                   >
                                     <i className="fas fa-eye"></i>
                                   </Button>
@@ -440,11 +455,23 @@ const TeacherManagement: React.FC = () => {
         show={showFormModal}
         onHide={handleCloseFormModal}
         onSubmit={onSubmit}
-        register={register}
-        errors={errors}
-        isLoading={isLoading}
-        editingTeacher={!!editingTeacher}
-        handleSubmit={handleSubmit(onSubmit)}
+        isLoading={isAddingTeacher}
+      />
+
+      <TeacherEditModal
+        show={showEditModal}
+        onHide={handleCloseEditModal}
+        onSubmit={handleUpdateTeacher}
+        isLoading={isLoadingDetails || isFetchingDetails}
+        teacherData={teacherDetailsData?.data?.[0]}
+        isUpdating={isUpdatingTeacher}
+      />
+
+      <ViewTeacherDetailsModal 
+        show={showViewModal}
+        onHide={handleCloseViewModal}
+        isLoading={isLoadingDetails || isFetchingDetails}
+        teacher={teacherDetailsData?.data?.[0] }
       />
 
       {/* Delete Confirmation Modal */}
@@ -457,7 +484,7 @@ const TeacherManagement: React.FC = () => {
             ? `${deletingTeacher.firstName} ${deletingTeacher.lastName}`
             : ""
         }
-        isLoading={isLoading}
+        isLoading={isDeleting}
       />
     </>
   );

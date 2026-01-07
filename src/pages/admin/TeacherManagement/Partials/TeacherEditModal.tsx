@@ -1,59 +1,73 @@
-import React from 'react';
-import { Modal, Button, Row, Col, Form, InputGroup } from 'react-bootstrap';
+import React, { useEffect } from 'react';
+import { Modal, Button, Row, Col, Form, InputGroup, Spinner } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
-import { TeacherFormData } from '../../../../features/admin/teacher/utils';
-import { teacherSchema } from '../validation/teacherSchema';
+import { Teacher } from '../../../../features/admin/teacher/utils';
+import { TeacherEditFormData } from '../../../../features/admin/teacher/utils';
+import { teacherEditSchema } from '../validation/teacherSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
 
-interface TeacherFormModalProps {
+interface TeacherEditModalProps {
     show: boolean;
     onHide: () => void;
-    onSubmit: (data: TeacherFormData) => void;
+    onSubmit: (data: TeacherEditFormData) => void;
     isLoading: boolean;
+    teacherData?: Teacher; // Data for editing
+    isUpdating?:boolean;
 }
 
-const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
+const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
     show,
     onHide,
     onSubmit,
     isLoading,
+    teacherData,
+    isUpdating=false
 }) => {
     const {
         register,
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<TeacherFormData>({
-        resolver:yupResolver(teacherSchema),
-        defaultValues: {
-            firstName: '',
-            lastName: '',
-            email: '',
-            phone: '',
-            address1: '',
-            gender: 'M',
-            DOB: '',
-        }
-    });
+    } = useForm<TeacherEditFormData>()
 
-    const handleFormSubmit = (data: TeacherFormData) => {
+    // Reset form when modal opens/closes or teacherData changes
+    useEffect(() => {
+        if (show && teacherData) {
+            // Pre-fill form with teacher data for editing
+            const teacher = teacherData;
+            const dob = teacher.DOB || teacher.DOB
+                ? new Date(teacher.DOB).toISOString().split("T")[0]
+                : "";
+            
+            reset({
+                firstName: teacher.firstName || '',
+                lastName: teacher.lastName || '',
+                email: teacher.email || '',
+                phone: teacher.phone || '',
+                address1: teacher.address1 || '',
+                gender: teacher.gender || 'M',
+                DOB: dob,
+            });
+        }
+    }, [show, teacherData, reset]);
+
+    const handleFormSubmit = (data: TeacherEditFormData) => {
         onSubmit(data);
     };
 
-    // Reset form when modal opens
-    React.useEffect(() => {
-        if (show) {
-            reset({
-                firstName: '',
-                lastName: '',
-                email: '',
-                phone: '',
-                address1: '',
-                gender: 'M',
-                DOB: '',
-            });
-        }
-    }, [show, reset]);
+  if (isLoading) {
+    return (
+      <Modal show={show} onHide={onHide} centered size="lg">
+        <Modal.Header closeButton className="border-bottom-0">
+          <Modal.Title>Loading Teacher Details...</Modal.Title>
+        </Modal.Header>
+        <Modal.Body className="text-center py-5">
+          <Spinner animation="border" variant="primary" />
+          <p className="mt-3 text-muted">Fetching Teacher information...</p>
+        </Modal.Body>
+      </Modal>
+    );
+  }
 
     return (
         <Modal
@@ -67,12 +81,12 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                     <div className="d-flex align-items-center gap-3 mb-2">
                         <div className="bg-primary rounded-circle p-2 d-flex align-items-center justify-content-center"
                              style={{ width: '44px', height: '44px' }}>
-                            <i className="fas fa-user-plus text-white fs-5"></i>
+                            <i className="fas fa-user-edit text-white fs-5"></i>
                         </div>
                         <div>
-                            <h5 className="mb-0">Add New Teacher</h5>
+                            <h5 className="mb-0">Edit Teacher Profile</h5>
                             <small className="text-muted">
-                                Fill in the details to add a new teacher
+                                Update teacher information
                             </small>
                         </div>
                     </div>
@@ -94,7 +108,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        First Name <span className="text-danger">*</span>
+                                        First Name 
                                     </Form.Label>
                                     <Form.Control
                                         type="text"
@@ -103,6 +117,9 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                                         placeholder="Enter first name"
                                         className="py-2"
                                     />
+                                    {/* <Form.Text className="text-muted small">
+                                        Name cannot be changed for existing teachers
+                                    </Form.Text> */}
                                     <Form.Control.Feedback type="invalid">
                                         {errors.firstName?.message}
                                     </Form.Control.Feedback>
@@ -112,7 +129,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Last Name <span className="text-danger">*</span>
+                                        Last Name 
                                     </Form.Label>
                                     <Form.Control
                                         type="text"
@@ -130,7 +147,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Email <span className="text-danger">*</span>
+                                        Email 
                                     </Form.Label>
                                     <Form.Control
                                         type="email"
@@ -147,7 +164,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
 
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label className="fw-semibold">Phone Number <span className="text-danger">*</span></Form.Label>
+                                    <Form.Label className="fw-semibold">Phone Number</Form.Label>
                                     <InputGroup>
                                         <InputGroup.Text className="bg-light">
                                             <i className="fas fa-phone"></i>
@@ -169,7 +186,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Gender <span className="text-danger">*</span>
+                                        Gender 
                                     </Form.Label>
                                     <Form.Select
                                         {...register('gender')}
@@ -189,7 +206,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Date of Birth <span className="text-danger">*</span>
+                                        Date of Birth 
                                     </Form.Label>
                                     <Form.Control
                                         type="date"
@@ -216,7 +233,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
 
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold">
-                                Address Line 1 <span className="text-danger">*</span>
+                                Address Line 1 
                             </Form.Label>
                             <Form.Control
                                 type="text"
@@ -229,18 +246,6 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                                 {errors.address1?.message}
                             </Form.Control.Feedback>
                         </Form.Group>
-
-                        {/* <Form.Group>
-                            <Form.Label className="fw-semibold">
-                                Address Line 2 (Optional)
-                            </Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('address2')}
-                                placeholder="Apartment, suite, unit, building, floor, etc."
-                                className="py-2"
-                            />
-                        </Form.Group> */}
                     </div>
                 </Modal.Body>
 
@@ -249,6 +254,7 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                         variant="outline-secondary"
                         onClick={onHide}
                         className="px-4"
+                        disabled={isUpdating}
                     >
                         <i className="fas fa-times me-2"></i>
                         Cancel
@@ -256,18 +262,18 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                     <Button
                         variant="primary"
                         type="submit"
-                        disabled={isLoading}
+                        disabled={isUpdating}
                         className="px-4"
                     >
-                        {isLoading ? (
+                        {isUpdating ? (
                             <>
                                 <span className="spinner-border spinner-border-sm me-2" role="status"></span>
-                                Creating...
+                                Updating...
                             </>
                         ) : (
                             <>
-                                <i className="fas fa-plus me-2"></i>
-                                Add Teacher
+                                <i className="fas fa-save me-2"></i>
+                                Update Teacher
                             </>
                         )}
                     </Button>
@@ -277,4 +283,4 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
     );
 };
 
-export default TeacherFormModal;
+export default TeacherEditModal;

@@ -403,7 +403,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
         </Modal.Body>
 
         <Modal.Footer className="border-top-0">
-          <Button variant="outline-secondary" onClick={onHide} className="px-4">
+          <Button variant="outline-secondary" onClick={onHide} className="px-4" disabled={isLoading}>
             <i className="fas fa-times me-2"></i>
             Cancel
           </Button>
