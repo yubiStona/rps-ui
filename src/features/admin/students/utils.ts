@@ -15,7 +15,7 @@ export interface Student {
   enrollmentDate: string;
   programId: number;
   program: {
-    id?:number;
+    id?: number;
     name: string;
   };
   createdAt: string;
@@ -26,9 +26,9 @@ export interface studentListParams {
   search?: string;
   page?: number;
   limit?: number;
-  currentSemester?:number;
-  programId?:number;
-  status?:string;
+  currentSemester?: number;
+  programId?: number;
+  status?: string;
 }
 
 export interface StudentListApiReponse {
@@ -42,17 +42,28 @@ export interface StudentListApiReponse {
   limit: number;
 }
 
-export interface ProgramList{
-    id:number;
-    code:string;
+export interface ProgramList {
+  id: number;
+  code: string;
 }
-
 
 export interface ProgramListApiResponse {
   success: boolean;
   statusCode: number;
   message: string;
-  data: ProgramList[]
+  data: ProgramList[];
+}
+
+export interface FacultyList {
+  id: number;
+  name: string;
+}
+
+export interface FacultyListApiResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: FacultyList[];
 }
 
 export interface StudentDetailApiResponse {

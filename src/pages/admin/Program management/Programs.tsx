@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Row, Col, Card, Button, Table, Form } from "react-bootstrap";
+import { Row, Col, Card, Button, Table, Form, Badge } from "react-bootstrap";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 // import DeleteConfirmationModal from "./Partials/DeleteConfirmationModal";
@@ -7,6 +7,7 @@ import Stack from "@mui/material/Stack";
 // import ProgramEditModal from "./Partials/ProgramEditModal";
 import { useGetProgramsQuery } from "../../../features/admin/programs/programApi";
 import { toast } from "react-toastify";
+import { useGetFacultiesQuery } from "../../../features/admin/students/studentApi";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -20,6 +21,7 @@ const ProgramManagement: React.FC = () => {
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [facultyFilter, setFacultyFilter] = useState<string>("");
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -38,10 +40,11 @@ const ProgramManagement: React.FC = () => {
   const queryParams = useMemo(
     () => ({
       search: debouncedSearch,
+      facultyId: facultyFilter || "",
       page: currentPage,
       limit: itemsPerPage,
     }),
-    [debouncedSearch, currentPage, itemsPerPage]
+    [debouncedSearch, facultyFilter, currentPage, itemsPerPage]
   );
 
   const {
@@ -49,6 +52,9 @@ const ProgramManagement: React.FC = () => {
     isLoading: isProgramLoading,
     isFetching,
   } = useGetProgramsQuery(queryParams);
+
+  const { data: facultyData, isLoading: isFacultyLoading } =
+    useGetFacultiesQuery();
 
   // Calculate pagination
   let startIndex = 0;
@@ -68,7 +74,7 @@ const ProgramManagement: React.FC = () => {
   // Reset to first page when filters or items per page change
   useEffect(() => {
     setCurrentPage(1);
-  }, [searchTerm, itemsPerPage]);
+  }, [searchTerm, facultyFilter, itemsPerPage]);
 
   //   const onSubmit = async (data: ProgramFormData) => {
   //     if (!data) return;
@@ -156,6 +162,7 @@ const ProgramManagement: React.FC = () => {
 
   const clearFilters = () => {
     setSearchTerm("");
+    setFacultyFilter("");
   };
 
   // Render pagination controls component (reusable)
@@ -257,8 +264,25 @@ const ProgramManagement: React.FC = () => {
                   />
                 </div>
               </Col>
-            </Row>
 
+              <Col md={2}>
+                <Form.Select
+                  value={facultyFilter}
+                  onChange={(e) => setFacultyFilter(e.target.value)}
+                  className="bg-light border-0"
+                  disabled={isFacultyLoading || isFetching}
+                >
+                  <option value="">
+                    {isFacultyLoading ? "Loading..." : "All Faculties"}
+                  </option>
+                  {facultyData?.data.map((faculty) => (
+                    <option key={faculty.id} value={faculty.id}>
+                      {faculty.name}
+                    </option>
+                  ))}
+                </Form.Select>
+              </Col>
+            </Row>
             {/* Clear Filters Button */}
             {searchTerm && (
               <div className="mt-3">
@@ -321,7 +345,9 @@ const ProgramManagement: React.FC = () => {
                                       {item.totalSubjects} subjects
                                     </small>
                                     <small className="text-muted d-block mt-1">
-                                      {item.totalSemesters} semesters
+                                      <Badge bg="secondary">
+                                        {item.totalSemesters} semesters
+                                      </Badge>
                                     </small>
                                   </div>
                                 </div>
@@ -354,9 +380,9 @@ const ProgramManagement: React.FC = () => {
                                     Faculty: {item?.faculty?.name}
                                   </small>
                                   <div className="d-flex align-items-center gap-2 mt-1">
-                                    <span className="badge bg-light text-dark">
+                                    <Badge bg="success">
                                       Credits: {item.totalCredits}
-                                    </span>
+                                    </Badge>
                                   </div>
                                   <div className="d-flex align-items-center gap-2 mt-1">
                                     <small className="d-block mt-1">
