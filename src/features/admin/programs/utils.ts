@@ -9,6 +9,7 @@ export interface HOD {
   email: string;
 }
 export interface Faculty {
+  id:number;
   name: string;
 }
 
@@ -33,4 +34,24 @@ export interface ProgramListResponse {
   page: number;
   limit: number;
   lastPage: number;
+}
+export interface ProgramFormData {
+    name: string;
+    code: string;
+    facultyId:  string | number;
+    totalSemesters: number;
+    totalSubjects: number;
+    totalCredits: number;
+    durationInYears: number;
+    hodId: string | number;
+}
+
+export interface HODList{
+  id:number,
+  name:string
+}
+export interface HodListResponse {
+  success: boolean;
+  message: string;
+  data:HODList[]
 }

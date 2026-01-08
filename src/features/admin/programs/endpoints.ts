@@ -3,5 +3,6 @@ type EndpointType ={
 }
 
 export const ProgramEndpoints:EndpointType ={
-    PROGRAM_ACTION:"/programs"
+    PROGRAM_ACTION:"/programs",
+    HOD_LIST:"/user/admin-head"
 }
