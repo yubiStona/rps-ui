@@ -421,7 +421,7 @@ const ProgramManagement: React.FC = () => {
                         })
                       ) : (
                         <tr>
-                          <td colSpan={4} className="text-center py-4">
+                          <td colSpan={6} className="text-center py-4">
                             <div className="text-muted">
                               <i className="fas fa-inbox fa-2x mb-2"></i>
                               <p>No programs found</p>
