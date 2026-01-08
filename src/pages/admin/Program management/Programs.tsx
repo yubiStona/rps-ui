@@ -21,6 +21,13 @@ const ProgramManagement: React.FC = () => {
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [debouncedSearch, setDebouncedSearch] = useState("");
 
+  const formatDate = (dateString: string) => {
+    return new Date(dateString).toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "short",
+      day: "numeric",
+    });
+  };
   useEffect(() => {
     const timer = setTimeout(() => {
       setDebouncedSearch(searchTerm);
@@ -37,7 +44,11 @@ const ProgramManagement: React.FC = () => {
     [debouncedSearch, currentPage, itemsPerPage]
   );
 
-  const { data: programData, isLoading: isProgramLoading, isFetching } = useGetProgramsQuery(queryParams);
+  const {
+    data: programData,
+    isLoading: isProgramLoading,
+    isFetching,
+  } = useGetProgramsQuery(queryParams);
 
   // Calculate pagination
   let startIndex = 0;
@@ -59,72 +70,72 @@ const ProgramManagement: React.FC = () => {
     setCurrentPage(1);
   }, [searchTerm, itemsPerPage]);
 
-//   const onSubmit = async (data: ProgramFormData) => {
-//     if (!data) return;
-//     try {
-//       const response = await addProgram(data).unwrap();
-//       if (response.success) {
-//         toast.success(response.message);
-//         setShowFormModal(false);
-//       }
-//     } catch (error: any) {
-//       toast.error(error?.data?.message);
-//     }
-//   };
+  //   const onSubmit = async (data: ProgramFormData) => {
+  //     if (!data) return;
+  //     try {
+  //       const response = await addProgram(data).unwrap();
+  //       if (response.success) {
+  //         toast.success(response.message);
+  //         setShowFormModal(false);
+  //       }
+  //     } catch (error: any) {
+  //       toast.error(error?.data?.message);
+  //     }
+  //   };
 
   const handleEdit = () => {
     // setEditingProgramId(program.id);
     // setShowEditModal(true);
   };
 
-//   const handleCloseEditModal = () => {
-//     setShowEditModal(false);
-//     setEditingProgramId(null);
-//   };
+  //   const handleCloseEditModal = () => {
+  //     setShowEditModal(false);
+  //     setEditingProgramId(null);
+  //   };
 
-//   const handleUpdateProgram = async (data: ProgramFormData) => {
-//     if (!data) return;
-//     try {
-//       const response = await editProgram({ data, id: editingProgramId }).unwrap();
-//       if (response.success) {
-//         toast.success(response.message);
-//         setEditingProgramId(null);
-//         setShowEditModal(false);
-//       }
-//     } catch (error: any) {
-//       const errorMessage = error?.data?.message || "Failed to edit program";
-//       toast.error(errorMessage);
-//     }
-//   };
+  //   const handleUpdateProgram = async (data: ProgramFormData) => {
+  //     if (!data) return;
+  //     try {
+  //       const response = await editProgram({ data, id: editingProgramId }).unwrap();
+  //       if (response.success) {
+  //         toast.success(response.message);
+  //         setEditingProgramId(null);
+  //         setShowEditModal(false);
+  //       }
+  //     } catch (error: any) {
+  //       const errorMessage = error?.data?.message || "Failed to edit program";
+  //       toast.error(errorMessage);
+  //     }
+  //   };
 
   const handleDeleteClick = () => {
     // setDeletingProgram(program);
     // setShowDeleteModal(true);
   };
 
-//   const handleDeleteConfirm = async () => {
-//     if (!deletingProgram) return;
-//     try {
-//       const response = await deleteProgram(deletingProgram.id).unwrap();
-//       if (response.success) {
-//         toast.success(response.message);
-//         setShowDeleteModal(false);
-//         setDeletingProgram(null);
-//       }
-//     } catch (error: any) {
-//       const errorMessage = error?.data?.message || "Failed to delete program";
-//       toast.error(errorMessage);
-//     }
-//   };
+  //   const handleDeleteConfirm = async () => {
+  //     if (!deletingProgram) return;
+  //     try {
+  //       const response = await deleteProgram(deletingProgram.id).unwrap();
+  //       if (response.success) {
+  //         toast.success(response.message);
+  //         setShowDeleteModal(false);
+  //         setDeletingProgram(null);
+  //       }
+  //     } catch (error: any) {
+  //       const errorMessage = error?.data?.message || "Failed to delete program";
+  //       toast.error(errorMessage);
+  //     }
+  //   };
 
-//   const handleCloseFormModal = () => {
-//     setShowFormModal(false);
-//   };
+  //   const handleCloseFormModal = () => {
+  //     setShowFormModal(false);
+  //   };
 
-//   const handleCloseDeleteModal = () => {
-//     setShowDeleteModal(false);
-//     setDeletingProgram(null);
-//   };
+  //   const handleCloseDeleteModal = () => {
+  //     setShowDeleteModal(false);
+  //     setDeletingProgram(null);
+  //   };
 
   const handleAddNew = () => {
     setShowFormModal(true);
@@ -271,7 +282,7 @@ const ProgramManagement: React.FC = () => {
             <div className="px-3 pb-3">{renderPaginationControls()}</div>
           </Card.Header>
           <Card.Body className="p-0">
-            {(isProgramLoading || isFetching) ? (
+            {isProgramLoading || isFetching ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
@@ -286,13 +297,16 @@ const ProgramManagement: React.FC = () => {
                         <th>SN</th>
                         <th>Program Code</th>
                         <th>Program Name</th>
+                        <th>HOD</th>
+                        <th>Details</th>
                         <th>Actions</th>
                       </tr>
                     </thead>
                     <tbody>
                       {programData?.data && programData?.data.length > 0 ? (
                         programData.data.map((item, key) => {
-                          const serialNumber = (currentPage - 1) * itemsPerPage + key + 1;
+                          const serialNumber =
+                            (currentPage - 1) * itemsPerPage + key + 1;
                           return (
                             <tr key={key}>
                               <td className="fw-semibold">{serialNumber}</td>
@@ -301,12 +315,61 @@ const ProgramManagement: React.FC = () => {
                                   <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
                                     <i className="fas fa-graduation-cap text-primary"></i>
                                   </div>
-                                  <div className="fw-semibold">{item.code}</div>
+                                  <div className="fw-semibold">
+                                    {item.code}
+                                    <small className="text-muted d-block mt-1">
+                                      {item.totalSubjects} subjects
+                                    </small>
+                                    <small className="text-muted d-block mt-1">
+                                      {item.totalSemesters} semesters
+                                    </small>
+                                  </div>
                                 </div>
                               </td>
                               <td>
-                                <div className="fw-semibold">{item.name}</div>
+                                <div className="fw-semibold">
+                                  {item.name}
+                                  <small className="text-muted d-block mt-1">
+                                    Started: {formatDate(item.createdAt)}
+                                  </small>
+                                </div>
                               </td>
+                              <td>
+                                <div className="fw-semibold">
+                                  {item?.hod?.name}
+                                </div>
+                                <div>
+                                  <a
+                                    href={`mailto:${item?.hod?.email}`}
+                                    className="text-decoration-none d-block"
+                                  >
+                                    <i className="fas fa-envelope me-1"></i>
+                                    {item?.hod?.email}
+                                  </a>
+                                </div>
+                              </td>
+                              <td>
+                                <div>
+                                  <small className="d-block mt-1">
+                                    Faculty: {item?.faculty?.name}
+                                  </small>
+                                  <div className="d-flex align-items-center gap-2 mt-1">
+                                    <span className="badge bg-light text-dark">
+                                      Credits: {item.totalCredits}
+                                    </span>
+                                  </div>
+                                  <div className="d-flex align-items-center gap-2 mt-1">
+                                    <small className="d-block mt-1">
+                                      Duration: {item.durationInYears} years
+                                    </small>
+                                  </div>
+                                </div>
+                              </td>
+                              {/* <td>
+                                <div className="fw-semibold">
+                                  {item?.faculty?.name}
+                                </div>
+                              </td> */}
                               <td>
                                 <div className="d-flex gap-2">
                                   <Button
