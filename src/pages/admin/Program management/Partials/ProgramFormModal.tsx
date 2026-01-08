@@ -28,24 +28,22 @@ const ProgramFormModal: React.FC<ProgramFormModalProps> = ({
         reset,
         formState: { errors },
     } = useForm<ProgramFormData>({
-        resolver: yupResolver(programSchema),
+        resolver: yupResolver(programSchema as any), // Cast to any to avoid type issues
         defaultValues: {
             name: '',
             code: '',
             facultyId: '',
             totalSemesters: 8,
-            totalSubjects: 0,
-            totalCredits: 0,
-            durationInYears: 0,
+            totalSubjects: 48,
+            totalCredits: 130,
+            durationInYears: 4,
             hodId: '',
         }
     });
 
-    // Fetch faculties for dropdown
-    const { data: facultiesData, isLoading: isFacultiesLoading } = useGetFacultiesQuery({});
-    
-    // Fetch teachers for HOD dropdown
-    const { data: teachersData, isLoading: isTeachersLoading } = useGetHodListQuery({});
+    const { data: facultiesData, isLoading: isFacultiesLoading } = useGetFacultiesQuery();
+
+    const { data: teachersData, isLoading: isTeachersLoading } = useGetHodListQuery();
 
     const handleFormSubmit = (data: ProgramFormData) => {
         onSubmit(data);
@@ -156,7 +154,7 @@ const ProgramFormModal: React.FC<ProgramFormModalProps> = ({
                                     >
                                         <option value="">Select Faculty</option>
                                         {facultiesData?.data?.map((faculty: FacultyList) => (
-                                            <option key={faculty.id} value={faculty.id}>
+                                            <option key={faculty.id} value={String(faculty.id)}>
                                                 {faculty.name}
                                             </option>
                                         ))}
@@ -183,7 +181,7 @@ const ProgramFormModal: React.FC<ProgramFormModalProps> = ({
                                     >
                                         <option value="">Select HOD</option>
                                         {teachersData?.data?.map((teacher: HODList) => (
-                                            <option key={teacher.id} value={teacher.id}>
+                                            <option key={teacher.id} value={String(teacher.id)}>
                                                 {teacher.name}
                                             </option>
                                         ))}

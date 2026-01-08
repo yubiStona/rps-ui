@@ -1,9 +1,9 @@
 import React, { useEffect } from 'react';
 import { Modal, Button, Row, Col, Form } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
-import { ProgramFormData } from '../../../../features/admin/programs/utils';
+import { PartialProgramFormData } from '../../../../features/admin/programs/utils';
 import { yupResolver } from '@hookform/resolvers/yup';
-import { useGetFacultiesQuery } from '../../../../features/admin/faculty/facultyApi';
+import { useGetFacultiesQuery } from '../../../../features/admin/students/studentApi';
 import { useGetHodListQuery } from '../../../../features/admin/programs/programApi';
 import { HODList } from '../../../../features/admin/programs/utils';
 import { FacultyList } from '../../../../features/admin/students/utils';
@@ -13,9 +13,9 @@ import * as yup from 'yup';
 interface ProgramEditModalProps {
     show: boolean;
     onHide: () => void;
-    onSubmit: (data: Partial<ProgramFormData>) => void;
+    onSubmit: (data: PartialProgramFormData) => void;
     isUpdating: boolean;
-    programData: Program;
+    programData: Program | null;
 }
 
 // Create a flexible schema where all fields are optional
@@ -120,9 +120,9 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
         reset,
         formState: { errors },
         watch,
-    } = useForm<Partial<ProgramFormData>>({
-        resolver: yupResolver(editProgramSchema),
-        mode: 'onChange', // Validate on change to provide immediate feedback
+    } = useForm<PartialProgramFormData>({
+        resolver: yupResolver(editProgramSchema as any),
+        mode: 'onChange',
         defaultValues: {
             name: '',
             code: '',
@@ -135,17 +135,21 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
         }
     });
 
-    const { data: facultiesData, isLoading: isFacultiesLoading } = useGetFacultiesQuery({});
+    const { data: facultiesData, isLoading: isFacultiesLoading } = useGetFacultiesQuery();
     const { data: teachersData, isLoading: isTeachersLoading } = useGetHodListQuery();
 
-    const handleFormSubmit = (data: Partial<ProgramFormData>) => {
-        const filteredData = Object.fromEntries(
-            Object.entries(data).filter(([_, value]) => {
-                return value !== undefined && value !== null && value !== '';
-            })
-        ) as Partial<ProgramFormData>;
+    const handleFormSubmit = (data: PartialProgramFormData) => {
+        const apiData: any = { ...data };
         
-        onSubmit(filteredData);
+        if (data.facultyId !== undefined && data.facultyId !== '') {
+            apiData.facultyId = Number(data.facultyId);
+        }
+        
+        if (data.hodId !== undefined && data.hodId !== '') {
+            apiData.hodId = Number(data.hodId);
+        }
+        
+        onSubmit(apiData);
     };
 
     useEffect(() => {
@@ -153,12 +157,12 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
             reset({
                 name: programData.name || '',
                 code: programData.code || '',
-                facultyId: programData.faculty?.id || '',
+                facultyId: programData.faculty?.id ? String(programData.faculty.id) : '',
                 totalSemesters: programData.totalSemesters || undefined,
                 totalSubjects: programData.totalSubjects || undefined,
                 totalCredits: programData.totalCredits || undefined,
                 durationInYears: programData.durationInYears || undefined,
-                hodId: programData.hod?.id || '',
+                hodId: programData.hod?.id ? String(programData.hod.id) : '',
             });
         } else if (show) {
             reset({
@@ -195,7 +199,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                 <Modal.Title className="fw-bold w-100">
                     <div className="d-flex align-items-center gap-3 mb-2">
                         <div className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center"
-                             style={{ width: '44px', height: '4444' }}>
+                             style={{ width: '44px', height: '44px' }}> {/* Fixed height typo */}
                             <i className="fas fa-edit text-white fs-5"></i>
                         </div>
                         <div>
@@ -270,7 +274,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                                     >
                                         <option value="">No change</option>
                                         {facultiesData?.data?.map((faculty: FacultyList) => (
-                                            <option key={faculty.id} value={faculty.id}>
+                                            <option key={faculty.id} value={String(faculty.id)}>
                                                 {faculty.name}
                                             </option>
                                         ))}
@@ -301,7 +305,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                                     >
                                         <option value="">No change</option>
                                         {teachersData?.data?.map((teacher: HODList) => (
-                                            <option key={teacher.id} value={teacher.id}>
+                                            <option key={teacher.id} value={String(teacher.id)}>
                                                 {teacher.name} 
                                             </option>
                                         ))}

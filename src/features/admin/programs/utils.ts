@@ -35,16 +35,6 @@ export interface ProgramListResponse {
   limit: number;
   lastPage: number;
 }
-export interface ProgramFormData {
-    name: string;
-    code: string;
-    facultyId:  string | number;
-    totalSemesters: number;
-    totalSubjects: number;
-    totalCredits: number;
-    durationInYears: number;
-    hodId: string | number;
-}
 
 export interface HODList{
   id:number,
@@ -54,4 +44,38 @@ export interface HodListResponse {
   success: boolean;
   message: string;
   data:HODList[]
+}
+
+// In utils.ts
+export interface ProgramFormData {
+    name: string;
+    code: string;
+    facultyId: string;
+    totalSemesters: number;
+    totalSubjects: number;
+    totalCredits: number;
+    durationInYears: number;
+    hodId: string; 
+}
+
+export interface ProgramAPIData {
+    name: string;
+    code: string;
+    facultyId: number;
+    totalSemesters: number;
+    totalSubjects: number;
+    totalCredits: number;
+    durationInYears: number;
+    hodId: number;
+}
+
+export interface PartialProgramFormData {
+    name?: string;
+    code?: string;
+    facultyId?: string;
+    totalSemesters?: number;
+    totalSubjects?: number;
+    totalCredits?: number;
+    durationInYears?: number;
+    hodId?: string;
 }
