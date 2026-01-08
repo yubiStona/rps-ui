@@ -444,7 +444,7 @@ const SubjectManagement: React.FC = () => {
                           <td colSpan={6} className="text-center py-4">
                             <div className="text-muted">
                               <i className="fas fa-inbox fa-2x mb-2"></i>
-                              <p>No programs found</p>
+                              <p>No subjects found</p>
                               {searchTerm && (
                                 <Button
                                   variant="outline-primary"
