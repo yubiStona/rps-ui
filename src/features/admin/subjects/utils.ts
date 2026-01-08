@@ -1,0 +1,54 @@
+export interface ProgramListParams {
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+export interface HOD {
+  id: number;
+  name: string;
+  email: string;
+}
+export interface Faculty {
+  name: string;
+}
+
+export interface Program {
+  id: number;
+  name: string;
+  code: string;
+}
+
+export interface SubjectListParams {
+  search?: string;
+  page?: number;
+  limit?: number;
+}
+
+export interface SubjectListResponse {
+  success: boolean;
+  message: string;
+  data: Subject[];
+  total: number;
+  page: number;
+  limit: number;
+  lastPage: number;
+}
+
+export interface Teacher {
+  id: number;
+  firstName: string;
+  lastName: string;
+  email: string;
+}
+//subject interface
+export interface Subject {
+  id: number;
+  name: string;
+  code: string;
+  credits: number;
+  semester: number;
+  type: string;
+  teacher: Teacher;
+  program: Program;
+  createdAt: string;
+}

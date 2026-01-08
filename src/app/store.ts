@@ -8,6 +8,7 @@ import { adminStudentApi } from "../features/admin/students/studentApi";
 import { adminTeacherApi } from "../features/admin/teacher/teacherApi";
 import { programApi } from "../features/admin/programs/programApi";
 import { facultyApi } from "../features/admin/faculty/facultyApi";
+import { subjectAPi } from "../features/admin/subjects/subjectApi";
 
 const persistConfig = {
   key: 'root',
@@ -24,6 +25,7 @@ export const store = configureStore({
         [adminTeacherApi.reducerPath]:adminTeacherApi.reducer,
         [programApi.reducerPath]:programApi.reducer,
         [facultyApi.reducerPath]:facultyApi.reducer,
+        [subjectAPi.reducerPath]:subjectAPi.reducer,
 
     },
     middleware:(getDefaultMiddleware) =>
@@ -33,7 +35,8 @@ export const store = configureStore({
           adminStudentApi.middleware, 
           adminTeacherApi.middleware,
           programApi.middleware,
-          facultyApi.middleware
+          facultyApi.middleware,
+          subjectAPi.middleware
         )
 })
 

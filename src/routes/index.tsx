@@ -12,6 +12,7 @@ import DashboardLayout from "../layouts/DashboardLayout";
 import TeacherDashboard from "../pages/teacher/Dashboard";
 import ProgramManagement from "../pages/admin/Program management/Programs";
 import FacultyManagement from "../pages/admin/Faculty/FacultyManagement";
+import SubjectManagement from "../pages/admin/SubjectManagement/Subject";
 const AppRouter = () => {
   const { user } = useAppSelector((state) => state.auth);
 
@@ -97,6 +98,16 @@ const AppRouter = () => {
             <ProtectedRoute requiredRole="admin">
               <DashboardLayout>
                 <FacultyManagement /> 
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+          <Route 
+          path="/admin/subjects"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout>
+                <SubjectManagement /> 
               </DashboardLayout>
             </ProtectedRoute>
           }

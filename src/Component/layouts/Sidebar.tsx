@@ -11,6 +11,8 @@ import {
   FaUsers,
   FaChalkboardTeacher,
   FaClipboardList,
+  FaBuilding,
+  FaBook,
 } from "react-icons/fa";
 import "./Sidebar.css";
 
@@ -48,9 +50,19 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
             icon: <FaChalkboardTeacher />,
             path: "/admin/teachers",
           },
-          { id: 4, label: "Faculties", icon: <FaChartBar />, path: "/admin/Faculties" },
-          { id: 5, label: "Programs", icon: <FaBookOpen />, path: "/admin/programs" },
-          { id: 6, label: "Results", icon: <FaChartBar />, path: "/results" },
+          {
+            id: 4,
+            label: "Faculties",
+            icon: <FaBuilding />,
+            path: "/admin/Faculties",
+          },
+          {
+            id: 5,
+            label: "Programs",
+            icon: <FaBookOpen />,
+            path: "/admin/programs",
+          },
+          { id: 6, label: "Subjects", icon: <FaBook />, path: "/admin/subjects" },
           {
             id: 7,
             label: "Schedule",
