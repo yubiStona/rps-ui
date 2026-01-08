@@ -8,6 +8,7 @@ import Stack from "@mui/material/Stack";
 import { toast } from "react-toastify";
 import { useGetProgramsQuery } from "../../../features/admin/students/studentApi";
 import { useGetSubjectsQuery } from "../../../features/admin/subjects/subjectApi";
+import SubjectFormModal from "./partials/SubjectFormModal";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -136,9 +137,9 @@ const SubjectManagement: React.FC = () => {
   //     }
   //   };
 
-  //   const handleCloseFormModal = () => {
-  //     setShowFormModal(false);
-  //   };
+    const handleCloseFormModal = () => {
+      setShowFormModal(false);
+    };
 
   //   const handleCloseDeleteModal = () => {
   //     setShowDeleteModal(false);
@@ -357,7 +358,7 @@ const SubjectManagement: React.FC = () => {
                               <td>
                                 <div className="d-flex align-items-center">
                                   <div className="avatar-sm bg-light rounded-circle d-flex align-items-center justify-content-center me-2">
-                                    <i className="fas fa-graduation-cap text-primary"></i>
+                                    <i className="fas fa-book text-primary"></i>
                                   </div>
                                   <div className="fw-semibold">
                                     {item.code}
@@ -470,11 +471,12 @@ const SubjectManagement: React.FC = () => {
       </div>
 
       {/* Form Modal */}
-      {/* <ProgramFormModal
+      {/* <SubjectFormModal
         show={showFormModal}
         onHide={handleCloseFormModal}
         onSubmit={onSubmit}
-        isLoading={isAddingProgram}
+        isLoading={isAddingProgram}}
+        
       /> */}
 
       {/* Edit Modal */}

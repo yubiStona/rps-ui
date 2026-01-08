@@ -1,0 +1,244 @@
+import React from 'react';
+import { Modal, Button, Row, Col, Form, InputGroup } from 'react-bootstrap';
+import { useForm } from 'react-hook-form';
+
+export interface SubjectFormData {
+  name: string;
+  code: string;
+  credits: number;
+  semester: number;
+  type: 'theory' | 'practical' | 'hybrid';
+  programId: number;
+  teacherId: number;
+}
+
+interface SubjectFormModalProps {
+  show: boolean;
+  onHide: () => void;
+  onSubmit: (data: SubjectFormData) => void;
+  isLoading: boolean;
+  programs: { id: number; name: string; code: string }[];
+  teachers: { id: number; firstName: string; lastName: string }[];
+}
+
+const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
+  show,
+  onHide,
+  onSubmit,
+  isLoading,
+  programs,
+  teachers,
+}) => {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<SubjectFormData>({
+    defaultValues: {
+      name: '',
+      code: '',
+      credits: 0,
+      semester: 1,
+      type: 'theory',
+      programId: 0,
+      teacherId: 0,
+    },
+  });
+
+  const handleFormSubmit = (data: SubjectFormData) => {
+    onSubmit(data);
+  };
+
+  React.useEffect(() => {
+    if (show) {
+      reset({
+        name: '',
+        code: '',
+        credits: 0,
+        semester: 1,
+        type: 'theory',
+        programId: 0,
+        teacherId: 0,
+      });
+    }
+  }, [show, reset]);
+
+  return (
+    <Modal show={show} onHide={onHide} size="lg" centered>
+      <Modal.Header closeButton className="border-bottom-0">
+        <Modal.Title className="fw-bold w-100">
+          <div className="d-flex align-items-center gap-3 mb-2">
+            <div
+              className="bg-primary rounded-circle p-2 d-flex align-items-center justify-content-center"
+              style={{ width: '44px', height: '44px' }}
+            >
+              <i className="fas fa-book text-white fs-5"></i>
+            </div>
+            <div>
+              <h5 className="mb-0">Add New Subject</h5>
+              <small className="text-muted">
+                Fill in the details to add a new subject
+              </small>
+            </div>
+          </div>
+        </Modal.Title>
+      </Modal.Header>
+
+      <Form onSubmit={handleSubmit(handleFormSubmit)}>
+        <Modal.Body>
+          {/* Subject Information */}
+          <div className="mb-4">
+            <div className="d-flex align-items-center mb-3">
+              <div className="bg-light rounded-circle p-2 me-3">
+                <i className="fas fa-book text-primary"></i>
+              </div>
+              <h6 className="fw-bold mb-0">Subject Information</h6>
+            </div>
+
+            <Row className="g-4">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">
+                    Subject Name <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    {...register('name')}
+                    isInvalid={!!errors.name}
+                    placeholder="Mathematical Foundation"
+                    className="py-2"
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">
+                    Subject Code <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    {...register('code')}
+                    isInvalid={!!errors.code}
+                    placeholder="MFCS"
+                    className="py-2"
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">
+                    Credits <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="number"
+                    {...register('credits', { valueAsNumber: true })}
+                    className="py-2"
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">
+                    Semester <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Control
+                    type="number"
+                    {...register('semester', { valueAsNumber: true })}
+                    className="py-2"
+                  />
+                </Form.Group>
+              </Col>
+
+              <Col md={4}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">
+                    Type <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select {...register('type')} className="py-2">
+                    <option value="theory">Theory</option>
+                    <option value="practical">Practical</option>
+                    <option value="hybrid">Hybrid</option>
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+          </div>
+
+          {/* Assignment Section */}
+          <div className="mb-3">
+            <div className="d-flex align-items-center mb-3">
+              <div className="bg-light rounded-circle p-2 me-3">
+                <i className="fas fa-link text-primary"></i>
+              </div>
+              <h6 className="fw-bold mb-0">Assignment</h6>
+            </div>
+
+            <Row className="g-4">
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">
+                    Program <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select
+                    {...register('programId', { valueAsNumber: true })}
+                    className="py-2"
+                  >
+                    <option value={0}>Select Program</option>
+                    {programs.map(program => (
+                      <option key={program.id} value={program.id}>
+                        {program.name} ({program.code})
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+
+              <Col md={6}>
+                <Form.Group>
+                  <Form.Label className="fw-semibold">
+                    Teacher <span className="text-danger">*</span>
+                  </Form.Label>
+                  <Form.Select
+                    {...register('teacherId', { valueAsNumber: true })}
+                    className="py-2"
+                  >
+                    <option value={0}>Select Teacher</option>
+                    {teachers.map(teacher => (
+                      <option key={teacher.id} value={teacher.id}>
+                        {teacher.firstName} {teacher.lastName}
+                      </option>
+                    ))}
+                  </Form.Select>
+                </Form.Group>
+              </Col>
+            </Row>
+          </div>
+        </Modal.Body>
+
+        <Modal.Footer className="border-top-0">
+          <Button variant="outline-secondary" onClick={onHide} className="px-4">
+            <i className="fas fa-times me-2"></i>
+            Cancel
+          </Button>
+          <Button variant="primary" type="submit" disabled={isLoading} className="px-4">
+            {isLoading ? (
+              <>
+                <span className="spinner-border spinner-border-sm me-2" />
+                Creating...
+              </>
+            ) : (
+              <>
+                <i className="fas fa-plus me-2"></i>
+                Add Subject
+              </>
+            )}
+          </Button>
+        </Modal.Footer>
+      </Form>
+    </Modal>
+  );
+};
+
+export default SubjectFormModal;

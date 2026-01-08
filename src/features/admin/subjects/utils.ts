@@ -1,17 +1,3 @@
-export interface ProgramListParams {
-  search?: string;
-  page?: number;
-  limit?: number;
-}
-export interface HOD {
-  id: number;
-  name: string;
-  email: string;
-}
-export interface Faculty {
-  name: string;
-}
-
 export interface Program {
   id: number;
   name: string;
@@ -51,4 +37,16 @@ export interface Subject {
   teacher: Teacher;
   program: Program;
   createdAt: string;
+}
+
+export interface TeacherList {
+  id: number;
+  name: string;
+}
+
+export interface TeacherListDropdown {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: TeacherList[];
 }

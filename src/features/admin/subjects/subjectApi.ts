@@ -1,7 +1,7 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../api/apislice";
 import { SubjectsEndpoints } from "./endpoints";
-import { SubjectListResponse, ProgramListParams, SubjectListParams } from "./utils";
+import { SubjectListResponse, SubjectListParams } from "./utils";
 
 export const subjectAPi = createApi({
   reducerPath: "subjectAPi",
