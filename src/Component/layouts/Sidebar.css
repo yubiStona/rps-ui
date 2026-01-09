@@ -48,6 +48,12 @@
   background: inherit;
   position: relative;
   z-index: 2;
+  transition: all 0.3s ease;
+}
+
+.sidebar.closed .logo-container {
+  padding: 20px 10px;
+  justify-content: center;
 }
 
 .logo {
@@ -63,6 +69,10 @@
   font-weight: bold;
   margin-right: 12px;
   flex-shrink: 0;
+}
+
+.sidebar.closed .logo {
+  margin-right: 0;
 }
 
 .logo-text {
