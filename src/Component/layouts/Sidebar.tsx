@@ -13,6 +13,7 @@ import {
   FaClipboardList,
   FaBuilding,
   FaBook,
+  FaGraduationCap,
 } from "react-icons/fa";
 import "./Sidebar.css";
 
@@ -180,7 +181,9 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
     <>
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <div className="logo-container">
-          <div className="logo">RPS</div>
+          <div className="logo">
+            <FaGraduationCap size={24} />
+          </div>
           <div className="logo-text">Result Portal</div>
         </div>
 
