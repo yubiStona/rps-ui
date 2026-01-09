@@ -370,7 +370,6 @@ const FacultyManagement: React.FC = () => {
                                     size="sm"
                                     onClick={() => handleDeleteClick(item)}
                                     title="Delete"
-                                    disabled={item.program?.length > 0}
                                   >
                                     <i className="fas fa-trash"></i>
                                   </Button>
