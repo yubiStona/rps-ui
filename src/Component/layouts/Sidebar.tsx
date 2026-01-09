@@ -13,7 +13,6 @@ import {
   FaClipboardList,
   FaBuilding,
   FaBook,
-  FaGraduationCap,
 } from "react-icons/fa";
 import "./Sidebar.css";
 
@@ -181,10 +180,8 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
     <>
       <div className={`sidebar ${isOpen ? "open" : "closed"}`}>
         <div className="logo-container">
-          <div className="logo">
-            <FaGraduationCap size={24} />
-          </div>
-          <div className="logo-text">Result Processing System</div>
+          <div className="logo">RPS</div>
+          <div className="logo-text">Result Portal</div>
         </div>
 
         {/* Scrollable Menu Container */}
@@ -214,7 +211,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
 
         {/* Optional Sidebar Footer */}
         <div className="sidebar-footer">
-          <div className="text-center small text-muted">
+          <div className="text-center small text-white-50">
             {role === "admin"
               ? "Admin Portal"
               : role === "teacher"
