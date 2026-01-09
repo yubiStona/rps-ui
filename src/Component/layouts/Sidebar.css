@@ -17,15 +17,14 @@
   top: 0;
   left: 0;
   height: 100vh;
-  background: #ffffff;
-  color: #344767;
+  background: linear-gradient(180deg, var(--primary-color), var(--secondary-color));
+  color: white;
   transition: all 0.3s ease;
   z-index: 1030;
-  box-shadow: 0 4px 12px 0 rgba(0, 0, 0, 0.07);
+  box-shadow: 3px 0 10px rgba(0, 0, 0, 0.1);
   display: flex;
   flex-direction: column;
   overflow: hidden;
-  border-right: 1px solid rgba(0, 0, 0, 0.05);
 }
 
 /* Sidebar States */
@@ -43,22 +42,16 @@
   align-items: center;
   padding: 20px;
   margin-bottom: 20px;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
   min-height: 80px;
   flex-shrink: 0;
   background: inherit;
   position: relative;
   z-index: 2;
-  transition: all 0.3s ease;
-}
-
-.sidebar.closed .logo-container {
-  padding: 20px 10px; /* Reduced side padding for centered alignment in 70px width */
-  justify-content: center;
 }
 
 .logo {
-  background-color: #e3f2fd; /* Light blue to match active items */
+  background-color: white;
   color: var(--primary-color);
   width: 50px;
   height: 40px;
@@ -70,22 +63,15 @@
   font-weight: bold;
   margin-right: 12px;
   flex-shrink: 0;
-  box-shadow: none; /* Removed shadow for flatter look or kept minimal */
-  border: 1px solid rgba(0, 0, 0, 0.05);
 }
-
-.sidebar.closed .logo {
-  margin-right: 0; /* Remove margin when closed to ensuring centering */
-}
-
 
 .logo-text {
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
   white-space: nowrap;
   overflow: hidden;
   transition: opacity 0.3s ease;
-  color: #344767;
+  color: white;
 }
 
 .sidebar.closed .logo-text {
@@ -120,29 +106,27 @@
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  color: #67748e;
+  color: white;
   text-decoration: none;
   transition: all 0.3s ease;
   border-left: 4px solid transparent;
-  margin: 0 10px 4px 10px;
-  border-radius: 8px;
+  margin-bottom: 4px;
+  border-radius: 6px;
   position: relative;
   white-space: nowrap;
   flex-shrink: 0;
-  font-weight: 500;
 }
 
 .nav-link-custom:hover {
-  background-color: #f0f7ff;
-  color: #344767;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
   transform: translateX(2px);
 }
 
 .nav-link-custom.active {
-  background-color: #e3f2fd;
-  color: var(--primary-color);
-  border-left: 4px solid var(--primary-color);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+  background-color: rgba(255, 255, 255, 0.15);
+  color: white;
+  border-left: 4px solid var(--accent-color);
 }
 
 .nav-icon {
@@ -151,7 +135,7 @@
   text-align: center;
   flex-shrink: 0;
   transition: margin 0.3s ease;
-  color: inherit;
+  color: white;
 }
 
 .sidebar.open .nav-icon {
@@ -171,7 +155,7 @@
   transition: opacity 0.3s ease, transform 0.3s ease;
   flex: 1;
   min-width: 0;
-  color: inherit;
+  color: white;
 }
 
 .sidebar.closed .nav-label {
@@ -210,8 +194,8 @@
 /* Sidebar Footer */
 .sidebar-footer {
   padding: 15px 20px;
-  border-top: 1px solid rgba(0, 0, 0, 0.05);
-  background: rgba(248, 249, 250, 0.5);
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(0, 0, 0, 0.1);
   margin-top: auto;
   flex-shrink: 0;
   position: relative;
@@ -224,23 +208,23 @@
 }
 
 .nav-menu::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.05);
   border-radius: 3px;
 }
 
 .nav-menu::-webkit-scrollbar-thumb {
-  background: #e2e5e9;
+  background: rgba(255, 255, 255, 0.2);
   border-radius: 3px;
 }
 
 .nav-menu::-webkit-scrollbar-thumb:hover {
-  background: #d0d4d9;
+  background: rgba(255, 255, 255, 0.3);
 }
 
 /* For Firefox */
 .nav-menu {
   scrollbar-width: thin;
-  scrollbar-color: #e2e5e9 transparent;
+  scrollbar-color: rgba(255, 255, 255, 0.2) rgba(255, 255, 255, 0.05);
 }
 
 /* Main Content Area - For Dashboard */
