@@ -7,7 +7,9 @@ import {
   ProgramListApiResponse,
   StudentDetailApiResponse,
   FacultyListApiResponse,
+  TeacherList
 } from "./utils";
+import { url } from "inspector";
 
 export const adminStudentApi = createApi({
   reducerPath: "adminStudentApi",
@@ -103,6 +105,12 @@ export const adminStudentApi = createApi({
       }),
       providesTags: (result, error, id) => [{ type: "Students", id }],
     }),
+    getTeacherList:builder.query<TeacherList,void>({
+      query:()=>({
+        url:AdminStudentEndpoints.TEACHER_LIST,
+        method:"GET"
+      })
+    })
   }),
 });
 
@@ -113,5 +121,6 @@ export const {
   useAddStudentMutation,
   useGetStudentByIdQuery,
   useEditStudentMutation,
-  useGetFacultiesQuery
+  useGetFacultiesQuery,
+  useGetTeacherListQuery
 } = adminStudentApi;

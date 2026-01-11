@@ -6,9 +6,10 @@ import Stack from "@mui/material/Stack";
 // import ProgramFormModal from "./Partials/ProgramFormModal";
 // import ProgramEditModal from "./Partials/ProgramEditModal";
 import { toast } from "react-toastify";
-import { useGetProgramsQuery } from "../../../features/admin/students/studentApi";
-import { useGetSubjectsQuery } from "../../../features/admin/subjects/subjectApi";
+import { useGetProgramsQuery, useGetTeacherListQuery } from "../../../features/admin/students/studentApi";
+import { useGetSubjectsQuery, useAddSubjectMutation } from "../../../features/admin/subjects/subjectApi";
 import SubjectFormModal from "./partials/SubjectFormModal";
+import { SubjectFormData } from "./partials/SubjectFormModal";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -58,6 +59,8 @@ const SubjectManagement: React.FC = () => {
 
   const { data: programData, isLoading: isProgramLoading } =
     useGetProgramsQuery();
+  const {data:TeachersData, isLoading:isTeachersLoading} = useGetTeacherListQuery();
+  const [addSubject,{isLoading:isAddingStudent}] = useAddSubjectMutation();
 
   // Calculate pagination
   let startIndex = 0;
@@ -79,18 +82,18 @@ const SubjectManagement: React.FC = () => {
     setCurrentPage(1);
   }, [searchTerm, programFilter, semesterFilter, itemsPerPage]);
 
-  //   const onSubmit = async (data: ProgramFormData) => {
-  //     if (!data) return;
-  //     try {
-  //       const response = await addProgram(data).unwrap();
-  //       if (response.success) {
-  //         toast.success(response.message);
-  //         setShowFormModal(false);
-  //       }
-  //     } catch (error: any) {
-  //       toast.error(error?.data?.message);
-  //     }
-  //   };
+    const onSubmit = async (data: SubjectFormData) => {
+      if (!data) return;
+      try {
+        const response = await addSubject(data).unwrap();
+        if (response.success) {
+          toast.success(response.message);
+          setShowFormModal(false);
+        }
+      } catch (error: any) {
+        toast.error(error?.data?.message);
+      }
+    };
 
   const handleEdit = () => {
     // setEditingProgramId(program.id);
@@ -471,13 +474,14 @@ const SubjectManagement: React.FC = () => {
       </div>
 
       {/* Form Modal */}
-      {/* <SubjectFormModal
+      <SubjectFormModal
         show={showFormModal}
         onHide={handleCloseFormModal}
         onSubmit={onSubmit}
-        isLoading={isAddingProgram}}
-        
-      /> */}
+        isLoading={isAddingStudent}
+        programs={programData?.data || []}
+        teachers={TeachersData?.data || []}
+      />
 
       {/* Edit Modal */}
       {/* <ProgramEditModal

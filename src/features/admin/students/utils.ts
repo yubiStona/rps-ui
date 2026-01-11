@@ -72,3 +72,15 @@ export interface StudentDetailApiResponse {
   message: string;
   data: Student[];
 }
+
+export interface Teacher{
+  id:number;
+  name:string;
+}
+
+export interface TeacherList{
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data:Teacher[];
+}

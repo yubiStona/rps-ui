@@ -5,6 +5,7 @@ import { SubjectListResponse, SubjectListParams } from "./utils";
 
 export const subjectAPi = createApi({
   reducerPath: "subjectAPi",
+  tagTypes:["Subject"],
   baseQuery,
   endpoints: (builder) => ({
     getSubjects: builder.query<SubjectListResponse, SubjectListParams>({
@@ -13,8 +14,17 @@ export const subjectAPi = createApi({
         method: "GET",
         params,
       }),
+      providesTags:["Subject"]
+    }),
+    addSubject: builder.mutation({
+      query: (data) => ({
+        url:  SubjectsEndpoints.SUBJECT_ACTION,
+        method: "POST",
+        body: data,
+      }),
+      invalidatesTags: (result) => (result?.success ? ["Subject"] : []),
     }),
   }),
 });
 
-export const { useGetSubjectsQuery } = subjectAPi;
+export const { useGetSubjectsQuery, useAddSubjectMutation } = subjectAPi;

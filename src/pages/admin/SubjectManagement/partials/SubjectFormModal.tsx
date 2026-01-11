@@ -1,6 +1,8 @@
 import React from 'react';
 import { Modal, Button, Row, Col, Form, InputGroup } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
+import { ProgramList } from '../../../../features/admin/students/utils';
+import { Teacher } from '../../../../features/admin/students/utils';
 
 export interface SubjectFormData {
   name: string;
@@ -17,8 +19,8 @@ interface SubjectFormModalProps {
   onHide: () => void;
   onSubmit: (data: SubjectFormData) => void;
   isLoading: boolean;
-  programs: { id: number; name: string; code: string }[];
-  teachers: { id: number; firstName: string; lastName: string }[];
+  programs: ProgramList[];
+  teachers: Teacher[];
 }
 
 const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
@@ -105,7 +107,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
                   <Form.Control
                     {...register('name')}
                     isInvalid={!!errors.name}
-                    placeholder="Mathematical Foundation"
+                    placeholder="Subject"
                     className="py-2"
                   />
                 </Form.Group>
@@ -119,7 +121,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
                   <Form.Control
                     {...register('code')}
                     isInvalid={!!errors.code}
-                    placeholder="MFCS"
+                    placeholder="SUB 123"
                     className="py-2"
                   />
                 </Form.Group>
@@ -188,7 +190,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
                     <option value={0}>Select Program</option>
                     {programs.map(program => (
                       <option key={program.id} value={program.id}>
-                        {program.name} ({program.code})
+                        ({program.code})
                       </option>
                     ))}
                   </Form.Select>
@@ -207,7 +209,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
                     <option value={0}>Select Teacher</option>
                     {teachers.map(teacher => (
                       <option key={teacher.id} value={teacher.id}>
-                        {teacher.firstName} {teacher.lastName}
+                        {teacher.name}
                       </option>
                     ))}
                   </Form.Select>
