@@ -34,7 +34,7 @@ export interface Subject {
   credits: number;
   semester: number;
   type: string;
-  teacher: Teacher;
+  subjectTeacher: Teacher | null;
   program: Program;
   createdAt: string;
 }

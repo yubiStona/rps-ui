@@ -200,7 +200,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
               <Col md={6}>
                 <Form.Group>
                   <Form.Label className="fw-semibold">
-                    Teacher <span className="text-danger">*</span>
+                    Teacher <span className="text-muted">(Optional)</span>
                   </Form.Label>
                   <Form.Select
                     {...register('teacherId', { valueAsNumber: true })}

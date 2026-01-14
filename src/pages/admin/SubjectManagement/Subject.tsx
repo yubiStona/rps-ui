@@ -6,8 +6,14 @@ import Stack from "@mui/material/Stack";
 // import ProgramFormModal from "./Partials/ProgramFormModal";
 // import ProgramEditModal from "./Partials/ProgramEditModal";
 import { toast } from "react-toastify";
-import { useGetProgramsQuery, useGetTeacherListQuery } from "../../../features/admin/students/studentApi";
-import { useGetSubjectsQuery, useAddSubjectMutation } from "../../../features/admin/subjects/subjectApi";
+import {
+  useGetProgramsQuery,
+  useGetTeacherListQuery,
+} from "../../../features/admin/students/studentApi";
+import {
+  useGetSubjectsQuery,
+  useAddSubjectMutation,
+} from "../../../features/admin/subjects/subjectApi";
 import SubjectFormModal from "./partials/SubjectFormModal";
 import { SubjectFormData } from "./partials/SubjectFormModal";
 
@@ -59,8 +65,9 @@ const SubjectManagement: React.FC = () => {
 
   const { data: programData, isLoading: isProgramLoading } =
     useGetProgramsQuery();
-  const {data:TeachersData, isLoading:isTeachersLoading} = useGetTeacherListQuery();
-  const [addSubject,{isLoading:isAddingStudent}] = useAddSubjectMutation();
+  const { data: TeachersData, isLoading: isTeachersLoading } =
+    useGetTeacherListQuery();
+  const [addSubject, { isLoading: isAddingStudent }] = useAddSubjectMutation();
 
   // Calculate pagination
   let startIndex = 0;
@@ -82,18 +89,18 @@ const SubjectManagement: React.FC = () => {
     setCurrentPage(1);
   }, [searchTerm, programFilter, semesterFilter, itemsPerPage]);
 
-    const onSubmit = async (data: SubjectFormData) => {
-      if (!data) return;
-      try {
-        const response = await addSubject(data).unwrap();
-        if (response.success) {
-          toast.success(response.message);
-          setShowFormModal(false);
-        }
-      } catch (error: any) {
-        toast.error(error?.data?.message);
+  const onSubmit = async (data: SubjectFormData) => {
+    if (!data) return;
+    try {
+      const response = await addSubject(data).unwrap();
+      if (response.success) {
+        toast.success(response.message);
+        setShowFormModal(false);
       }
-    };
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
+  };
 
   const handleEdit = () => {
     // setEditingProgramId(program.id);
@@ -140,9 +147,9 @@ const SubjectManagement: React.FC = () => {
   //     }
   //   };
 
-    const handleCloseFormModal = () => {
-      setShowFormModal(false);
-    };
+  const handleCloseFormModal = () => {
+    setShowFormModal(false);
+  };
 
   //   const handleCloseDeleteModal = () => {
   //     setShowDeleteModal(false);
@@ -383,21 +390,30 @@ const SubjectManagement: React.FC = () => {
                                 </div>
                               </td>
                               <td>
-                                <div className="fw-semibold">
-                                  {item?.teacher?.firstName +
-                                    " " +
-                                    item?.teacher?.lastName}
-                                </div>
-                                <div>
-                                  <a
-                                    href={`mailto:${item?.teacher?.email}`}
-                                    className="text-decoration-none d-block"
-                                  >
-                                    <i className="fas fa-envelope me-1"></i>
-                                    {item?.teacher?.email}
-                                  </a>
-                                </div>
+                                {item?.subjectTeacher ? (
+                                  <>
+                                    <div className="fw-semibold">
+                                      {item.subjectTeacher.firstName +
+                                        " " +
+                                        item.subjectTeacher.lastName}
+                                    </div>
+                                    <div>
+                                      <a
+                                        href={`mailto:${item.subjectTeacher.email}`}
+                                        className="text-decoration-none d-block"
+                                      >
+                                        <i className="fas fa-envelope me-1"></i>
+                                        {item.subjectTeacher.email}
+                                      </a>
+                                    </div>
+                                  </>
+                                ) : (
+                                  <span className="badge bg-danger">
+                                    Not Assigned
+                                  </span>
+                                )}
                               </td>
+
                               <td>
                                 <div>
                                   <small className="d-block mt-1">
@@ -408,18 +424,8 @@ const SubjectManagement: React.FC = () => {
                                       Credits: {item.credits}
                                     </Badge>
                                   </div>
-                                  <div className="d-flex align-items-center gap-2 mt-1">
-                                    <small className="d-block mt-1">
-                                      {/* Duration: {item.durationInYears} years */}
-                                    </small>
-                                  </div>
                                 </div>
                               </td>
-                              {/* <td>
-                                <div className="fw-semibold">
-                                  {item?.faculty?.name}
-                                </div>
-                              </td> */}
                               <td>
                                 <div className="d-flex gap-2">
                                   <Button
