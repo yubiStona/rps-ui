@@ -111,7 +111,10 @@ const SubjectManagement: React.FC = () => {
         subjectId:selectedSubject?.id,
         parameters:parameters
       }
-      const response = await assignParams(payload).unwrap();
+      const response = await toast.promise(assignParams(payload).unwrap(), {
+      loading: "Saving...",
+        error: "Could not save.",
+      });
       if(response.success){
         toast.success(response.message || "Evaluation parameters saved successfully!");
         handleCloseEvaluationModal();
