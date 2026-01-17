@@ -18,6 +18,7 @@ import { Student } from "../../../features/admin/students/utils";
 import toast from "react-hot-toast";
 import { StudentForm } from "../../../features/admin/students/utils";
 import { FaUserGraduate } from "react-icons/fa";
+import { EditStudentFormData } from "./validations/editStudentSchema";
 
 // interface StudentForm {
 //   firstName: string;
@@ -133,7 +134,7 @@ const StudentManagement: React.FC = () => {
     setViewingStudentId(null);
   };
 
-  const handleEditConfirm = async (data: StudentForm) =>{
+  const handleEditConfirm = async (data: EditStudentFormData) =>{
     if(!data) return;
     try{
       const response = await editStudent({data,id:viewingStudentId}).unwrap();

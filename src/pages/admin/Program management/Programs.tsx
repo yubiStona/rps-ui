@@ -117,7 +117,7 @@ const handleUpdateProgram = async (data: Partial<ProgramFormData>) => {
     );
 
     if (Object.keys(filteredData).length === 0) {
-      toast.warning('Please fill at least one field to update');
+      toast.error('Please fill at least one field to update');
       return;
     }
 
