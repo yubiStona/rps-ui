@@ -8,7 +8,7 @@ import {
   useDeleteProgramMutation,
   useEditProgramMutation 
 } from "../../../features/admin/programs/programApi";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import { useGetFacultiesQuery } from "../../../features/admin/students/studentApi";
 import { ProgramFormData } from "../../../features/admin/programs/utils";
 import ProgramFormModal from "./Partials/ProgramFormModal";

@@ -50,3 +50,30 @@ export interface TeacherListDropdown {
   message: string;
   data: TeacherList[];
 }
+
+export interface EvalParams{
+  weight:number;
+  id:number;
+  code:string;
+  name:string;
+  assigned:number;
+}
+
+export interface EvaluationParamterResponse {
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: EvalParams[]
+}
+
+export interface Params{
+  name?:string
+  code?:string;
+  type?:string;
+}
+
+export interface EvaluationParamterParams{
+  search?:string;
+  subjectId?:number;
+  type?:string | null;
+}

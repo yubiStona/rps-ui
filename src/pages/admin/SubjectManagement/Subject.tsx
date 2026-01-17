@@ -1,11 +1,11 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Row, Col, Card, Button, Table, Form, Badge } from "react-bootstrap";
+import { Row, Col, Card, Button, Table, Form, Badge, Dropdown } from "react-bootstrap";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 // import DeleteConfirmationModal from "./Partials/DeleteConfirmationModal";
 // import ProgramFormModal from "./Partials/ProgramFormModal";
 // import ProgramEditModal from "./Partials/ProgramEditModal";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import {
   useGetProgramsQuery,
   useGetTeacherListQuery,
@@ -13,9 +13,12 @@ import {
 import {
   useGetSubjectsQuery,
   useAddSubjectMutation,
+  useAssignParametersMutation
 } from "../../../features/admin/subjects/subjectApi";
 import SubjectFormModal from "./partials/SubjectFormModal";
 import { SubjectFormData } from "./partials/SubjectFormModal";
+import EvaluationParameterModal from "./partials/EvaluationParameterModal";
+import {params} from "./partials/EvaluationParameterModal";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -25,6 +28,8 @@ const SubjectManagement: React.FC = () => {
   const [showEditModal, setShowEditModal] = useState(false);
   // const [deletingProgram, setDeletingProgram] = useState<Program | null>(null);
   const [editingProgramId, setEditingProgramId] = useState<number | null>(null);
+  const [showEvaluationModal, setShowEvaluationModal] = useState(false);
+  const [selectedSubject, setSelectedSubject] = useState<{id: number, name: string} | null>(null); 
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
@@ -68,6 +73,7 @@ const SubjectManagement: React.FC = () => {
   const { data: TeachersData, isLoading: isTeachersLoading } =
     useGetTeacherListQuery();
   const [addSubject, { isLoading: isAddingStudent }] = useAddSubjectMutation();
+  const [assignParams,{isLoading:isAssigning}] = useAssignParametersMutation();
 
   // Calculate pagination
   let startIndex = 0;
@@ -88,6 +94,32 @@ const SubjectManagement: React.FC = () => {
   useEffect(() => {
     setCurrentPage(1);
   }, [searchTerm, programFilter, semesterFilter, itemsPerPage]);
+
+  const handleOpenEvaluationModal = (subjectId: number, subjectName: string) => {
+    setSelectedSubject({ id: subjectId, name: subjectName });
+    setShowEvaluationModal(true);
+  };
+
+  const handleCloseEvaluationModal = () => {
+    setShowEvaluationModal(false);
+    setSelectedSubject(null);
+  };
+
+  const handleSaveEvaluationParameters = async (parameters:params[]) => {
+    try {
+      const payload={
+        subjectId:selectedSubject?.id,
+        parameters:parameters
+      }
+      const response = await assignParams(payload).unwrap();
+      if(response.success){
+        toast.success(response.message || "Evaluation parameters saved successfully!");
+        handleCloseEvaluationModal();
+      }
+    } catch (error:any) {
+      toast.error(error?.data?.message||"Failed to save evaluation parameters");
+    }
+  };
 
   const onSubmit = async (data: SubjectFormData) => {
     if (!data) return;
@@ -428,19 +460,35 @@ const SubjectManagement: React.FC = () => {
                               </td>
                               <td>
                                 <div className="d-flex gap-2">
+                                  {/* Edit Button */}
                                   <Button
                                     variant="outline-primary"
                                     size="sm"
                                     onClick={() => handleEdit()}
                                     title="Edit"
+                                    className="d-flex align-items-center"
                                   >
                                     <i className="fas fa-edit"></i>
                                   </Button>
+                                  
+                                  {/* Evaluation Parameters Button */}
+                                  <Button
+                                    variant="outline-info"
+                                    size="sm"
+                                    onClick={() => handleOpenEvaluationModal(item.id, item.name)}
+                                    title="Evaluation Parameters"
+                                    className="d-flex align-items-center"
+                                  >
+                                    <i className="fas fa-sliders-h"></i>
+                                  </Button>
+                                  
+                                  {/* Delete Button */}
                                   <Button
                                     variant="outline-danger"
                                     size="sm"
                                     onClick={() => handleDeleteClick()}
                                     title="Delete"
+                                    className="d-flex align-items-center"
                                   >
                                     <i className="fas fa-trash"></i>
                                   </Button>
@@ -478,6 +526,17 @@ const SubjectManagement: React.FC = () => {
           </Card.Body>
         </Card>
       </div>
+
+      {selectedSubject && (
+        <EvaluationParameterModal
+          show={showEvaluationModal}
+          onHide={handleCloseEvaluationModal}
+          subjectId={selectedSubject.id}
+          subjectName={selectedSubject.name}
+          onSave={handleSaveEvaluationParameters}
+          isSaving={isAssigning} 
+        />
+      )}
 
       {/* Form Modal */}
       <SubjectFormModal

@@ -8,7 +8,7 @@ import {
   useEditFacultyMutation,
   useDeleteFacultyMutation 
 } from "../../../features/admin/faculty/facultyApi";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
 import FacultyEditModal from "./partials/FacultyEditModal";
 import FacultyFormModal from "./partials/AddFacultyModal";
 import DeleteConfirmationModal from "./partials/DeleteConfirmationModal"

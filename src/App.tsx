@@ -1,5 +1,6 @@
 import AppRouter from "./routes"
-import { ToastContainer } from "react-toastify"
+import { ToastContainer, Slide } from "react-toastify"
+import { Toaster } from "react-hot-toast"
 function App() {
 
   return (
@@ -7,15 +8,20 @@ function App() {
       <AppRouter />
       <ToastContainer
         position="top-right"
-        autoClose={3000}
+        autoClose={8000}
         hideProgressBar={false}
         newestOnTop={false}
-        closeOnClick
+        closeOnClick={true}
         rtl={false}
         pauseOnFocusLoss
         draggable
         pauseOnHover
         theme="light"
+        transition={Slide}
+      />
+      <Toaster
+        position="top-center"
+        reverseOrder={false}
       />
     </>
   )
