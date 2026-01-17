@@ -84,3 +84,18 @@ export interface TeacherList{
   message: string;
   data:Teacher[];
 }
+
+export interface StudentForm {
+  firstName: string;
+  lastName: string;
+  email: string;
+  phone: string;
+  rollNumber: string;
+  enrollmentDate: string;
+  currentSemester: number;
+  registrationNumber: string;
+  gender: "M" | "F" | "O";
+  DOB: string;
+  address1: string;
+  programId: number;
+}

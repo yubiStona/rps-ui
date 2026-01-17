@@ -1,22 +1,12 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { Modal, Button, Row, Col, Form, InputGroup } from "react-bootstrap";
 import { ProgramList } from "../../../../features/admin/students/utils";
 import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import SearchableDropdown,{DropdownOption} from "../../../../Component/common/SearchableDropdown";
+import { studentSchema } from "../validations/studentSchema";
+import { StudentForm } from "../../../../features/admin/students/utils";
 
-interface StudentForm {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  rollNumber: string;
-  enrollmentDate: string;
-  registrationNumber: string;
-  gender: "M" | "F" | "O";
-  DOB: string;
-  address1: string;
-  address2: string;
-  programId: number;
-}
 
 interface StudentFormModalProps {
   show: boolean;
@@ -37,12 +27,61 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
     register,
     handleSubmit,
     reset,
+    watch,
+    setValue,
+    setError,
+    clearErrors,
     formState: { errors },
-  } = useForm<StudentForm>();
+  } = useForm<StudentForm>({
+    resolver: yupResolver(studentSchema as any),
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      email: "",
+      phone: "",
+      rollNumber: "",
+      enrollmentDate: new Date().toISOString().split("T")[0],
+      currentSemester: 1,
+      registrationNumber: "",
+      gender: "M",
+      DOB: "",
+      address1: "",
+      programId: 0,
+    }
+  });
+
+  const programOptions: DropdownOption<number >[] = [
+    { value: 0, label: "Select Program" },
+    ...programs.map((program) => ({
+      value: program.id,
+      label: `${program.code}`,
+    })),
+  ];
+
+  const semesterOptions: DropdownOption<number>[] = Array.from(
+    { length: 10 },
+    (_, i) => ({
+      value: i + 1,
+      label: `Semester ${i + 1}`,
+    })
+  );
 
   const handleFormSubmit = (data: StudentForm) => {
     onSubmit(data);
   };
+
+  // Additional validation for program selection
+  useEffect(() => {
+    const programId = watch("programId");
+    if (programId === 0 || programId === null) {
+      setError("programId", {
+        type: "manual",
+        message: "Please select a program"
+      });
+    } else {
+      clearErrors("programId");
+    }
+  }, [watch("programId"), setError, clearErrors]);
 
   // Reset form when modal opens
   React.useEffect(() => {
@@ -54,11 +93,11 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
         phone: "",
         rollNumber: "",
         enrollmentDate: new Date().toISOString().split("T")[0],
+        currentSemester: 1,
         registrationNumber: "",
         gender: "M",
         DOB: "",
         address1: "",
-        address2: "",
         programId: 0,
       });
     }
@@ -104,9 +143,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Label>
                   <Form.Control
                     type="text"
-                    {...register("firstName", {
-                      required: "First name is required",
-                    })}
+                    {...register("firstName")}
                     isInvalid={!!errors.firstName}
                     placeholder="Enter first name"
                     className="py-2"
@@ -114,6 +151,9 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   <Form.Control.Feedback type="invalid">
                     {errors.firstName?.message}
                   </Form.Control.Feedback>
+                  <Form.Text className="text-muted">
+                    Letters and spaces only
+                  </Form.Text>
                 </Form.Group>
               </Col>
 
@@ -124,9 +164,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Label>
                   <Form.Control
                     type="text"
-                    {...register("lastName", {
-                      required: "Last name is required",
-                    })}
+                    {...register("lastName")}
                     isInvalid={!!errors.lastName}
                     placeholder="Enter last name"
                     className="py-2"
@@ -134,6 +172,9 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   <Form.Control.Feedback type="invalid">
                     {errors.lastName?.message}
                   </Form.Control.Feedback>
+                  <Form.Text className="text-muted">
+                    Letters only, no spaces
+                  </Form.Text>
                 </Form.Group>
               </Col>
 
@@ -144,13 +185,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Label>
                   <Form.Control
                     type="email"
-                    {...register("email", {
-                      required: "Email is required",
-                      pattern: {
-                        value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
-                        message: "Invalid email address",
-                      },
-                    })}
+                    {...register("email")}
                     isInvalid={!!errors.email}
                     placeholder="student@university.edu"
                     className="py-2"
@@ -172,21 +207,18 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                     </InputGroup.Text>
                     <Form.Control
                       type="tel"
-                      {...register("phone", {
-                        required: "Phone is required",
-                        pattern: {
-                          value: /^[0-9]{10,15}$/,
-                          message: "Invalid phone number",
-                        },
-                      })}
+                      {...register("phone")}
                       isInvalid={!!errors.phone}
-                      placeholder="+1234567890"
+                      placeholder="9876543210"
                       className="py-2"
                     />
                   </InputGroup>
                   <Form.Control.Feedback type="invalid">
                     {errors.phone?.message}
                   </Form.Control.Feedback>
+                  <Form.Text className="text-muted">
+                    10-15 digits only
+                  </Form.Text>
                 </Form.Group>
               </Col>
 
@@ -196,9 +228,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                     Gender <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Select
-                    {...register("gender", {
-                      required: "Gender is required",
-                    })}
+                    {...register("gender")}
                     isInvalid={!!errors.gender}
                     className="py-2"
                   >
@@ -219,11 +249,10 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Label>
                   <Form.Control
                     type="date"
-                    {...register("DOB", {
-                      required: "Date of birth is required",
-                    })}
+                    {...register("DOB")}
                     isInvalid={!!errors.DOB}
                     className="py-2"
+                    max={new Date().toISOString().split("T")[0]}
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.DOB?.message}
@@ -250,9 +279,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Label>
                   <Form.Control
                     type="text"
-                    {...register("rollNumber", {
-                      required: "Roll number is required",
-                    })}
+                    {...register("rollNumber")}
                     isInvalid={!!errors.rollNumber}
                     placeholder="Enter roll number"
                     className="py-2"
@@ -270,9 +297,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Label>
                   <Form.Control
                     type="text"
-                    {...register("registrationNumber", {
-                      required: "Registration number is required",
-                    })}
+                    {...register("registrationNumber")}
                     isInvalid={!!errors.registrationNumber}
                     placeholder="Enter registration number"
                     className="py-2"
@@ -290,43 +315,61 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
                   </Form.Label>
                   <Form.Control
                     type="date"
-                    {...register("enrollmentDate", {
-                      required: "Enrollment date is required",
-                    })}
+                    {...register("enrollmentDate")}
                     isInvalid={!!errors.enrollmentDate}
                     className="py-2"
+                    max={new Date().toISOString().split("T")[0]}
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.enrollmentDate?.message}
                   </Form.Control.Feedback>
+                  <Form.Text className="text-muted">
+                    Cannot be a future date
+                  </Form.Text>
                 </Form.Group>
               </Col>
 
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Program <span className="text-danger">*</span>
+                    Current Semester <span className="text-danger">*</span>
                   </Form.Label>
-                  <Form.Select
-                    {...register("programId", {
-                      required: "Program is required",
-                      valueAsNumber: true,
-                    })}
-                    isInvalid={!!errors.programId}
-                    className="py-2"
-                  >
-                    <option value="">Select Program</option>
-                    {programs.map((program) => (
-                      <option key={program.id} value={program.id}>
-                        {program.code}
-                      </option>
-                    ))}
-                  </Form.Select>
-                  <Form.Control.Feedback type="invalid">
-                    {errors.programId?.message}
-                  </Form.Control.Feedback>
+                  <SearchableDropdown
+                    options={semesterOptions}
+                    value={watch("currentSemester") || 1}
+                    onChange={(value) => setValue("currentSemester", value)}
+                    placeholder="Select Semester"
+                    required
+                    enableSearch={false}
+                    error={errors.currentSemester?.message}
+                    className="mb-3"
+                  />
                 </Form.Group>
               </Col>
+              
+              <Col md={6}>
+                <Form.Group className="mb-3">
+                  <Form.Label className="fw-semibold">
+                    Program <span className="text-danger">*</span>
+                  </Form.Label>
+                  <SearchableDropdown
+                    options={programOptions}
+                    value={watch("programId") || 0}
+                    onChange={(value) => {
+                      setValue("programId", value || 0);
+                      if (value && value !== 0) {
+                        clearErrors("programId");
+                      }
+                    }}
+                    placeholder="Select Program"
+                    required
+                    enableSearch={programs.length > 5} 
+                    searchPlaceholder="Search programs..."
+                    error={errors.programId?.message}
+                    className="mb-3"
+                  />
+                </Form.Group>
+              </Col>              
             </Row>
           </div>
 
@@ -345,9 +388,7 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
               </Form.Label>
               <Form.Control
                 type="text"
-                {...register("address1", {
-                  required: "Address is required",
-                })}
+                {...register("address1")}
                 isInvalid={!!errors.address1}
                 placeholder="Street address, P.O. box, company name"
                 className="py-2"
@@ -355,24 +396,20 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
               <Form.Control.Feedback type="invalid">
                 {errors.address1?.message}
               </Form.Control.Feedback>
+              <Form.Text className="text-muted">
+                Minimum 10 characters required
+              </Form.Text>
             </Form.Group>
-
-            {/* <Form.Group>
-              <Form.Label className="fw-semibold">
-                Address Line 2 (Optional)
-              </Form.Label>
-              <Form.Control
-                type="text"
-                {...register("address2")}
-                placeholder="Apartment, suite, unit, building, floor, etc."
-                className="py-2"
-              />
-            </Form.Group> */}
           </div>
         </Modal.Body>
 
         <Modal.Footer className="border-top-0">
-          <Button variant="outline-secondary" onClick={onHide} className="px-4">
+          <Button 
+            variant="outline-secondary" 
+            onClick={onHide} 
+            className="px-4"
+            disabled={isLoading}
+          >
             <i className="fas fa-times me-2"></i>
             Cancel
           </Button>

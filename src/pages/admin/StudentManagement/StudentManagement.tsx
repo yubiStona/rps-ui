@@ -15,22 +15,23 @@ import {
   useEditStudentMutation
 } from "../../../features/admin/students/studentApi";
 import { Student } from "../../../features/admin/students/utils";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
+import { StudentForm } from "../../../features/admin/students/utils";
+import { FaUserGraduate } from "react-icons/fa";
 
-interface StudentForm {
-  firstName: string;
-  lastName: string;
-  email: string;
-  phone: string;
-  rollNumber: string;
-  enrollmentDate: string;
-  registrationNumber: string;
-  gender: "M" | "F" | "O";
-  DOB: string;
-  address1: string;
-  address2: string;
-  programId: number;
-}
+// interface StudentForm {
+//   firstName: string;
+//   lastName: string;
+//   email: string;
+//   phone: string;
+//   rollNumber: string;
+//   enrollmentDate: string;
+//   registrationNumber: string;
+//   gender: "M" | "F" | "O";
+//   DOB: string;
+//   address1: string;
+//   programId: number;
+// }
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -546,9 +547,14 @@ const StudentManagement: React.FC = () => {
                           );
                         })
                       ) : (
-                        <>
-                          <p>No data found</p>
-                        </>
+                        <tr>
+                          <td colSpan={8} className="text-center py-5">
+                            <div className="text-muted">
+                              <FaUserGraduate />
+                              <p className="mb-2">No students found</p>
+                            </div>
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </Table>

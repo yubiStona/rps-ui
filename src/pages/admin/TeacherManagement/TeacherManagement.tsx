@@ -15,7 +15,8 @@ import {
 import { Teacher } from "../../../features/admin/teacher/utils";
 import ViewTeacherDetailsModal from "./Partials/TeacherDetailsModal";
 import { TeacherFormData } from "../../../features/admin/teacher/utils";
-import { toast } from "react-toastify";
+import toast from "react-hot-toast";
+import { FaChalkboardTeacher } from "react-icons/fa";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -435,9 +436,14 @@ const TeacherManagement: React.FC = () => {
                           );
                         })
                       ) : (
-                        <>
-                          <p>No data found</p>
-                        </>
+                        <tr>
+                          <td colSpan={6} className="text-center py-5">
+                            <div className="text-muted">
+                              <FaChalkboardTeacher />
+                              <p className="mb-2">No teachers found</p>
+                            </div>
+                          </td>
+                        </tr>
                       )}
                     </tbody>
                   </Table>
