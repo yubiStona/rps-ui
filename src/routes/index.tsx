@@ -13,6 +13,7 @@ import TeacherDashboard from "../pages/teacher/Dashboard";
 import ProgramManagement from "../pages/admin/Program management/Programs";
 import FacultyManagement from "../pages/admin/Faculty/FacultyManagement";
 import SubjectManagement from "../pages/admin/SubjectManagement/Subject";
+import AdminManagement from "../pages/admin/Administration/AdminManagement";
 const AppRouter = () => {
   const { user } = useAppSelector((state) => state.auth);
 
@@ -62,6 +63,17 @@ const AppRouter = () => {
         />
 
         <Route
+          path="/admin/administration"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout>
+                <AdminManagement />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
           path="/admin/students"
           element={
             <ProtectedRoute requiredRole="admin">
@@ -82,32 +94,32 @@ const AppRouter = () => {
             </ProtectedRoute>
           }
         />
-        <Route 
+        <Route
           path="/admin/programs"
           element={
             <ProtectedRoute requiredRole="admin">
               <DashboardLayout>
-                <ProgramManagement /> 
+                <ProgramManagement />
               </DashboardLayout>
             </ProtectedRoute>
           }
         />
-        <Route 
+        <Route
           path="/admin/faculties"
           element={
             <ProtectedRoute requiredRole="admin">
               <DashboardLayout>
-                <FacultyManagement /> 
+                <FacultyManagement />
               </DashboardLayout>
             </ProtectedRoute>
           }
         />
-          <Route 
+        <Route
           path="/admin/subjects"
           element={
             <ProtectedRoute requiredRole="admin">
               <DashboardLayout>
-                <SubjectManagement /> 
+                <SubjectManagement />
               </DashboardLayout>
             </ProtectedRoute>
           }
