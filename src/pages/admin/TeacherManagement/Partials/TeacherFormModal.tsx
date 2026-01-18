@@ -230,17 +230,6 @@ const TeacherFormModal: React.FC<TeacherFormModalProps> = ({
                             </Form.Control.Feedback>
                         </Form.Group>
 
-                        {/* <Form.Group>
-                            <Form.Label className="fw-semibold">
-                                Address Line 2 (Optional)
-                            </Form.Label>
-                            <Form.Control
-                                type="text"
-                                {...register('address2')}
-                                placeholder="Apartment, suite, unit, building, floor, etc."
-                                className="py-2"
-                            />
-                        </Form.Group> */}
                     </div>
                 </Modal.Body>
 

@@ -8,7 +8,7 @@ import { useGetHodListQuery } from '../../../../features/admin/programs/programA
 import { HODList } from '../../../../features/admin/programs/utils';
 import { FacultyList } from '../../../../features/admin/students/utils';
 import { Program } from '../../../../features/admin/programs/utils';
-import * as yup from 'yup';
+import { programSchema } from '../validations/programSchema';
 
 interface ProgramEditModalProps {
     show: boolean;
@@ -17,95 +17,6 @@ interface ProgramEditModalProps {
     isUpdating: boolean;
     programData: Program | null;
 }
-
-// Create a flexible schema where all fields are optional
-const editProgramSchema = yup.object().shape({
-    name: yup
-        .string()
-        .optional()
-        .min(3, 'Program name must be at least 3 characters')
-        .max(100, 'Program name cannot exceed 100 characters')
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-    
-    code: yup
-        .string()
-        .optional()
-        .min(2, 'Program code must be at least 2 characters')
-        .max(10, 'Program code cannot exceed 10 characters')
-        .matches(/^[A-Z0-9]*$/, 'Program code can only contain uppercase letters and numbers')
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-    
-    facultyId: yup
-        .mixed()
-        .optional()
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-    
-    hodId: yup
-        .mixed()
-        .optional()
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-    
-    totalSemesters: yup
-        .number()
-        .optional()
-        .min(1, 'Must have at least 1 semester')
-        .max(20, 'Cannot exceed 20 semesters')
-        .integer('Must be a whole number')
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-    
-    totalSubjects: yup
-        .number()
-        .optional()
-        .min(1, 'Must have at least 1 subject')
-        .max(200, 'Cannot exceed 200 subjects')
-        .integer('Must be a whole number')
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-    
-    totalCredits: yup
-        .number()
-        .optional()
-        .min(1, 'Must have at least 1 credit')
-        .max(500, 'Cannot exceed 500 credits')
-        .positive('Credits must be positive')
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-    
-    durationInYears: yup
-        .number()
-        .optional()
-        .min(1, 'Duration must be at least 1 year')
-        .max(10, 'Duration cannot exceed 10 years')
-        .integer('Must be a whole number')
-        .nullable()
-        .transform((value, originalValue) => 
-            originalValue === '' ? undefined : value
-        ),
-}).test('at-least-one-field', 'Please fill at least one field to update', (value) => {
-    const hasValue = Object.values(value).some(
-        (field) => field !== undefined && field !== null && field !== ''
-    );
-    return hasValue;
-});
 
 const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
     show,
@@ -121,7 +32,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
         formState: { errors },
         watch,
     } = useForm<PartialProgramFormData>({
-        resolver: yupResolver(editProgramSchema as any),
+        resolver: yupResolver(programSchema as any),
         mode: 'onChange',
         defaultValues: {
             name: '',
@@ -180,12 +91,6 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
 
     const currentFacultyId = watch('facultyId');
     const currentHodId = watch('hodId');
-    const currentValues = watch();
-
-    // Check if at least one field has been filled
-    const hasAtLeastOneField = Object.values(currentValues).some(
-        value => value !== undefined && value !== null && value !== ''
-    );
 
     return (
         <Modal
@@ -227,7 +132,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Program Name
+                                        Program Name <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="text"
@@ -245,7 +150,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Program Code
+                                        Program Code <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="text"
@@ -263,7 +168,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Faculty
+                                        Faculty <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Select
                                         value={currentFacultyId || ''}
@@ -294,7 +199,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Head of Department (HOD)
+                                        Head of Department (HOD) <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Select
                                         value={currentHodId || ''}
@@ -336,7 +241,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Duration (Years)
+                                        Duration (Years) <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="number"
@@ -358,7 +263,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Total Semesters
+                                        Total Semesters <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="number"
@@ -380,7 +285,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Total Subjects
+                                        Total Subjects <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="number"
@@ -402,7 +307,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Total Credits
+                                        Total Credits <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="number"
@@ -432,12 +337,6 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                         </div>
                     )}
 
-                    {!hasAtLeastOneField && (
-                        <div className="alert alert-info mb-0">
-                            <i className="fas fa-info-circle me-2"></i>
-                            <small>Fill at least one field to update the program. Empty fields will be ignored.</small>
-                        </div>
-                    )}
                 </Modal.Body>
 
                 <Modal.Footer className="border-top-0">
@@ -453,7 +352,7 @@ const ProgramEditModal: React.FC<ProgramEditModalProps> = ({
                     <Button
                         variant="warning"
                         type="submit"
-                        disabled={isUpdating || !hasAtLeastOneField}
+                        disabled={isUpdating}
                         className="px-4"
                     >
                         {isUpdating ? (

@@ -4,7 +4,8 @@ import { ProgramList, Student } from "../../../../features/admin/students/utils"
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import SearchableDropdown, { DropdownOption } from "../../../../Component/common/SearchableDropdown";
-import { editStudentSchema, EditStudentFormData } from "../validations/editStudentSchema";
+import { EditStudentFormData } from "../validations/editStudentSchema";
+import { studentSchema } from "../validations/studentSchema";
 
 interface StudentEditModalProps {
   show: boolean;
@@ -33,7 +34,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
     setValue,
     formState: { errors },
   } = useForm<EditStudentFormData>({
-    resolver: yupResolver(editStudentSchema as any),
+    resolver: yupResolver(studentSchema as any),
     mode: "onChange",
   });
 
@@ -131,7 +132,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
         <Modal.Title className="fw-bold w-100">
           <div className="d-flex align-items-center gap-3 mb-2">
             <div
-              className="bg-primary rounded-circle p-2 d-flex align-items-center justify-content-center"
+              className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center"
               style={{ width: "44px", height: "44px" }}
             >
               <i className="fas fa-user-edit text-white fs-5"></i>
@@ -149,8 +150,8 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
           {/* Personal Information Section */}
           <div className="mb-4">
             <div className="d-flex align-items-center mb-3">
-              <div className="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
-                <i className="fas fa-user text-primary"></i>
+              <div className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
+                <i className="fas fa-user text-white"></i>
               </div>
               <h6 className="fw-bold mb-0">Personal Information</h6>
             </div>
@@ -159,7 +160,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    First Name
+                    First Name <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -180,7 +181,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Last Name
+                    Last Name <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -201,7 +202,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Email
+                    Email <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="email"
@@ -219,7 +220,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Phone Number
+                    Phone Number <span className="text-danger">*</span>
                   </Form.Label>
                   <InputGroup>
                     <InputGroup.Text className="bg-light">
@@ -237,7 +238,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
                     {errors.phone?.message}
                   </Form.Control.Feedback>
                   <Form.Text className="text-muted">
-                    10-15 digits only (leave empty to keep current)
+                    10 digits only 
                   </Form.Text>
                 </Form.Group>
               </Col>
@@ -245,7 +246,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Gender
+                    Gender <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Select
                     {...register("gender")}
@@ -266,7 +267,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Date of Birth
+                    Date of Birth <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="date"
@@ -278,9 +279,6 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
                   <Form.Control.Feedback type="invalid">
                     {errors.DOB?.message}
                   </Form.Control.Feedback>
-                  <Form.Text className="text-muted">
-                    Leave empty to keep current
-                  </Form.Text>
                 </Form.Group>
               </Col>
             </Row>
@@ -289,8 +287,8 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
           {/* Academic Information Section */}
           <div className="mb-4">
             <div className="d-flex align-items-center mb-3">
-              <div className="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
-                <i className="fas fa-graduation-cap text-primary"></i>
+              <div className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
+                <i className="fas fa-graduation-cap text-white"></i>
               </div>
               <h6 className="fw-bold mb-0">Academic Information</h6>
             </div>
@@ -299,7 +297,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Roll Number
+                    Roll Number <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -307,21 +305,17 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
                     isInvalid={!!errors.rollNumber}
                     placeholder="Enter roll number"
                     className="py-2"
-                    disabled // Roll number is usually not editable
                   />
                   <Form.Control.Feedback type="invalid">
                     {errors.rollNumber?.message}
                   </Form.Control.Feedback>
-                  <Form.Text className="text-muted small">
-                    Roll number cannot be changed
-                  </Form.Text>
                 </Form.Group>
               </Col>
 
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Registration Number
+                    Registration Number <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="text"
@@ -339,7 +333,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Enrollment Date
+                    Enrollment Date <span className="text-danger">*</span>
                   </Form.Label>
                   <Form.Control
                     type="date"
@@ -360,7 +354,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Current Semester
+                    Current Semester <span className="text-danger">*</span>
                   </Form.Label>
                   <SearchableDropdown
                     options={semesterOptions}
@@ -377,7 +371,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Col md={6}>
                 <Form.Group className="mb-3">
                   <Form.Label className="fw-semibold">
-                    Program
+                    Program <span className="text-danger">*</span>
                   </Form.Label>
                   <SearchableDropdown
                     options={programOptions}
@@ -397,15 +391,15 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
           {/* Address Information Section */}
           <div className="mb-3">
             <div className="d-flex align-items-center mb-3">
-              <div className="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
-                <i className="fas fa-home text-primary"></i>
+              <div className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
+                <i className="fas fa-home text-white"></i>
               </div>
               <h6 className="fw-bold mb-0">Address Information</h6>
             </div>
 
             <Form.Group className="mb-3">
               <Form.Label className="fw-semibold">
-                Address Line 1
+                Address Line 1 <span className="text-danger">*</span>
               </Form.Label>
               <Form.Control
                 type="text"
@@ -417,9 +411,6 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
               <Form.Control.Feedback type="invalid">
                 {errors.address1?.message}
               </Form.Control.Feedback>
-              <Form.Text className="text-muted">
-                Minimum 10 characters if provided
-              </Form.Text>
             </Form.Group>
           </div>
         </Modal.Body>
@@ -430,7 +421,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
             Cancel
           </Button>
           <Button
-            variant="primary"
+            variant="warning"
             type="submit"
             disabled={isLoading}
             className="px-4"

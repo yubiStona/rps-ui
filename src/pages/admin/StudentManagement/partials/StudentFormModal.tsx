@@ -396,9 +396,6 @@ const StudentFormModal: React.FC<StudentFormModalProps> = ({
               <Form.Control.Feedback type="invalid">
                 {errors.address1?.message}
               </Form.Control.Feedback>
-              <Form.Text className="text-muted">
-                Minimum 10 characters required
-              </Form.Text>
             </Form.Group>
           </div>
         </Modal.Body>

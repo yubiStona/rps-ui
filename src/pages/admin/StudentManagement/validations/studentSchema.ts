@@ -91,7 +91,7 @@ DOB: yup
   address1: yup
     .string()
     .required('Address is required')
-    .min(10, 'Address must be at least 10 characters')
+    .min(3, 'Address must be at least 3 characters')
     .max(200, 'Address cannot exceed 200 characters'),
 
 });

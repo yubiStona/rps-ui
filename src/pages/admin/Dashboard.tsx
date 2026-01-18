@@ -121,29 +121,35 @@ const AdminDashboard: React.FC = () => {
         {stats.map((stat, index) => (
           <Col xs={12} sm={6} lg={3} key={index}>
             <Card className="border-0 shadow-sm stat-card">
-              <Card.Body>
-                <div className="d-flex align-items-center">
-                  <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
-                  <div className="stat-info ms-3">
-                    <h4 className="fw-bold mb-1">
-                      {stat.value.toLocaleString()} 
-                    </h4>
-                    <p className="text-muted mb-0">{stat.title}</p>
-                  </div>
+              {isLoading ? (
+                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 120 }}>
+                  <span className="spinner-border text-primary" role="status" aria-hidden="true"></span>
                 </div>
-              </Card.Body>
-            </Card>
-          </Col>
-        ))}
+              ) : (
+                <Card.Body>
+                  <div className="d-flex align-items-center">
+                    <div className={`stat-icon ${stat.color}`}>{stat.icon}</div>
+                    <div className="stat-info ms-3">
+                      <h4 className="fw-bold mb-1">
+                        {stat.value.toLocaleString()}
+                      </h4>
+                      <p className="text-muted mb-0">{stat.title}</p>
+                    </div>
+                  </div>
+                </Card.Body>
+              )}
+                  </Card>
+                </Col>
+              ))}
       </Row>
 
       {/* Charts Row */}
       <Row className="mb-4">
-        <Col lg={6} className="mb-4 mb-lg-0">
+        {/* <Col lg={6} className="mb-4 mb-lg-0">
           <PerformanceChart data={performanceData} />
-        </Col>
-        <Col lg={6}>
-          <StudentDistributionChart data={distributionData} />
+        </Col> */}
+        <Col lg={12}>
+          <StudentDistributionChart data={distributionData} Loading={isLoading} />
         </Col>
       </Row>
 

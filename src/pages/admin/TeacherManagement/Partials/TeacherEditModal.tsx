@@ -3,7 +3,7 @@ import { Modal, Button, Row, Col, Form, InputGroup, Spinner } from 'react-bootst
 import { useForm } from 'react-hook-form';
 import { Teacher } from '../../../../features/admin/teacher/utils';
 import { TeacherFormData } from '../../../../features/admin/teacher/utils';
-import { teacherEditSchema } from '../validation/teacherSchema';
+import { teacherSchema } from '../validation/teacherSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
 
 interface TeacherEditModalProps {
@@ -28,7 +28,9 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
         handleSubmit,
         reset,
         formState: { errors },
-    } = useForm<TeacherFormData>()
+    } = useForm<TeacherFormData>({
+        resolver:yupResolver(teacherSchema)
+    })
 
     // Reset form when modal opens/closes or teacherData changes
     useEffect(() => {
@@ -79,7 +81,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
             <Modal.Header closeButton className="border-bottom-0">
                 <Modal.Title className="fw-bold w-100">
                     <div className="d-flex align-items-center gap-3 mb-2">
-                        <div className="bg-primary rounded-circle p-2 d-flex align-items-center justify-content-center"
+                        <div className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center"
                              style={{ width: '44px', height: '44px' }}>
                             <i className="fas fa-user-edit text-white fs-5"></i>
                         </div>
@@ -98,8 +100,8 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                     {/* Personal Information Section */}
                     <div className="mb-4">
                         <div className="d-flex align-items-center mb-3">
-                            <div className="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
-                                <i className="fas fa-user text-primary"></i>
+                            <div className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
+                                <i className="fas fa-user text-white"></i>
                             </div>
                             <h6 className="fw-bold mb-0">Personal Information</h6>
                         </div>
@@ -108,7 +110,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        First Name 
+                                        First Name <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="text"
@@ -129,7 +131,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Last Name 
+                                        Last Name <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="text"
@@ -147,7 +149,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Email 
+                                        Email <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="email"
@@ -164,7 +166,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
 
                             <Col md={6}>
                                 <Form.Group className="mb-3">
-                                    <Form.Label className="fw-semibold">Phone Number</Form.Label>
+                                    <Form.Label className="fw-semibold">Phone Number <span className="text-danger">*</span></Form.Label>
                                     <InputGroup>
                                         <InputGroup.Text className="bg-light">
                                             <i className="fas fa-phone"></i>
@@ -186,7 +188,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Gender 
+                                        Gender <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Select
                                         {...register('gender')}
@@ -206,7 +208,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                             <Col md={6}>
                                 <Form.Group className="mb-3">
                                     <Form.Label className="fw-semibold">
-                                        Date of Birth 
+                                        Date of Birth <span className="text-danger">*</span>
                                     </Form.Label>
                                     <Form.Control
                                         type="date"
@@ -225,15 +227,15 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                     {/* Address Information Section */}
                     <div className="mb-3">
                         <div className="d-flex align-items-center mb-3">
-                            <div className="bg-light rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
-                                <i className="fas fa-home text-primary"></i>
+                            <div className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center me-3">
+                                <i className="fas fa-home text-white"></i>
                             </div>
                             <h6 className="fw-bold mb-0">Address Information</h6>
                         </div>
 
                         <Form.Group className="mb-3">
                             <Form.Label className="fw-semibold">
-                                Address Line 1 
+                                Address Line 1 <span className="text-danger">*</span>
                             </Form.Label>
                             <Form.Control
                                 type="text"
@@ -260,7 +262,7 @@ const TeacherEditModal: React.FC<TeacherEditModalProps> = ({
                         Cancel
                     </Button>
                     <Button
-                        variant="primary"
+                        variant="warning"
                         type="submit"
                         disabled={isUpdating}
                         className="px-4"

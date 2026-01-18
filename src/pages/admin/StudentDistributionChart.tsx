@@ -11,10 +11,12 @@ interface DistributionData {
 
 interface StudentDistributionChartProps {
   data: DistributionData[];
+  Loading:boolean;
 }
 
 const StudentDistributionChart: React.FC<StudentDistributionChartProps> = ({
   data,
+  Loading=false
 }) => {
   const svgRef = useRef<SVGSVGElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
@@ -281,17 +283,23 @@ const StudentDistributionChart: React.FC<StudentDistributionChartProps> = ({
 
   return (
     <Card className="border-0 shadow-sm chart-card">
-      <Card.Body className="chart-card-body">
-        <div className="chart-header">
-          <h5 className="chart-title">Student Distribution by Program</h5>
+      {Loading ? (
+        <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 120 }}>
+          <span className="spinner-border text-primary" role="status" aria-hidden="true"></span>
         </div>
-        <div 
-          ref={containerRef} 
-          className="chart-container-responsive"
-        >
-          <svg ref={svgRef} className="chart-svg"></svg>
-        </div>
-      </Card.Body>
+      ):(
+        <Card.Body className="chart-card-body">
+          <div className="chart-header">
+            <h5 className="chart-title">Student Distribution by Program</h5>
+          </div>
+          <div 
+            ref={containerRef} 
+            className="chart-container-responsive"
+          >
+            <svg ref={svgRef} className="chart-svg"></svg>
+          </div>
+        </Card.Body>
+      )} 
     </Card>
   );
 };
