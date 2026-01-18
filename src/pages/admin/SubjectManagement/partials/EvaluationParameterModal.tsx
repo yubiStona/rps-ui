@@ -171,21 +171,6 @@ const EvaluationParameterModal: React.FC<EvaluationParameterModalProps> = ({
           </Col>
         </Row>
 
-        {/* Total Weight Indicator */}
-        <div className="mb-4 p-3 bg-light rounded">
-          <div className="d-flex justify-content-between align-items-center">
-            <div>
-              {/* <span className="fw-bold">Total Weight: </span>
-              <span className={`h4 mb-0 ${totalWeight === 100 ? 'text-success' : 'text-danger'}`}>
-                {totalWeight}%
-              </span> */}
-              <div className="small text-muted mt-1">
-                {/* {Object.keys(selectedParams).length} parameter(s) selected */}
-              </div>
-            </div>
-          </div>
-        </div>
-
         {/* Parameters List */}
         {(isEvalParamaLoading || isFetching) ? (
           <div className="text-center py-5">

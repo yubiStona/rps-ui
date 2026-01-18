@@ -1,6 +1,5 @@
 import React, { useRef, KeyboardEvent, useState, useEffect } from "react";
 import { useForm, SubmitHandler } from "react-hook-form";
-import { useAppDispatch } from "../../app/hooks";
 import { toast } from 'react-toastify';
 import "./css/auth.css";
 import { useVerifyOTPMutation } from "../../features/auth/authApi";

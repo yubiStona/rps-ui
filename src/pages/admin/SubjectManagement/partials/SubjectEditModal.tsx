@@ -3,6 +3,7 @@ import { Modal, Button, Row, Col, Form } from 'react-bootstrap';
 import { useForm } from 'react-hook-form';
 import { ProgramList } from '../../../../features/admin/students/utils';
 import { Teacher } from '../../../../features/admin/students/utils';
+import { Subject } from '../../../../features/admin/subjects/utils';
 import { subjectSchema } from '../validations/subjectSchema';
 import { yupResolver } from '@hookform/resolvers/yup';
 
@@ -16,22 +17,24 @@ export interface SubjectFormData {
   teacherId: number;
 }
 
-interface SubjectFormModalProps {
+interface SubjectEditProps {
   show: boolean;
   onHide: () => void;
   onSubmit: (data: SubjectFormData) => void;
   isLoading: boolean;
   programs: ProgramList[];
   teachers: Teacher[];
+  subjectData: Subject | null;
 }
 
-const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
+const SubjectEditModal: React.FC<SubjectEditProps> = ({
   show,
   onHide,
   onSubmit,
   isLoading,
   programs,
   teachers,
+  subjectData
 }) => {
   const {
     register,
@@ -39,16 +42,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
     reset,
     formState: { errors },
   } = useForm<SubjectFormData>({
-    resolver: yupResolver(subjectSchema as any),
-    defaultValues: {
-      name: '',
-      code: '',
-      credits: 0,
-      semester: 1,
-      type: 'theory',
-      programId: 0,
-      teacherId: 0,
-    },
+    resolver: yupResolver(subjectSchema as any)
   });
 
   const handleFormSubmit = (data: SubjectFormData) => {
@@ -56,18 +50,18 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
   };
 
   React.useEffect(() => {
-    if (show) {
+    if (show && subjectData) {
       reset({
-        name: '',
-        code: '',
-        credits: 0,
-        semester: 1,
-        type: 'theory',
-        programId: 0,
-        teacherId: 0,
+        name: subjectData.name,
+        code: subjectData.code,
+        credits: subjectData.credits,
+        semester: subjectData.semester,
+        type: subjectData.type,
+        programId: subjectData.program.id,
+        teacherId: subjectData.subjectTeacher?.id || 0,
       });
     }
-  }, [show, reset]);
+  }, [show, subjectData, reset]);
 
   return (
     <Modal show={show} onHide={onHide} size="lg" centered>
@@ -75,15 +69,15 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
         <Modal.Title className="fw-bold w-100">
           <div className="d-flex align-items-center gap-3 mb-2">
             <div
-              className="bg-primary rounded-circle p-2 d-flex align-items-center justify-content-center"
+              className="bg-warning rounded-circle p-2 d-flex align-items-center justify-content-center"
               style={{ width: '44px', height: '44px' }}
             >
               <i className="fas fa-book text-white fs-5"></i>
             </div>
             <div>
-              <h5 className="mb-0">Add New Subject</h5>
+              <h5 className="mb-0">Update Subject</h5>
               <small className="text-muted">
-                Fill in the details to add a new subject
+                Modify the details to Update subject
               </small>
             </div>
           </div>
@@ -96,7 +90,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
           <div className="mb-4">
             <div className="d-flex align-items-center mb-3">
               <div className="bg-light rounded-circle p-2 me-3">
-                <i className="fas fa-book text-primary"></i>
+                <i className="fas fa-book text-warning"></i>
               </div>
               <h6 className="fw-bold mb-0">Subject Information</h6>
             </div>
@@ -211,7 +205,7 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
           <div className="mb-3">
             <div className="d-flex align-items-center mb-3">
               <div className="bg-light rounded-circle p-2 me-3">
-                <i className="fas fa-link text-primary"></i>
+                <i className="fas fa-link text-warning"></i>
               </div>
               <h6 className="fw-bold mb-0">Assignment</h6>
             </div>
@@ -271,16 +265,16 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
             <i className="fas fa-times me-2"></i>
             Cancel
           </Button>
-          <Button variant="primary" type="submit" disabled={isLoading} className="px-4">
+          <Button variant="warning" type="submit" disabled={isLoading} className="px-4">
             {isLoading ? (
               <>
                 <span className="spinner-border spinner-border-sm me-2" />
-                Creating...
+                Updating...
               </>
             ) : (
               <>
                 <i className="fas fa-plus me-2"></i>
-                Add Subject
+                Update Subject
               </>
             )}
           </Button>
@@ -305,4 +299,4 @@ const SubjectFormModal: React.FC<SubjectFormModalProps> = ({
   );
 };
 
-export default SubjectFormModal;
+export default SubjectEditModal;

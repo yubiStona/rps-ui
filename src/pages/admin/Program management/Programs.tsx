@@ -491,11 +491,12 @@ const handleDeleteClick = (program: Program) => {
       show={showDeleteModal}
       onHide={handleCloseDeleteModal}
       onConfirm={handleDeleteConfirm}
-      programName={
+      name={
         deletingProgram
           ? `${deletingProgram.name} (${deletingProgram.code})`
           : ""
       }
+      type="Program"
       isLoading={isDeleting}
     />
     </>

@@ -2,9 +2,6 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Row, Col, Card, Button, Table, Form, Badge, Dropdown } from "react-bootstrap";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-// import DeleteConfirmationModal from "./Partials/DeleteConfirmationModal";
-// import ProgramFormModal from "./Partials/ProgramFormModal";
-// import ProgramEditModal from "./Partials/ProgramEditModal";
 import toast from "react-hot-toast";
 import {
   useGetProgramsQuery,
@@ -13,12 +10,17 @@ import {
 import {
   useGetSubjectsQuery,
   useAddSubjectMutation,
-  useAssignParametersMutation
+  useAssignParametersMutation,
+  useEditSubjectMutation,
+  useDeleteSubjectMutation
 } from "../../../features/admin/subjects/subjectApi";
 import SubjectFormModal from "./partials/SubjectFormModal";
 import { SubjectFormData } from "./partials/SubjectFormModal";
 import EvaluationParameterModal from "./partials/EvaluationParameterModal";
 import {params} from "./partials/EvaluationParameterModal";
+import SubjectEditModal from "./partials/SubjectEditModal";
+import { Subject } from "../../../features/admin/subjects/utils";
+import DeleteConfirmationModal from "../../../Component/DeleteModal/DeleteConfirmationModal";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -26,8 +28,6 @@ const SubjectManagement: React.FC = () => {
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
-  // const [deletingProgram, setDeletingProgram] = useState<Program | null>(null);
-  const [editingProgramId, setEditingProgramId] = useState<number | null>(null);
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
   const [selectedSubject, setSelectedSubject] = useState<{id: number, name: string} | null>(null); 
   const [searchTerm, setSearchTerm] = useState("");
@@ -36,6 +36,7 @@ const SubjectManagement: React.FC = () => {
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [programFilter, setProgramFilter] = useState<string>("");
   const [semesterFilter, setSemesterFilter] = useState<string>("");
+  const [editingSubject,SetEditingSubject] = useState<Subject | null>(null);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -68,12 +69,12 @@ const SubjectManagement: React.FC = () => {
     isFetching,
   } = useGetSubjectsQuery(queryParams);
 
-  const { data: programData, isLoading: isProgramLoading } =
-    useGetProgramsQuery();
-  const { data: TeachersData, isLoading: isTeachersLoading } =
-    useGetTeacherListQuery();
+  const { data: programData, isLoading: isProgramLoading } = useGetProgramsQuery();
+  const { data: TeachersData, isLoading: isTeachersLoading } = useGetTeacherListQuery();
   const [addSubject, { isLoading: isAddingStudent }] = useAddSubjectMutation();
   const [assignParams,{isLoading:isAssigning}] = useAssignParametersMutation();
+  const [editSubject,{isLoading:isEditing}]=useEditSubjectMutation();
+  const [deleteSubject,{isLoading:isDeleting}]=useDeleteSubjectMutation();
 
   // Calculate pagination
   let startIndex = 0;
@@ -137,59 +138,64 @@ const SubjectManagement: React.FC = () => {
     }
   };
 
-  const handleEdit = () => {
-    // setEditingProgramId(program.id);
-    // setShowEditModal(true);
+  const handleEdit = (subjectData:Subject) => {
+    SetEditingSubject(subjectData);
+    setShowEditModal(true);
   };
 
-  //   const handleCloseEditModal = () => {
-  //     setShowEditModal(false);
-  //     setEditingProgramId(null);
-  //   };
+    const handleCloseEditModal = () => {
+      SetEditingSubject(null);
+      setShowEditModal(false);
+    };
 
-  //   const handleUpdateProgram = async (data: ProgramFormData) => {
-  //     if (!data) return;
-  //     try {
-  //       const response = await editProgram({ data, id: editingProgramId }).unwrap();
-  //       if (response.success) {
-  //         toast.success(response.message);
-  //         setEditingProgramId(null);
-  //         setShowEditModal(false);
-  //       }
-  //     } catch (error: any) {
-  //       const errorMessage = error?.data?.message || "Failed to edit program";
-  //       toast.error(errorMessage);
-  //     }
-  //   };
+    const handleUpdateProgram = async (data: SubjectFormData) => {
+      // if (!data) return;
+      try {
+        const response = await toast.promise(editSubject({id:editingSubject?.id,data }).unwrap(),{
+          loading:"Editing...",
+          error:"Failed to Update"
+        });
+        if(response.success){
+          toast.success(response.message);
+          handleCloseEditModal();
+        }
 
-  const handleDeleteClick = () => {
-    // setDeletingProgram(program);
-    // setShowDeleteModal(true);
+      } catch (error: any) {
+        const errorMessage = error?.data?.message || "Failed to update subject";
+        toast.error(errorMessage);
+      }
+    };
+
+  const handleDeleteClick = (subjectId: number, subjectName: string) => {
+    setSelectedSubject({ id: subjectId, name: subjectName });
+    setShowDeleteModal(true);
   };
 
-  //   const handleDeleteConfirm = async () => {
-  //     if (!deletingProgram) return;
-  //     try {
-  //       const response = await deleteProgram(deletingProgram.id).unwrap();
-  //       if (response.success) {
-  //         toast.success(response.message);
-  //         setShowDeleteModal(false);
-  //         setDeletingProgram(null);
-  //       }
-  //     } catch (error: any) {
-  //       const errorMessage = error?.data?.message || "Failed to delete program";
-  //       toast.error(errorMessage);
-  //     }
-  //   };
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setSelectedSubject(null);
+  };
+
+    const handleDeleteConfirm = async () => {
+      if (!selectedSubject) return;
+      try {
+        const response = await toast.promise(deleteSubject(selectedSubject.id).unwrap(),{
+          loading:"Deleting...",
+          error:"Failed to delete subject"
+        });
+        if (response.success) {
+          toast.success(response.message);
+          handleCloseDeleteModal();  
+        }
+      } catch (error: any) {
+        const errorMessage = error?.data?.message || "Failed to delete program";
+        toast.error(errorMessage);
+      }
+    };
 
   const handleCloseFormModal = () => {
     setShowFormModal(false);
   };
-
-  //   const handleCloseDeleteModal = () => {
-  //     setShowDeleteModal(false);
-  //     setDeletingProgram(null);
-  //   };
 
   const handleAddNew = () => {
     setShowFormModal(true);
@@ -467,7 +473,7 @@ const SubjectManagement: React.FC = () => {
                                   <Button
                                     variant="outline-primary"
                                     size="sm"
-                                    onClick={() => handleEdit()}
+                                    onClick={() => handleEdit(item)}
                                     title="Edit"
                                     className="d-flex align-items-center"
                                   >
@@ -489,7 +495,7 @@ const SubjectManagement: React.FC = () => {
                                   <Button
                                     variant="outline-danger"
                                     size="sm"
-                                    onClick={() => handleDeleteClick()}
+                                    onClick={() => handleDeleteClick(item.id,item.name)}
                                     title="Delete"
                                     className="d-flex align-items-center"
                                   >
@@ -552,27 +558,25 @@ const SubjectManagement: React.FC = () => {
       />
 
       {/* Edit Modal */}
-      {/* <ProgramEditModal
+      <SubjectEditModal
         show={showEditModal}
         onHide={handleCloseEditModal}
         onSubmit={handleUpdateProgram}
-        isLoading={isLoadingDetails || isFetchingDetails}
-        subjectData={programDetailsData?.data?.[0]}
-        isUpdating={isUpdatingProgram}
-      /> */}
+        isLoading={isEditing}
+        programs={programData?.data || []}
+        teachers={TeachersData?.data || []}
+        subjectData={editingSubject}
+      />
 
-      {/* Delete Confirmation Modal
+      {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal
         show={showDeleteModal}
         onHide={handleCloseDeleteModal}
         onConfirm={handleDeleteConfirm}
-        programName={
-          deletingProgram
-            ? `${deletingProgram.name} (${deletingProgram.code})`
-            : ""
-        }
+        name={selectedSubject?.name}
+        type="Subject"
         isLoading={isDeleting}
-      /> */}
+      />
     </>
   );
 };

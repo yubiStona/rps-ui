@@ -38,6 +38,21 @@ export const subjectAPi = createApi({
         method:"POST",
         body:data
       })
+    }),
+    editSubject:builder.mutation({
+      query:({id,data})=>({
+        url:`${SubjectsEndpoints.SUBJECT_ACTION}/${id}`,
+        method:"PATCH",
+        body:data
+      }),
+      invalidatesTags:(result) =>result?.success ? ["Subject"] :[]
+    }),
+    deleteSubject:builder.mutation({
+      query:(id)=>({
+        url:`${SubjectsEndpoints.SUBJECT_ACTION}/${id}`,
+        method:"DELETE",
+      }),
+      invalidatesTags:(result)=>result?.success ? ["Subject"] : []
     })
 
   }),
@@ -47,5 +62,7 @@ export const {
   useGetSubjectsQuery, 
   useAddSubjectMutation, 
   useGetEvaluationParamtersQuery,
-  useAssignParametersMutation 
+  useAssignParametersMutation,
+  useEditSubjectMutation,
+  useDeleteSubjectMutation 
 } = subjectAPi;

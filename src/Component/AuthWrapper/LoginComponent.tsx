@@ -4,7 +4,7 @@ import "./css/auth.css";
 import { setCredentials } from "../../features/auth/authSlice";
 import { useAppDispatch } from "../../app/hooks";
 import { useLoginUserMutation } from "../../features/auth/authApi";
-import {toast} from 'react-toastify';
+import toast from "react-hot-toast";
 interface LoginComponentProps {
   onForgotPassword: () => void;
 }
@@ -33,10 +33,14 @@ const LoginComponent: React.FC<LoginComponentProps> = ({
     try{
       const user_type="A";
       const formData = {...data,user_type}
-      const res = await login(formData).unwrap()
-      if (res.status === "success") {
+      const res = await toast.promise(login(formData).unwrap(),{
+        loading:"Logging in..."
+      })
+      if (res.success) {
         dispatch(setCredentials({ user: res.userDetails }));
-        toast.success(res.message || "Login successful!");
+        toast.success(res.message || "Login successful!",{
+          icon:"😎",
+        });
       }
     }catch(error:any){
       console.log("Failed to login: ", error);
