@@ -2,11 +2,11 @@ import React, { useState, useEffect, useMemo } from "react";
 import { Row, Col, Card, Button, Table, Form, Badge } from "react-bootstrap";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
-import { 
+import {
   useGetProgramsQuery,
   useAddProgramMutation,
   useDeleteProgramMutation,
-  useEditProgramMutation 
+  useEditProgramMutation,
 } from "../../../features/admin/programs/programApi";
 import toast from "react-hot-toast";
 import { useGetFacultiesQuery } from "../../../features/admin/students/studentApi";
@@ -15,10 +15,24 @@ import ProgramFormModal from "./Partials/ProgramFormModal";
 import DeleteConfirmationModal from "./Partials/DeleteConfirmationModal";
 import ProgramEditModal from "./Partials/ ProgramEditModal";
 import { Program } from "../../../features/admin/programs/utils";
+import { useAppDispatch } from "../../../app/hooks";
+import { setPageTitle } from "../../../features/ui/uiSlice";
+import CommonBreadCrumb from "../../../Component/common/BreadCrumb";
+import { FaTachometerAlt } from "react-icons/fa";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const ProgramManagement: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setPageTitle({
+        title: "Program Management",
+        subtitle: "Manage academic programs and information",
+      }),
+    );
+  }, [dispatch]);
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
@@ -51,7 +65,7 @@ const ProgramManagement: React.FC = () => {
       page: currentPage,
       limit: itemsPerPage,
     }),
-    [debouncedSearch, facultyFilter, currentPage, itemsPerPage]
+    [debouncedSearch, facultyFilter, currentPage, itemsPerPage],
   );
 
   const {
@@ -60,10 +74,12 @@ const ProgramManagement: React.FC = () => {
     isFetching,
   } = useGetProgramsQuery(queryParams);
 
-  const { data: facultyData, isLoading: isFacultyLoading } = useGetFacultiesQuery();
-  const [addProgram,{isLoading:isAddingProgram}] =useAddProgramMutation();
-  const [deleteProgram,{isLoading:isDeleting}] =useDeleteProgramMutation();
-  const [editProgram,{isLoading:isUpdatingProgram}] = useEditProgramMutation();
+  const { data: facultyData, isLoading: isFacultyLoading } =
+    useGetFacultiesQuery();
+  const [addProgram, { isLoading: isAddingProgram }] = useAddProgramMutation();
+  const [deleteProgram, { isLoading: isDeleting }] = useDeleteProgramMutation();
+  const [editProgram, { isLoading: isUpdatingProgram }] =
+    useEditProgramMutation();
 
   // Calculate pagination
   let startIndex = 0;
@@ -76,7 +92,7 @@ const ProgramManagement: React.FC = () => {
         : (programData?.page - 1) * programData?.limit + 1;
     endIndex = Math.min(
       programData?.page * programData?.limit,
-      programData?.total
+      programData?.total,
     );
   }
 
@@ -85,62 +101,62 @@ const ProgramManagement: React.FC = () => {
     setCurrentPage(1);
   }, [searchTerm, facultyFilter, itemsPerPage]);
 
-    const onSubmit = async (data: ProgramFormData) => {
-      if (!data) return;
-      try {
-        const response = await addProgram(data).unwrap();
-        if (response.success) {
-          toast.success(response.message);
-          setShowFormModal(false);
-        }
-      } catch (error: any) {
-        toast.error(error?.data?.message);
+  const onSubmit = async (data: ProgramFormData) => {
+    if (!data) return;
+    try {
+      const response = await addProgram(data).unwrap();
+      if (response.success) {
+        toast.success(response.message);
+        setShowFormModal(false);
       }
-    };
+    } catch (error: any) {
+      toast.error(error?.data?.message);
+    }
+  };
 
-  const handleEdit = (program:Program) => {
+  const handleEdit = (program: Program) => {
     setEditingProgram(program);
     setShowEditModal(true);
   };
 
-    const handleCloseEditModal = () => {
-      setShowEditModal(false);
-      setEditingProgram(null);
-    };
+  const handleCloseEditModal = () => {
+    setShowEditModal(false);
+    setEditingProgram(null);
+  };
 
-const handleUpdateProgram = async (data: Partial<ProgramFormData>) => {
-  try {
-    const filteredData = Object.fromEntries(
-      Object.entries(data).filter(([_, value]) => {
-        return value !== undefined && value !== null && value !== '';
-      })
-    );
+  const handleUpdateProgram = async (data: Partial<ProgramFormData>) => {
+    try {
+      const filteredData = Object.fromEntries(
+        Object.entries(data).filter(([_, value]) => {
+          return value !== undefined && value !== null && value !== "";
+        }),
+      );
 
-    if (Object.keys(filteredData).length === 0) {
-      toast.error('Please fill at least one field to update');
-      return;
+      if (Object.keys(filteredData).length === 0) {
+        toast.error("Please fill at least one field to update");
+        return;
+      }
+
+      const response = await editProgram({
+        data: filteredData,
+        id: editingProgram?.id,
+      }).unwrap();
+
+      if (response.success) {
+        toast.success(response.message);
+        setEditingProgram(null);
+        setShowEditModal(false);
+      }
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to edit program";
+      toast.error(errorMessage);
     }
+  };
 
-    const response = await editProgram({ 
-      data: filteredData, 
-      id: editingProgram?.id
-    }).unwrap();
-    
-    if (response.success) {
-      toast.success(response.message);
-      setEditingProgram(null);
-      setShowEditModal(false);
-    }
-  } catch (error: any) {
-    const errorMessage = error?.data?.message || "Failed to edit program";
-    toast.error(errorMessage);
-  }
-};
-
-const handleDeleteClick = (program: Program) => {
-  setDeletingProgram(program);
-  setShowDeleteModal(true);
-};
+  const handleDeleteClick = (program: Program) => {
+    setDeletingProgram(program);
+    setShowDeleteModal(true);
+  };
 
   const handleDeleteConfirm = async () => {
     if (!deletingProgram) return;
@@ -160,10 +176,10 @@ const handleDeleteClick = (program: Program) => {
     setShowFormModal(false);
   };
 
-    const handleCloseDeleteModal = () => {
-      setShowDeleteModal(false);
-      setDeletingProgram(null);
-    };
+  const handleCloseDeleteModal = () => {
+    setShowDeleteModal(false);
+    setDeletingProgram(null);
+  };
 
   const handleAddNew = () => {
     setShowFormModal(true);
@@ -171,13 +187,13 @@ const handleDeleteClick = (program: Program) => {
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
-    page: number
+    page: number,
   ) => {
     setCurrentPage(page);
   };
 
   const handleItemsPerPageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setItemsPerPage(Number(event.target.value));
   };
@@ -251,16 +267,23 @@ const handleDeleteClick = (program: Program) => {
     <>
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 className="fw-bold">Program Management</h2>
-            <p className="text-muted">
-              Manage academic programs and information
-            </p>
-          </div>
+          <CommonBreadCrumb
+            items={[
+              {
+                label: "Dashboard",
+                link: "/admin/dashboard",
+                icon: <FaTachometerAlt />,
+              },
+              {
+                label: "Program Management",
+                active: true,
+              },
+            ]}
+          />
           <Button
             variant="primary"
             onClick={handleAddNew}
-            className="d-flex align-items-center gap-2"
+            className="d-flex align-items-center gap-2 mb-4"
           >
             <i className="fas fa-plus"></i>
             Add Program
@@ -487,18 +510,18 @@ const handleDeleteClick = (program: Program) => {
         isUpdating={isUpdatingProgram}
       />
 
-    <DeleteConfirmationModal
-      show={showDeleteModal}
-      onHide={handleCloseDeleteModal}
-      onConfirm={handleDeleteConfirm}
-      name={
-        deletingProgram
-          ? `${deletingProgram.name} (${deletingProgram.code})`
-          : ""
-      }
-      type="Program"
-      isLoading={isDeleting}
-    />
+      <DeleteConfirmationModal
+        show={showDeleteModal}
+        onHide={handleCloseDeleteModal}
+        onConfirm={handleDeleteConfirm}
+        name={
+          deletingProgram
+            ? `${deletingProgram.name} (${deletingProgram.code})`
+            : ""
+        }
+        type="Program"
+        isLoading={isDeleting}
+      />
     </>
   );
 };

@@ -14,17 +14,27 @@ interface CommonBreadCrumbProps {
   title?: string;
 }
 
-const CommonBreadCrumb: React.FC<CommonBreadCrumbProps> = ({ items, title }) => {
+const CommonBreadCrumb: React.FC<CommonBreadCrumbProps> = ({
+  items,
+  title,
+}) => {
   return (
-    <div className="mb-3">
-        {title && <h4 className="fw-bold mb-2">{title}</h4>}
+    <div className="ms-2 mt-1">
+      {title && <h4 className="fw-bold mb-2">{title}</h4>}
       <Breadcrumb>
         {items.map((item, index) => (
           <Breadcrumb.Item
             key={index}
             active={item.active}
             linkAs={item.link ? Link : undefined}
-            linkProps={item.link ? { to: item.link } : undefined}
+            linkProps={
+              item.link
+                ? {
+                    to: item.link,
+                    className: "text-decoration-none fw-semibold text-primary",
+                  }
+                : undefined
+            }
           >
             {item.icon && <span className="me-2">{item.icon}</span>}
             {item.label}

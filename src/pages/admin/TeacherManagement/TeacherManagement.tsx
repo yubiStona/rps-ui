@@ -10,17 +10,30 @@ import {
   useGetTeacherByIdQuery,
   useAddTeacherMutation,
   useDeleteTeacherMutation,
-  useEditTeacherMutation
+  useEditTeacherMutation,
 } from "../../../features/admin/teacher/teacherApi";
 import { Teacher } from "../../../features/admin/teacher/utils";
 import ViewTeacherDetailsModal from "./Partials/TeacherDetailsModal";
 import { TeacherFormData } from "../../../features/admin/teacher/utils";
 import toast from "react-hot-toast";
-import { FaChalkboardTeacher } from "react-icons/fa";
+import { FaChalkboardTeacher, FaTachometerAlt } from "react-icons/fa";
+import { setPageTitle } from "../../../features/ui/uiSlice";
+import { useAppDispatch } from "../../../app/hooks";
+import CommonBreadCrumb from "../../../Component/common/BreadCrumb";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const TeacherManagement: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setPageTitle({
+        title: "Teacher Management",
+        subtitle: "Manage teacher profiles and information",
+      }),
+    );
+  }, [dispatch]);
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -47,19 +60,24 @@ const TeacherManagement: React.FC = () => {
       limit: itemsPerPage,
       gender: genderFilter,
     }),
-    [debouncedSearch, currentPage, itemsPerPage, genderFilter]
+    [debouncedSearch, currentPage, itemsPerPage, genderFilter],
   );
 
-  const { data: teacherData, isLoading: isTeacherLoading, isFetching} = useGetTeacherQuery(queryParams);
-  const [addTeacher, {isLoading:isAddingTeacher}] = useAddTeacherMutation();
-  const [deleteTeacher,{isLoading:isDeleting}] = useDeleteTeacherMutation();
-  const [editTeacher, {isLoading:isUpdatingTeacher}] = useEditTeacherMutation();
+  const {
+    data: teacherData,
+    isLoading: isTeacherLoading,
+    isFetching,
+  } = useGetTeacherQuery(queryParams);
+  const [addTeacher, { isLoading: isAddingTeacher }] = useAddTeacherMutation();
+  const [deleteTeacher, { isLoading: isDeleting }] = useDeleteTeacherMutation();
+  const [editTeacher, { isLoading: isUpdatingTeacher }] =
+    useEditTeacherMutation();
 
   // Fetch teacher details for view modal
   const {
     data: teacherDetailsData,
     isLoading: isLoadingDetails,
-    isFetching:isFetchingDetails,
+    isFetching: isFetchingDetails,
   } = useGetTeacherByIdQuery(viewingTeacherId!, {
     skip: !viewingTeacherId,
   });
@@ -75,7 +93,7 @@ const TeacherManagement: React.FC = () => {
         : (teacherData?.page - 1) * teacherData?.limit + 1;
     endIndex = Math.min(
       teacherData?.page * teacherData?.limit,
-      teacherData?.total
+      teacherData?.total,
     );
   }
 
@@ -85,14 +103,14 @@ const TeacherManagement: React.FC = () => {
   }, [searchTerm, genderFilter, itemsPerPage]);
 
   const onSubmit = async (data: TeacherFormData) => {
-    if(!data) return;
-    try{
+    if (!data) return;
+    try {
       const response = await addTeacher(data).unwrap();
-      if(response.success){
+      if (response.success) {
         toast.success(response.message);
         setShowFormModal(false);
       }
-    }catch(error:any){
+    } catch (error: any) {
       toast.error(error?.data?.message);
     }
   };
@@ -102,52 +120,54 @@ const TeacherManagement: React.FC = () => {
     setShowEditModal(true);
   };
 
-  const handleCloseEditModal = () =>{
+  const handleCloseEditModal = () => {
     setShowEditModal(false);
-
-  }
-  const handleUpdateTeacher= async (data:TeacherFormData)=>{
-    if(!data) return;
-    try{
-      const response = await editTeacher({data,id:viewingTeacherId}).unwrap();
-      if(response.success){
+  };
+  const handleUpdateTeacher = async (data: TeacherFormData) => {
+    if (!data) return;
+    try {
+      const response = await editTeacher({
+        data,
+        id: viewingTeacherId,
+      }).unwrap();
+      if (response.success) {
         toast.success(response.message);
         setViewingTeacherId(null);
-        setShowEditModal(false)
+        setShowEditModal(false);
       }
-    }catch(error:any){
+    } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to edit techer";
-      toast.error(errorMessage)
+      toast.error(errorMessage);
     }
-  }
+  };
 
   const handleDeleteClick = (teacher: Teacher) => {
     setDeletingTeacher(teacher);
     setShowDeleteModal(true);
   };
 
-  const handleViewDetails = (teacher:Teacher)=>{
+  const handleViewDetails = (teacher: Teacher) => {
     setViewingTeacherId(teacher.id);
     setShowViewModal(true);
-  }
+  };
 
-  const handleCloseViewModal = ()=>{
+  const handleCloseViewModal = () => {
     setViewingTeacherId(null);
     setShowViewModal(false);
-  }
+  };
 
   const handleDeleteConfirm = async () => {
     if (!deletingTeacher) return;
-    try{
+    try {
       const response = await deleteTeacher(deletingTeacher.id).unwrap();
-      if(response.success){
+      if (response.success) {
         toast.success(response.message);
         setShowDeleteModal(false);
         setDeletingTeacher(null);
       }
-    }catch(error:any){
+    } catch (error: any) {
       const errorMessage = error?.data?.message || "Failed to delete techer";
-      toast.error(errorMessage)
+      toast.error(errorMessage);
     }
   };
 
@@ -183,13 +203,13 @@ const TeacherManagement: React.FC = () => {
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
-    page: number
+    page: number,
   ) => {
     setCurrentPage(page);
   };
 
   const handleItemsPerPageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setItemsPerPage(Number(event.target.value));
   };
@@ -263,16 +283,23 @@ const TeacherManagement: React.FC = () => {
     <>
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 className="fw-bold">Teacher Management</h2>
-            <p className="text-muted">
-              Manage teacher profiles and information
-            </p>
-          </div>
+          <CommonBreadCrumb
+            items={[
+              {
+                label: "Dashboard",
+                link: "/admin/dashboard",
+                icon: <FaTachometerAlt />,
+              },
+              {
+                label: "Teacher Management",
+                active: true,
+              },
+            ]}
+          />
           <Button
             variant="primary"
             onClick={handleAddNew}
-            className="d-flex align-items-center gap-2"
+            className="d-flex align-items-center gap-2 mb-4"
           >
             <i className="fas fa-plus"></i>
             Add Teacher
@@ -337,7 +364,7 @@ const TeacherManagement: React.FC = () => {
             <div className="px-3 pb-3">{renderPaginationControls()}</div>
           </Card.Header>
           <Card.Body className="p-0">
-            {(isTeacherLoading || isFetching) ? (
+            {isTeacherLoading || isFetching ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
@@ -361,7 +388,8 @@ const TeacherManagement: React.FC = () => {
                       {teacherData?.data && teacherData?.data.length > 0 ? (
                         teacherData.data.map((item, key) => {
                           const genderConfig = getGenderBadge(item.gender);
-                           const serialNumber =(currentPage - 1) * itemsPerPage + key + 1;
+                          const serialNumber =
+                            (currentPage - 1) * itemsPerPage + key + 1;
                           return (
                             <tr key={key}>
                               <td className="fw-semibold">{serialNumber}</td>
@@ -426,7 +454,7 @@ const TeacherManagement: React.FC = () => {
                                     variant="outline-info"
                                     size="sm"
                                     title="View Details"
-                                    onClick={()=>handleViewDetails(item)}
+                                    onClick={() => handleViewDetails(item)}
                                   >
                                     <i className="fas fa-eye"></i>
                                   </Button>
@@ -473,11 +501,11 @@ const TeacherManagement: React.FC = () => {
         isUpdating={isUpdatingTeacher}
       />
 
-      <ViewTeacherDetailsModal 
+      <ViewTeacherDetailsModal
         show={showViewModal}
         onHide={handleCloseViewModal}
         isLoading={isLoadingDetails || isFetchingDetails}
-        teacher={teacherDetailsData?.data?.[0] }
+        teacher={teacherDetailsData?.data?.[0]}
       />
 
       {/* Delete Confirmation Modal */}

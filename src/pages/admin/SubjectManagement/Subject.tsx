@@ -1,5 +1,14 @@
 import React, { useState, useEffect, useMemo } from "react";
-import { Row, Col, Card, Button, Table, Form, Badge, Dropdown } from "react-bootstrap";
+import {
+  Row,
+  Col,
+  Card,
+  Button,
+  Table,
+  Form,
+  Badge,
+  Dropdown,
+} from "react-bootstrap";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
 import toast from "react-hot-toast";
@@ -12,31 +21,49 @@ import {
   useAddSubjectMutation,
   useAssignParametersMutation,
   useEditSubjectMutation,
-  useDeleteSubjectMutation
+  useDeleteSubjectMutation,
 } from "../../../features/admin/subjects/subjectApi";
 import SubjectFormModal from "./partials/SubjectFormModal";
 import { SubjectFormData } from "./partials/SubjectFormModal";
 import EvaluationParameterModal from "./partials/EvaluationParameterModal";
-import {params} from "./partials/EvaluationParameterModal";
+import { params } from "./partials/EvaluationParameterModal";
 import SubjectEditModal from "./partials/SubjectEditModal";
 import { Subject } from "../../../features/admin/subjects/utils";
 import DeleteConfirmationModal from "../../../Component/DeleteModal/DeleteConfirmationModal";
+import { useAppDispatch } from "../../../app/hooks";
+import { setPageTitle } from "../../../features/ui/uiSlice";
+import CommonBreadCrumb from "../../../Component/common/BreadCrumb";
+import { FaTachometerAlt } from "react-icons/fa";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const SubjectManagement: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setPageTitle({
+        title: "Subject Management",
+        subtitle: "Manage academic Subjects and information",
+      }),
+    );
+  }, [dispatch]);
+
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showEditModal, setShowEditModal] = useState(false);
   const [showEvaluationModal, setShowEvaluationModal] = useState(false);
-  const [selectedSubject, setSelectedSubject] = useState<{id: number, name: string} | null>(null); 
+  const [selectedSubject, setSelectedSubject] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
   const [searchTerm, setSearchTerm] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [debouncedSearch, setDebouncedSearch] = useState("");
   const [programFilter, setProgramFilter] = useState<string>("");
   const [semesterFilter, setSemesterFilter] = useState<string>("");
-  const [editingSubject,SetEditingSubject] = useState<Subject | null>(null);
+  const [editingSubject, SetEditingSubject] = useState<Subject | null>(null);
 
   const formatDate = (dateString: string) => {
     return new Date(dateString).toLocaleDateString("en-US", {
@@ -60,7 +87,7 @@ const SubjectManagement: React.FC = () => {
       page: currentPage,
       limit: itemsPerPage,
     }),
-    [debouncedSearch, programFilter, semesterFilter, currentPage, itemsPerPage]
+    [debouncedSearch, programFilter, semesterFilter, currentPage, itemsPerPage],
   );
 
   const {
@@ -69,12 +96,15 @@ const SubjectManagement: React.FC = () => {
     isFetching,
   } = useGetSubjectsQuery(queryParams);
 
-  const { data: programData, isLoading: isProgramLoading } = useGetProgramsQuery();
-  const { data: TeachersData, isLoading: isTeachersLoading } = useGetTeacherListQuery();
+  const { data: programData, isLoading: isProgramLoading } =
+    useGetProgramsQuery();
+  const { data: TeachersData, isLoading: isTeachersLoading } =
+    useGetTeacherListQuery();
   const [addSubject, { isLoading: isAddingStudent }] = useAddSubjectMutation();
-  const [assignParams,{isLoading:isAssigning}] = useAssignParametersMutation();
-  const [editSubject,{isLoading:isEditing}]=useEditSubjectMutation();
-  const [deleteSubject,{isLoading:isDeleting}]=useDeleteSubjectMutation();
+  const [assignParams, { isLoading: isAssigning }] =
+    useAssignParametersMutation();
+  const [editSubject, { isLoading: isEditing }] = useEditSubjectMutation();
+  const [deleteSubject, { isLoading: isDeleting }] = useDeleteSubjectMutation();
 
   // Calculate pagination
   let startIndex = 0;
@@ -87,7 +117,7 @@ const SubjectManagement: React.FC = () => {
         : (subjectData?.page - 1) * subjectData?.limit + 1;
     endIndex = Math.min(
       subjectData?.page * subjectData?.limit,
-      subjectData?.total
+      subjectData?.total,
     );
   }
 
@@ -96,7 +126,10 @@ const SubjectManagement: React.FC = () => {
     setCurrentPage(1);
   }, [searchTerm, programFilter, semesterFilter, itemsPerPage]);
 
-  const handleOpenEvaluationModal = (subjectId: number, subjectName: string) => {
+  const handleOpenEvaluationModal = (
+    subjectId: number,
+    subjectName: string,
+  ) => {
     setSelectedSubject({ id: subjectId, name: subjectName });
     setShowEvaluationModal(true);
   };
@@ -106,22 +139,26 @@ const SubjectManagement: React.FC = () => {
     setSelectedSubject(null);
   };
 
-  const handleSaveEvaluationParameters = async (parameters:params[]) => {
+  const handleSaveEvaluationParameters = async (parameters: params[]) => {
     try {
-      const payload={
-        subjectId:selectedSubject?.id,
-        parameters:parameters
-      }
+      const payload = {
+        subjectId: selectedSubject?.id,
+        parameters: parameters,
+      };
       const response = await toast.promise(assignParams(payload).unwrap(), {
-      loading: "Saving...",
+        loading: "Saving...",
         error: "Could not save.",
       });
-      if(response.success){
-        toast.success(response.message || "Evaluation parameters saved successfully!");
+      if (response.success) {
+        toast.success(
+          response.message || "Evaluation parameters saved successfully!",
+        );
         handleCloseEvaluationModal();
       }
-    } catch (error:any) {
-      toast.error(error?.data?.message||"Failed to save evaluation parameters");
+    } catch (error: any) {
+      toast.error(
+        error?.data?.message || "Failed to save evaluation parameters",
+      );
     }
   };
 
@@ -138,33 +175,35 @@ const SubjectManagement: React.FC = () => {
     }
   };
 
-  const handleEdit = (subjectData:Subject) => {
+  const handleEdit = (subjectData: Subject) => {
     SetEditingSubject(subjectData);
     setShowEditModal(true);
   };
 
-    const handleCloseEditModal = () => {
-      SetEditingSubject(null);
-      setShowEditModal(false);
-    };
+  const handleCloseEditModal = () => {
+    SetEditingSubject(null);
+    setShowEditModal(false);
+  };
 
-    const handleUpdateProgram = async (data: SubjectFormData) => {
-      // if (!data) return;
-      try {
-        const response = await toast.promise(editSubject({id:editingSubject?.id,data }).unwrap(),{
-          loading:"Editing...",
-          error:"Failed to Update"
-        });
-        if(response.success){
-          toast.success(response.message);
-          handleCloseEditModal();
-        }
-
-      } catch (error: any) {
-        const errorMessage = error?.data?.message || "Failed to update subject";
-        toast.error(errorMessage);
+  const handleUpdateProgram = async (data: SubjectFormData) => {
+    // if (!data) return;
+    try {
+      const response = await toast.promise(
+        editSubject({ id: editingSubject?.id, data }).unwrap(),
+        {
+          loading: "Editing...",
+          error: "Failed to Update",
+        },
+      );
+      if (response.success) {
+        toast.success(response.message);
+        handleCloseEditModal();
       }
-    };
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to update subject";
+      toast.error(errorMessage);
+    }
+  };
 
   const handleDeleteClick = (subjectId: number, subjectName: string) => {
     setSelectedSubject({ id: subjectId, name: subjectName });
@@ -176,22 +215,25 @@ const SubjectManagement: React.FC = () => {
     setSelectedSubject(null);
   };
 
-    const handleDeleteConfirm = async () => {
-      if (!selectedSubject) return;
-      try {
-        const response = await toast.promise(deleteSubject(selectedSubject.id).unwrap(),{
-          loading:"Deleting...",
-          error:"Failed to delete subject"
-        });
-        if (response.success) {
-          toast.success(response.message);
-          handleCloseDeleteModal();  
-        }
-      } catch (error: any) {
-        const errorMessage = error?.data?.message || "Failed to delete program";
-        toast.error(errorMessage);
+  const handleDeleteConfirm = async () => {
+    if (!selectedSubject) return;
+    try {
+      const response = await toast.promise(
+        deleteSubject(selectedSubject.id).unwrap(),
+        {
+          loading: "Deleting...",
+          error: "Failed to delete subject",
+        },
+      );
+      if (response.success) {
+        toast.success(response.message);
+        handleCloseDeleteModal();
       }
-    };
+    } catch (error: any) {
+      const errorMessage = error?.data?.message || "Failed to delete program";
+      toast.error(errorMessage);
+    }
+  };
 
   const handleCloseFormModal = () => {
     setShowFormModal(false);
@@ -203,13 +245,13 @@ const SubjectManagement: React.FC = () => {
 
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
-    page: number
+    page: number,
   ) => {
     setCurrentPage(page);
   };
 
   const handleItemsPerPageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setItemsPerPage(Number(event.target.value));
   };
@@ -284,16 +326,23 @@ const SubjectManagement: React.FC = () => {
     <>
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 className="fw-bold">Subject Management</h2>
-            <p className="text-muted">
-              Manage academic Subjects and information
-            </p>
-          </div>
+          <CommonBreadCrumb
+            items={[
+              {
+                label: "Dashboard",
+                link: "/admin/dashboard",
+                icon: <FaTachometerAlt />,
+              },
+              {
+                label: "Subject Management",
+                active: true,
+              },
+            ]}
+          />
           <Button
             variant="primary"
             onClick={handleAddNew}
-            className="d-flex align-items-center gap-2"
+            className="d-flex align-items-center gap-2 mb-4"
           >
             <i className="fas fa-plus"></i>
             Add Subjects
@@ -479,23 +528,30 @@ const SubjectManagement: React.FC = () => {
                                   >
                                     <i className="fas fa-edit"></i>
                                   </Button>
-                                  
+
                                   {/* Evaluation Parameters Button */}
                                   <Button
                                     variant="outline-info"
                                     size="sm"
-                                    onClick={() => handleOpenEvaluationModal(item.id, item.name)}
+                                    onClick={() =>
+                                      handleOpenEvaluationModal(
+                                        item.id,
+                                        item.name,
+                                      )
+                                    }
                                     title="Evaluation Parameters"
                                     className="d-flex align-items-center"
                                   >
                                     <i className="fas fa-sliders-h"></i>
                                   </Button>
-                                  
+
                                   {/* Delete Button */}
                                   <Button
                                     variant="outline-danger"
                                     size="sm"
-                                    onClick={() => handleDeleteClick(item.id,item.name)}
+                                    onClick={() =>
+                                      handleDeleteClick(item.id, item.name)
+                                    }
                                     title="Delete"
                                     className="d-flex align-items-center"
                                   >
@@ -543,7 +599,7 @@ const SubjectManagement: React.FC = () => {
           subjectId={selectedSubject.id}
           subjectName={selectedSubject.name}
           onSave={handleSaveEvaluationParameters}
-          isSaving={isAssigning} 
+          isSaving={isAssigning}
         />
       )}
 

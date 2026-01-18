@@ -2,6 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { persistReducer, persistStore } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import authSlice from "../features/auth/authSlice";
+import uiReducer from "../features/ui/uiSlice";
 import { authApi } from "../features/auth/authApi";
 import { dashboardApi } from "../features/admin/dashboard/dahboardApi";
 import { adminStudentApi } from "../features/admin/students/studentApi";
@@ -20,6 +21,7 @@ const persistedReducer = persistReducer(persistConfig, authSlice);
 export const store = configureStore({
   reducer: {
     auth: persistedReducer,
+    ui: uiReducer,
     [authApi.reducerPath]: authApi.reducer,
     [dashboardApi.reducerPath]: dashboardApi.reducer,
     [adminStudentApi.reducerPath]: adminStudentApi.reducer,
@@ -41,6 +43,7 @@ export const store = configureStore({
       adminApi.middleware,
     ),
 });
+
 
 export const persistor = persistStore(store);
 export type RootState = ReturnType<typeof store.getState>;

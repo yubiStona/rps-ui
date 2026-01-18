@@ -12,31 +12,30 @@ import {
   useDeleteStudentMutation,
   useAddStudentMutation,
   useGetStudentByIdQuery,
-  useEditStudentMutation
+  useEditStudentMutation,
 } from "../../../features/admin/students/studentApi";
 import { Student } from "../../../features/admin/students/utils";
 import toast from "react-hot-toast";
 import { StudentForm } from "../../../features/admin/students/utils";
-import { FaUserGraduate } from "react-icons/fa";
+import { FaTachometerAlt, FaUserGraduate } from "react-icons/fa";
 import { EditStudentFormData } from "./validations/editStudentSchema";
-
-// interface StudentForm {
-//   firstName: string;
-//   lastName: string;
-//   email: string;
-//   phone: string;
-//   rollNumber: string;
-//   enrollmentDate: string;
-//   registrationNumber: string;
-//   gender: "M" | "F" | "O";
-//   DOB: string;
-//   address1: string;
-//   programId: number;
-// }
+import { useAppDispatch } from "../../../app/hooks";
+import { setPageTitle } from "../../../features/ui/uiSlice";
+import CommonBreadCrumb from "../../../Component/common/BreadCrumb";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const StudentManagement: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setPageTitle({
+        title: "Student Management",
+        subtitle: "Manage student registrations and information",
+      }),
+    );
+  }, [dispatch]);
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -74,14 +73,19 @@ const StudentManagement: React.FC = () => {
       semesterFilter,
       programFilter,
       statusFilter,
-    ]
+    ],
   );
 
-  const { data: studentsData, isLoading, isFetching } = useGetStudentsQuery(queryParams);
+  const {
+    data: studentsData,
+    isLoading,
+    isFetching,
+  } = useGetStudentsQuery(queryParams);
   const { data: programData } = useGetProgramsQuery();
   const [deleteStudent, { isLoading: isDeleting }] = useDeleteStudentMutation();
   const [addStudent, { isLoading: isAddingStudent }] = useAddStudentMutation();
-  const [editStudent, {isLoading:isUpdatingStudent}] = useEditStudentMutation();
+  const [editStudent, { isLoading: isUpdatingStudent }] =
+    useEditStudentMutation();
 
   // Fetch student details for view modal
   const {
@@ -102,7 +106,7 @@ const StudentManagement: React.FC = () => {
         : (studentsData?.page - 1) * studentsData?.limit + 1;
     endIndex = Math.min(
       studentsData?.page * studentsData?.limit,
-      studentsData?.total
+      studentsData?.total,
     );
   }
 
@@ -134,19 +138,22 @@ const StudentManagement: React.FC = () => {
     setViewingStudentId(null);
   };
 
-  const handleEditConfirm = async (data: EditStudentFormData) =>{
-    if(!data) return;
-    try{
-      const response = await editStudent({data,id:viewingStudentId}).unwrap();
-      if(response.success){
+  const handleEditConfirm = async (data: EditStudentFormData) => {
+    if (!data) return;
+    try {
+      const response = await editStudent({
+        data,
+        id: viewingStudentId,
+      }).unwrap();
+      if (response.success) {
         toast.success(response.message);
         setShowEditModal(false);
         setViewingStudentId(null);
       }
-    }catch(error:any){
+    } catch (error: any) {
       toast.error(error?.data?.message);
     }
-  }
+  };
 
   const handleDeleteClick = (student: Student) => {
     setDeletingStudent(student);
@@ -219,16 +226,15 @@ const StudentManagement: React.FC = () => {
     return config[gender];
   };
 
-
   const handlePageChange = (
     event: React.ChangeEvent<unknown>,
-    page: number
+    page: number,
   ) => {
     setCurrentPage(page);
   };
 
   const handleItemsPerPageChange = (
-    event: React.ChangeEvent<HTMLSelectElement>
+    event: React.ChangeEvent<HTMLSelectElement>,
   ) => {
     setItemsPerPage(Number(event.target.value));
     console.log("query params: ", queryParams);
@@ -303,16 +309,23 @@ const StudentManagement: React.FC = () => {
     <>
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 className="fw-bold">Student Management</h2>
-            <p className="text-muted">
-              Manage student registrations and information
-            </p>
-          </div>
+          <CommonBreadCrumb
+            items={[
+              {
+                label: "Dashboard",
+                link: "/admin/dashboard",
+                icon: <FaTachometerAlt />,
+              },
+              {
+                label: "Student Management",
+                active: true,
+              },
+            ]}
+          />
           <Button
             variant="primary"
             onClick={handleAddNew}
-            className="d-flex align-items-center gap-2"
+            className="d-flex align-items-center gap-2 mb-4"
           >
             <i className="fas fa-plus"></i>
             Add Student
@@ -416,7 +429,7 @@ const StudentManagement: React.FC = () => {
             <div className="px-3 pb-3">{renderPaginationControls()}</div>
           </Card.Header>
           <Card.Body className="p-0">
-            {(isLoading || isFetching) ? (
+            {isLoading || isFetching ? (
               <div className="text-center py-5">
                 <div className="spinner-border text-primary" role="status">
                   <span className="visually-hidden">Loading...</span>
@@ -442,7 +455,8 @@ const StudentManagement: React.FC = () => {
                       {studentsData?.data && studentsData?.data?.length > 0 ? (
                         studentsData.data.map((item, key) => {
                           const genderConfig = getGenderBadge(item.gender);
-                          const serialNumber =(currentPage - 1) * itemsPerPage + key + 1;
+                          const serialNumber =
+                            (currentPage - 1) * itemsPerPage + key + 1;
                           return (
                             <tr key={key}>
                               <td className="fw-semibold">{serialNumber}.</td>
@@ -598,9 +612,9 @@ const StudentManagement: React.FC = () => {
       <StudentEditModal
         show={showEditModal}
         onHide={handleCloseEditModal}
-        onSubmit={handleEditConfirm} 
-        isLoading={isUpdatingStudent} 
-        isGettingData = {isLoadingDetails || isStudentDetailsFetching}
+        onSubmit={handleEditConfirm}
+        isLoading={isUpdatingStudent}
+        isGettingData={isLoadingDetails || isStudentDetailsFetching}
         programs={programData?.data || []}
         studentData={studentDetailsData?.data?.[0]}
       />

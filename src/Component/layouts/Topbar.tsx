@@ -1,6 +1,7 @@
 import React from "react";
 import { Navbar, Nav, Dropdown, Badge, Container } from "react-bootstrap";
 import { useNavigate } from "react-router-dom";
+import { useAppSelector } from "../../app/hooks";
 
 interface TopbarProps {
   onToggleSidebar: () => void;
@@ -10,6 +11,7 @@ interface TopbarProps {
 
 const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
   const navigate = useNavigate();
+  const { title, subtitle } = useAppSelector((state) => state.ui);
   // Format role display name
   const getRoleDisplayName = (role: string) => {
     switch (role) {
@@ -52,6 +54,9 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
     }
   };
 
+  const displayTitle = title || getDashboardTitle(user.role);
+  const displaySubtitle = subtitle || `Welcome back, ${user.name}. ${getDashboardSubtitle(user.role)}`;
+
   return (
     <Navbar
       className="bg-white shadow-sm border-bottom position-sticky top-0"
@@ -79,17 +84,17 @@ const Topbar: React.FC<TopbarProps> = ({ onToggleSidebar, onLogout, user }) => {
               <i className="fas fa-bars" style={{ fontSize: "20px" }}></i>
             </button>
             <div className="d-flex flex-column justify-content-center">
-              <h4
+              <h1
                 className="fw-bold mb-1 text-dark"
-                style={{ fontSize: "20px", lineHeight: "1.2" }}
+                style={{ fontSize: "28px", lineHeight: "1.2" }}
               >
-                {getDashboardTitle(user.role)}
-              </h4>
+                {displayTitle}
+              </h1>
               <p
                 className="text-muted mb-0 d-none d-md-block"
-                style={{ fontSize: "14px", lineHeight: "1.2" }}
+                style={{ fontSize: "16px", lineHeight: "1.2" }}
               >
-                Welcome back, {user.name}. {getDashboardSubtitle(user.role)}
+                {displaySubtitle}
               </p>
             </div>
           </div>

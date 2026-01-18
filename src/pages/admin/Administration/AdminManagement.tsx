@@ -5,6 +5,7 @@ import Stack from "@mui/material/Stack";
 import AdminFormModal from "./Partials/AdminFormModal";
 import DeleteConfirmationModal from "./Partials/DeleteConfirmationModal";
 import AdminEditModal from "./Partials/AdminEditModal";
+import CommonBreadCrumb from "../../../Component/common/BreadCrumb";
 
 import {
   useGetAdminByIdQuery,
@@ -16,12 +17,25 @@ import {
 import ViewAdminDetailsModal from "./Partials/AdminDetailsModal";
 import { AdminFormData } from "../../../features/admin/admins/utils";
 import toast from "react-hot-toast";
-import { FaUserCog } from "react-icons/fa";
+import { FaUserCog, FaTachometerAlt } from "react-icons/fa";
 import { Admin } from "../../../features/admin/admins/utils";
+import { useAppDispatch } from "../../../app/hooks";
+import { setPageTitle } from "../../../features/ui/uiSlice";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const AdminManagement: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    dispatch(
+      setPageTitle({
+        title: "User Management",
+        subtitle: "Manage Admins, Users and Login",
+      }),
+    );
+  }, [dispatch]);
+
   const [showFormModal, setShowFormModal] = useState(false);
   const [showDeleteModal, setShowDeleteModal] = useState(false);
   const [showViewModal, setShowViewModal] = useState(false);
@@ -264,14 +278,23 @@ const AdminManagement: React.FC = () => {
     <>
       <div className="mb-4">
         <div className="d-flex justify-content-between align-items-center">
-          <div>
-            <h2 className="fw-bold">User Management</h2>
-            <p className="text-muted">Manage Admins, Users and Login</p>
-          </div>
+          <CommonBreadCrumb
+            items={[
+              {
+                label: "Dashboard",
+                link: "/admin/dashboard",
+                icon: <FaTachometerAlt />,
+              },
+              {
+                label: "User Management",
+                active: true,
+              },
+            ]}
+          />
           <Button
             variant="primary"
             onClick={handleAddNew}
-            className="d-flex align-items-center gap-2"
+            className="d-flex align-items-center gap-2 mb-4"
           >
             <i className="fas fa-plus"></i>
             Add Admin

@@ -11,8 +11,17 @@ import StudentDistributionChart from "./StudentDistributionChart";
 import RecentActivity from "./RecentActivity";
 import "./Dashboard.css";
 import { useGetStatisticsQuery } from "../../features/admin/dashboard/dahboardApi";
+import { useAppDispatch } from "../../app/hooks";
+import { clearPageTitle } from "../../features/ui/uiSlice";
 
 const AdminDashboard: React.FC = () => {
+  const dispatch = useAppDispatch();
+
+  useEffect(() => {
+    // Clear page title to show default welcome message in Topbar
+    dispatch(clearPageTitle());
+  }, [dispatch]);
+
   const [performanceData] = useState([
     { course: "Mathematics", score: 85 },
     { course: "Science", score: 78 },
