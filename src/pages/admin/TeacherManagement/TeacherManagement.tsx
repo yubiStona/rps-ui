@@ -504,8 +504,7 @@ const TeacherManagement: React.FC = () => {
       <ViewTeacherDetailsModal
         show={showViewModal}
         onHide={handleCloseViewModal}
-        isLoading={isLoadingDetails || isFetchingDetails}
-        teacher={teacherDetailsData?.data?.[0]}
+        teacherId={viewingTeacherId}
       />
 
       {/* Delete Confirmation Modal */}

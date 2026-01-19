@@ -1,20 +1,21 @@
 import React from "react";
 import { Modal, Button, Spinner, Row, Col, Card } from "react-bootstrap";
 import { Teacher } from "../../../../features/admin/teacher/utils";
+import { useGetTeacherByIdQuery } from "../../../../features/admin/teacher/teacherApi";
 
 interface ViewTeacherDetailsModalProps {
   show: boolean;
   onHide: () => void;
-  teacher?: Teacher;
-  isLoading: boolean;
+  teacherId:number | null;
 }
 
 const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
   show,
   onHide,
-  teacher,
-  isLoading = false,
+  teacherId,
 }) => {
+  const {data:teacherData,isLoading, isFetching} = useGetTeacherByIdQuery(teacherId!, {skip:!teacherId, refetchOnMountOrArgChange:true});
+  const teacher = teacherData?.data?.[0];
   const getGenderText = (gender: "M" | "F" | "O") => {
     switch (gender) {
       case "M":
@@ -41,7 +42,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
     }
   };
 
-  if (isLoading) {
+  if (isLoading || isFetching) {
     return (
       <Modal show={show} onHide={onHide} centered size="lg">
         <Modal.Header closeButton className="border-bottom-0">
@@ -88,7 +89,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
               className="rounded-circle bg-info bg-opacity-10 p-3 d-flex align-items-center justify-content-center"
               style={{ width: "70px", height: "70px" }}
             >
-              <i className="fas fa-chalkboard-teacher text-info fs-3"></i>
+              <i className="fas fa-chalkboard-teacher text-primary fs-3"></i>
             </div>
           </div>
           <div className="flex-grow-1 ms-3">
@@ -110,7 +111,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
             <Card className="border-0 shadow-sm h-100">
               <Card.Header className="bg-white border-bottom py-2">
                 <h6 className="mb-0 fw-semibold">
-                  <i className="fas fa-user-circle text-info me-2"></i>
+                  <i className="fas fa-user-circle text-primary me-2"></i>
                   Personal Information
                 </h6>
               </Card.Header>
@@ -146,7 +147,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
                           : teacher.gender === "F"
                           ? "fa-venus"
                           : "fa-genderless"
-                      } me-2 text-info`}
+                      } me-2 text-primary`}
                     ></i>
                     {genderText}
                   </p>
@@ -158,7 +159,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
                       Date of Birth
                     </label>
                     <p className="mb-0 fw-semibold">
-                      <i className="fas fa-birthday-cake me-2 text-info"></i>
+                      <i className="fas fa-birthday-cake me-2 text-primary"></i>
                       {formatDate(teacher.DOB)}
                     </p>
                   </div>
@@ -169,7 +170,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
                     Account Created
                   </label>
                   <p className="mb-0 fw-semibold">
-                    <i className="fas fa-calendar-check me-2 text-info"></i>
+                    <i className="fas fa-calendar-check me-2 text-primary"></i>
                     {formatDate(teacher.createdAt)}
                   </p>
                 </div>
@@ -182,7 +183,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
             <Card className="border-0 shadow-sm h-100">
               <Card.Header className="bg-white border-bottom py-2">
                 <h6 className="mb-0 fw-semibold">
-                  <i className="fas fa-address-book text-info me-2"></i>
+                  <i className="fas fa-address-book text-primary me-2"></i>
                   Contact Information
                 </h6>
               </Card.Header>
@@ -195,8 +196,8 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
                     href={`mailto:${teacher.email}`}
                     className="text-decoration-none d-block"
                   >
-                    <i className="fas fa-envelope me-2 text-info"></i>
-                    <span className="fw-semibold text-info">
+                    <i className="fas fa-envelope me-2 text-primary"></i>
+                    <span className="fw-semibold text-primary">
                       {teacher.email}
                     </span>
                   </a>
@@ -211,8 +212,8 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
                       href={`tel:${teacher.phone}`}
                       className="text-decoration-none d-block"
                     >
-                      <i className="fas fa-phone me-2 text-info"></i>
-                      <span className="fw-semibold text-info">
+                      <i className="fas fa-phone me-2 text-primary"></i>
+                      <span className="fw-semibold text-primary">
                         {teacher.phone}
                       </span>
                     </a>
@@ -229,7 +230,7 @@ const ViewTeacherDetailsModal: React.FC<ViewTeacherDetailsModalProps> = ({
                     Address
                   </label>
                   <p className="mb-0 fw-semibold">
-                    <i className="fas fa-map-marker-alt me-2 text-info"></i>
+                    <i className="fas fa-map-marker-alt me-2 text-primary"></i>
                     {teacher.address1}
                     {/* {teacher.address2 && (
                       <span className="d-block text-muted small mt-1 ms-4">

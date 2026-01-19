@@ -74,7 +74,7 @@ const Sidebar: React.FC<SidebarProps> = ({ role, isOpen = true, onClose }) => {
             id: 8,
             label: "Reports",
             icon: <FaClipboardList />,
-            path: "/reports",
+            path: "/admin/reports",
           },
           { id: 9, label: "Settings", icon: <FaCog />, path: "/settings" },
           {

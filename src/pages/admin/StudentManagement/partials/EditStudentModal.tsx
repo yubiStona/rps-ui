@@ -139,7 +139,7 @@ const StudentEditModal: React.FC<StudentEditModalProps> = ({
             </div>
             <div>
               <h5 className="mb-0">Edit Student Profile</h5>
-              <small className="text-muted">Update student information (All fields are optional)</small>
+              <small className="text-muted">Update student information</small>
             </div>
           </div>
         </Modal.Title>

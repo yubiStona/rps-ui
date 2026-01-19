@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from "react";
+import { useNavigate } from "react-router-dom";
 import { Row, Col, Card, Button, Table, Badge, Form } from "react-bootstrap";
 import Pagination from "@mui/material/Pagination";
 import Stack from "@mui/material/Stack";
@@ -27,6 +28,7 @@ const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
 const StudentManagement: React.FC = () => {
   const dispatch = useAppDispatch();
+  const navigate = useNavigate();
 
   useEffect(() => {
     dispatch(
@@ -555,6 +557,14 @@ const StudentManagement: React.FC = () => {
                                     title="View Details"
                                   >
                                     <i className="fas fa-eye"></i>
+                                  </Button>
+                                  <Button
+                                    variant="outline-success"
+                                    size="sm"
+                                    onClick={() => navigate('/admin/students/marks-entry')}
+                                    title="Marks Entry"
+                                  >
+                                    <i className="fas fa-file-alt"></i>
                                   </Button>
                                 </div>
                               </td>

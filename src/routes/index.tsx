@@ -14,6 +14,7 @@ import ProgramManagement from "../pages/admin/Program management/Programs";
 import FacultyManagement from "../pages/admin/Faculty/FacultyManagement";
 import SubjectManagement from "../pages/admin/SubjectManagement/Subject";
 import AdminManagement from "../pages/admin/Administration/AdminManagement";
+import MarksEntryPage from "../Component/Marks/MarksEntryPage";
 const AppRouter = () => {
   const { user } = useAppSelector((state) => state.auth);
 
@@ -120,6 +121,17 @@ const AppRouter = () => {
             <ProtectedRoute requiredRole="admin">
               <DashboardLayout>
                 <SubjectManagement />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route 
+          path="/admin/students/marks-entry"
+          element={
+            <ProtectedRoute requiredRole="admin">
+              <DashboardLayout>
+                <MarksEntryPage/>
               </DashboardLayout>
             </ProtectedRoute>
           }
