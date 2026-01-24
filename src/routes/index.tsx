@@ -15,8 +15,9 @@ import FacultyManagement from "../pages/admin/Faculty/FacultyManagement";
 import SubjectManagement from "../pages/admin/SubjectManagement/Subject";
 import AdminManagement from "../pages/admin/Administration/AdminManagement";
 import MarksEntryPage from "../Component/Marks/MarksEntryPage";
+import { RootState } from "../app/store";
 const AppRouter = () => {
-  const { user } = useAppSelector((state) => state.auth);
+  const { user } = useAppSelector((state:RootState) => state.auth);
 
   const isAuthenticated = !!user;
 

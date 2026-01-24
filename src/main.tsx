@@ -8,6 +8,7 @@ import { Provider } from 'react-redux';
 import { store } from './app/store';
 import "./Component/AuthWrapper/css/auth.css"
 import './css/index.css'
+import 'react-loading-skeleton/dist/skeleton.css'
 
 createRoot(document.getElementById('root')!).render(
     <Provider store={store}>

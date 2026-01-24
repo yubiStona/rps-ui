@@ -13,6 +13,7 @@ import "./Dashboard.css";
 import { useGetStatisticsQuery } from "../../features/admin/dashboard/dahboardApi";
 import { useAppDispatch } from "../../app/hooks";
 import { clearPageTitle } from "../../features/ui/uiSlice";
+import Skeleton from "react-loading-skeleton";
 
 const AdminDashboard: React.FC = () => {
   const dispatch = useAppDispatch();
@@ -40,7 +41,7 @@ const AdminDashboard: React.FC = () => {
     return `hsl(${hue}, 65%, 55%)`;
   };
 
-  const {data:statisticsData,isLoading} = useGetStatisticsQuery();
+  const {data:statisticsData,isLoading,isFetching} = useGetStatisticsQuery(undefined,{refetchOnMountOrArgChange:true});
 
   useEffect(() => {
     if (!statisticsData?.data?.studentsDistributions) return;
@@ -130,10 +131,34 @@ const AdminDashboard: React.FC = () => {
         {stats.map((stat, index) => (
           <Col xs={12} sm={6} lg={3} key={index}>
             <Card className="border-0 shadow-sm stat-card">
-              {isLoading ? (
-                <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 120 }}>
-                  <span className="spinner-border text-primary" role="status" aria-hidden="true"></span>
-                </div>
+              {isLoading || isFetching ? (
+                // <div className="d-flex justify-content-center align-items-center" style={{ minHeight: 120 }}>
+                //   <span className="spinner-border text-primary" role="status" aria-hidden="true"></span>
+                // </div>
+                <Card.Body>
+                  <div className="d-flex align-items-center">
+                    {/* Skeleton for the icon */}
+                    <Skeleton 
+                      circle 
+                      width={56} 
+                      height={56} 
+                      className="me-3"
+                    />
+                    <div className="stat-info flex-grow-1">
+                      {/* Skeleton for the main value */}
+                      <Skeleton 
+                        width={70} 
+                        height={28} 
+                        className="mb-2"
+                      />
+                      {/* Skeleton for the title */}
+                      <Skeleton 
+                        width="50%" 
+                        height={20}
+                      />
+                    </div>
+                  </div>
+                </Card.Body>
               ) : (
                 <Card.Body>
                   <div className="d-flex align-items-center">

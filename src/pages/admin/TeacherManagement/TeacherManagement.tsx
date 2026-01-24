@@ -20,6 +20,7 @@ import { FaChalkboardTeacher, FaTachometerAlt } from "react-icons/fa";
 import { setPageTitle } from "../../../features/ui/uiSlice";
 import { useAppDispatch } from "../../../app/hooks";
 import CommonBreadCrumb from "../../../Component/common/BreadCrumb";
+import AssignSubjectsModal from "./Partials/AssignSubjects";
 
 const ITEMS_PER_PAGE_OPTIONS = [5, 10, 15, 20, 50];
 
@@ -45,6 +46,11 @@ const TeacherManagement: React.FC = () => {
   const [genderFilter, setGenderFilter] = useState<string>("all");
   const [itemsPerPage, setItemsPerPage] = useState<number>(10);
   const [debouncedSearch, setDebouncedSearch] = useState("");
+  const [showAssignModal, setShowAssignModal] = useState(false);
+  const [selectedTeacher, setSelectedTeacher] = useState<{
+    id: number;
+    name: string;
+  } | null>(null);
 
   useEffect(() => {
     const timer = setTimeout(() => {
@@ -217,6 +223,11 @@ const TeacherManagement: React.FC = () => {
   const clearFilters = () => {
     setSearchTerm("");
     setGenderFilter("all");
+  };
+
+  const handleAssignClick = (teacherId: number, teacherName: string) => {
+    setSelectedTeacher({ id: teacherId, name: teacherName });
+    setShowAssignModal(true);
   };
 
   // Render pagination controls component (reusable)
@@ -451,6 +462,14 @@ const TeacherManagement: React.FC = () => {
                                     <i className="fas fa-trash"></i>
                                   </Button>
                                   <Button
+                                    variant="outline-primary"
+                                    size="sm"
+                                    onClick={() => handleAssignClick(item.id, `${item.firstName} ${item.lastName}`)}
+                                    title="Assign Subjects"
+                                  >
+                                    <i className="fas fa-book"></i>
+                                  </Button>
+                                  <Button
                                     variant="outline-info"
                                     size="sm"
                                     title="View Details"
@@ -506,6 +525,18 @@ const TeacherManagement: React.FC = () => {
         onHide={handleCloseViewModal}
         teacherId={viewingTeacherId}
       />
+
+      {selectedTeacher && (
+        <AssignSubjectsModal
+          show={showAssignModal}
+          onHide={() => {
+            setShowAssignModal(false);
+            setSelectedTeacher(null);
+          }}
+          teacherId={selectedTeacher.id}
+          teacherName={selectedTeacher.name}
+        />
+      )}
 
       {/* Delete Confirmation Modal */}
       <DeleteConfirmationModal

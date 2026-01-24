@@ -9,7 +9,8 @@ export const AdminStudentEndpoints: EndpointType = {
     PROGRAM_LIST:"/programs/program-list",
     FACULTY_LIST:"/faculties/faculty-list",
     STUDENT_ACTION:"/students",
-    TEACHER_LIST:"/teacher/teacher-list"
+    TEACHER_LIST:"/teacher/teacher-list",
+    SUBJECT_LIST:"/subject/students-subject-eval-param"
 }
 
 export default AdminStudentEndpoints;

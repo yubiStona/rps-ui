@@ -99,3 +99,32 @@ export interface StudentForm {
   address1: string;
   programId: number;
 }
+
+interface EvaluationParameter {
+  weight:number;
+  id:number;
+  code:string;
+  name:string;
+  assigned:number;
+}
+
+export interface StudentSubjectData {
+  id:number;
+  name:string;
+  code:string;
+  semester:number;
+  type:string;
+  subjectTeacher:null;
+  evaluationParameters:EvaluationParameter[]
+}
+
+export interface StudentSubjectResponse{
+  success: boolean;
+  statusCode: number;
+  message: string;
+  data: StudentSubjectData[];
+}
+
+export interface Param{
+  studentId:number;
+}

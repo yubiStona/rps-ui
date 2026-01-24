@@ -1,7 +1,13 @@
 import { createApi } from "@reduxjs/toolkit/query/react";
 import baseQuery from "../../api/apislice";
 import { AdminTeacherEndpoints } from "./endpoints";
-import { TeacherListResponse, TeacherListParams, TeacherDetailResponseById } from "./utils";
+import { 
+    TeacherListResponse, 
+    TeacherListParams, 
+    TeacherDetailResponseById,
+    SubjectAssignListResponse,
+    Params 
+} from "./utils";
 
 export const adminTeacherApi = createApi({
     reducerPath:"adminTeacherApi",
@@ -68,6 +74,20 @@ export const adminTeacherApi = createApi({
                 url: `${AdminTeacherEndpoints.TEACHER_ACTION}?id=${id}`,
                 method: "GET"
             })
+        }),
+        getSubjectAssignList:builder.query<SubjectAssignListResponse,Params>({
+            query:(param)=>({
+                url:AdminTeacherEndpoints.SUBJECT_ASSIGN_LIST,
+                method:"GET",
+                params:param
+            })
+        }),
+        assignSubject:builder.mutation({
+            query:(data)=>({
+                url:AdminTeacherEndpoints.ASSIGN_SUBJECT,
+                method:"POST",
+                body:data
+            })
         })
     })
 })
@@ -77,5 +97,7 @@ export const {
     useGetTeacherByIdQuery,
     useAddTeacherMutation,
     useDeleteTeacherMutation,
-    useEditTeacherMutation
+    useEditTeacherMutation,
+    useGetSubjectAssignListQuery,
+    useAssignSubjectMutation
 } = adminTeacherApi

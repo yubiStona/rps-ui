@@ -43,4 +43,36 @@ export interface TeacherFormData {
   DOB: string;
 }
 
+interface Program{
+  id:number;
+  name:string;
+  code:string
+}
+
+interface SubjectTeacher{
+  id:number;
+  firstName:string;
+  lastName:string;
+}
+
+export interface SubjectList{
+  id:number;
+  name:string;
+  code:string;
+  semester:number
+  type:number;
+  program:Program;
+  subjectTeacher:SubjectTeacher;
+}
+
+export interface SubjectAssignListResponse {
+  success: boolean;
+  message: string;
+  data: SubjectList[];
+}
+
+export interface Params{
+  teacherId:number;
+}
+
 export type TeacherEditFormData = Partial<TeacherFormData>;

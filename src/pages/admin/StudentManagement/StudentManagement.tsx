@@ -561,7 +561,7 @@ const StudentManagement: React.FC = () => {
                                   <Button
                                     variant="outline-success"
                                     size="sm"
-                                    onClick={() => navigate('/admin/students/marks-entry')}
+                                    onClick={() => navigate('/admin/students/marks-entry',{state:{id:item.id,item}})}
                                     title="Marks Entry"
                                   >
                                     <i className="fas fa-file-alt"></i>
