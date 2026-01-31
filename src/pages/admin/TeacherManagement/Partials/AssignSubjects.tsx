@@ -36,6 +36,7 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
     subjectId: number;
     subjectName: string;
     assignedTo: string;
+    isCurrentTeacher: boolean;
   } | null>(null);
 
   useEffect(() => {
@@ -77,17 +78,32 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
 
   const handleSubjectToggle = (subjectId: number, subject: SubjectList) => {
     const isAssigned = !!subject.subjectTeacher;
+    const isAssignedToCurrentTeacher = subject.subjectTeacher?.id === teacherId;
     
-    if (isAssigned) {
-      // Show confirmation for already assigned subject
+    // If subject is already assigned to current teacher, just toggle selection
+    if (isAssignedToCurrentTeacher) {
+      setSelectedSubjectIds(prev => {
+        if (prev.includes(subjectId)) {
+          return prev.filter(id => id !== subjectId);
+        } else {
+          return [...prev, subjectId];
+        }
+      });
+      return;
+    }
+    
+    // If assigned to another teacher, show confirmation modal
+    if (isAssigned && !isAssignedToCurrentTeacher) {
       setAlreadyAssignedSubject({
         subjectId,
         subjectName: subject.name,
-        assignedTo: `${subject.subjectTeacher?.firstName} ${subject.subjectTeacher?.lastName}`
+        assignedTo: `${subject.subjectTeacher?.firstName} ${subject.subjectTeacher?.lastName}`,
+        isCurrentTeacher: false
       });
       return;
     }
 
+    // If not assigned, toggle normally
     setSelectedSubjectIds(prev => {
       if (prev.includes(subjectId)) {
         return prev.filter(id => id !== subjectId);
@@ -151,13 +167,24 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
     }
   };
 
+  // Pre-select subjects that are already assigned to this teacher
+  useEffect(() => {
+    if (subjects.length > 0 && show) {
+      const currentTeacherSubjectIds = subjects
+        .filter(subject => subject.subjectTeacher?.id === teacherId)
+        .map(subject => subject.id);
+      
+      setSelectedSubjectIds(currentTeacherSubjectIds);
+    }
+  }, [subjects, teacherId, show]);
+
   // Count statistics
   const totalSubjects = subjects.length;
   const availableSubjects = subjects.filter(s => !s.subjectTeacher).length;
   const assignedSubjects = subjects.filter(s => s.subjectTeacher).length;
   const selectedAssignedSubjects = selectedSubjectIds.filter(id => {
     const subject = subjects.find(s => s.id === id);
-    return subject?.subjectTeacher;
+    return subject?.subjectTeacher && subject.subjectTeacher.id !== teacherId;
   }).length;
 
   return (
@@ -170,6 +197,7 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
         backdrop="static"
         keyboard={false}
         scrollable
+        className={alreadyAssignedSubject ? "modal-blur" : ""}
       >
         <Modal.Header closeButton className="bg-light text-dark border-bottom">
           <Modal.Title>
@@ -271,6 +299,7 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
             >
               {subjects.map((subject) => {
                 const isAssigned = !!subject.subjectTeacher;
+                const isAssignedToCurrentTeacher = subject.subjectTeacher?.id === teacherId;
                 const isSelected = selectedSubjectIds.includes(subject.id);
                 const assignedToName = subject.subjectTeacher 
                   ? `${subject.subjectTeacher.firstName} ${subject.subjectTeacher.lastName}`
@@ -279,12 +308,19 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
                 return (
                   <div
                     key={subject.id}
-                    className={`card mb-3 border-start ${isAssigned ? 'border-warning' : 'border-success'} border-3 cursor-pointer`}
+                    className={`card mb-3 border-start ${
+                      isAssignedToCurrentTeacher 
+                        ? 'border-primary border-3' 
+                        : isAssigned 
+                          ? 'border-warning border-3' 
+                          : 'border-light border-2'
+                    } cursor-pointer`}
                     onClick={(e) => handleCardClick(subject.id, subject, e)}
                     style={{ 
                       cursor: 'pointer',
                       transition: 'all 0.2s ease',
-                      backgroundColor: isSelected ? '#f8f9fa' : 'white'
+                      backgroundColor: isSelected ? '#f8f9fa' : 'white',
+                      borderLeftWidth: isAssignedToCurrentTeacher || isAssigned ? '4px' : '2px'
                     }}
                     onMouseEnter={(e) => {
                       e.currentTarget.style.boxShadow = '0 4px 8px rgba(0,0,0,0.1)';
@@ -305,7 +341,7 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
                             onClick={(e) => e.stopPropagation()} // Prevent card click when clicking checkbox
                           />
                         </Col>
-                        <Col xs={8}>
+                        <Col xs={9}>
                           <div className="d-flex align-items-center">
                             <div className="fw-bold mb-0">
                               {subject.name}
@@ -315,10 +351,15 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
                               <Badge bg="light" text="dark" className="ms-2">
                                 {subject.type === 1 ? 'Theory' : 'Practical'}
                               </Badge>
-                              {isAssigned ? (
+                              {isAssignedToCurrentTeacher ? (
+                                <Badge bg="primary" className="ms-2">
+                                  <i className="fas fa-user-check me-1"></i>
+                                  Current Teacher
+                                </Badge>
+                              ) : isAssigned ? (
                                 <Badge bg="warning" className="ms-2">
                                   <i className="fas fa-user-tie me-1"></i>
-                                  Assigned
+                                  Assigned to {assignedToName}
                                 </Badge>
                               ) : (
                                 <Badge bg="success" className="ms-2">
@@ -338,27 +379,10 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
                               Semester {subject.semester}
                             </span>
                           </div>
-                          {isAssigned && assignedToName && (
-                            <Alert variant="light" className="small mt-2 mb-0 py-2">
-                              <i className="fas fa-info-circle text-warning me-2"></i>
-                              Currently assigned to: <strong>{assignedToName}</strong>
-                            </Alert>
-                          )}
+                          {/* Removed the Alert showing "Currently assigned to" */}
                         </Col>
-                        <Col xs={3} className="text-end">
-                          <div className="small">
-                            {isAssigned ? (
-                              <span className="text-warning">
-                                <i className="fas fa-sync-alt me-1"></i>
-                                Will be reassigned
-                              </span>
-                            ) : (
-                              <span className="text-success">
-                                <i className="fas fa-unlock me-1"></i>
-                                Available for Assignment
-                              </span>
-                            )}
-                          </div>
+                        <Col xs={2} className="text-end">
+                          {/* Removed the "Will be reassigned"/"Available for Assignment" text */}
                         </Col>
                       </Row>
                     </div>
@@ -404,7 +428,7 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
               ) : (
                 <>
                   <i className="fas fa-user-plus me-2"></i>
-                  Assign {selectedSubjectIds.length} Subject(s)
+                  Update {selectedSubjectIds.length} Subject(s)
                 </>
               )}
             </Button>
@@ -418,6 +442,7 @@ const AssignSubjectsModal: React.FC<AssignSubjectsModalProps> = ({
         onHide={() => setAlreadyAssignedSubject(null)}
         centered
         size="lg"
+        backdrop="static"
       >
         <Modal.Header closeButton className="bg-warning text-white">
           <Modal.Title>
